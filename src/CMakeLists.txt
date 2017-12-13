@@ -24,6 +24,8 @@ add_executable(Insight
 )
 
 target_link_libraries(Insight PRIVATE
+    GraphicEngine
+    PhysicEngine
     ShellClass
     ShellInterpreter
 )
