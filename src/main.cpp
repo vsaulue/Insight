@@ -17,10 +17,58 @@
 
 #include <cstdlib>
 
+#include "ShellClass.hpp"
+#include "ShellInterpreter.hpp"
+
+class Insight : public ShellClass {
+private:
+    ShellInterpreter interpreter;
+
+public:
+
+    virtual ShellClass& getField(const std::string& fieldName) override {
+        if (fieldName == "interpreter") {
+            return interpreter;
+        }
+        return ShellClass::getField(fieldName);
+    }
+
+    Insight() : interpreter(*this) {}
+
+    virtual const std::string& getShellClassName() const override {
+        static const std::string className("Insight");
+        return className;
+    }
+
+    void runInterpreter() {
+        interpreter.run();
+    }
+
+    void quit() {
+        interpreter.quit();
+    }
+
+    void evalMethod(const std::string& methodName) override {
+        if (methodName == "quit") {
+            quit();
+        } else {
+            ShellClass::evalMethod(methodName);
+        }
+    }
+};
+
+static void runInterpreter(Insight &insight) {
+    insight.runInterpreter();
+}
+
 /*
  *
  */
 int main(int argc, char** argv) {
+    Insight insight;
+
+    runInterpreter(insight);
+
     return EXIT_SUCCESS;
 }
 

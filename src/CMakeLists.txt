@@ -19,3 +19,8 @@ add_subdirectory(shell)
 add_executable(Insight
     main.cpp
 )
+
+target_link_libraries(Insight PRIVATE
+    ShellClass
+    ShellInterpreter
+)
