@@ -14,14 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(math)
-add_subdirectory(shell)
+add_executable(testFixedPoint FixedPoint.cpp)
+target_link_libraries(testFixedPoint Catch Math)
 
-add_executable(Insight
-    main.cpp
+add_custom_target(run-testFixedPoint "./testFixedPoint"
+    DEPENDS testFixedPoint
 )
 
-target_link_libraries(Insight PRIVATE
-    ShellClass
-    ShellInterpreter
-)
+add_dependencies(run-tests run-testFixedPoint)
