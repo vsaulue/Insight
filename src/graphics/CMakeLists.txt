@@ -14,16 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(graphics)
-add_subdirectory(math)
-add_subdirectory(physics)
-add_subdirectory(shell)
-
-add_executable(Insight
-    main.cpp
+add_library(GraphicEngine STATIC
+    GraphicEngine.cpp
 )
 
-target_link_libraries(Insight PRIVATE
+target_include_directories(GraphicEngine PUBLIC include)
+target_link_libraries(GraphicEngine PUBLIC
+    Irrlicht
+    PhysicEngine
     ShellClass
-    ShellInterpreter
 )

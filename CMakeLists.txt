@@ -17,6 +17,8 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(Insight)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+
 set(Insight_VERSION_MAJOR 0)
 set(Insight_VERSION_MINOR 0)
 set(Insight_VERSION_PATCH_LEVEL )
@@ -46,6 +48,13 @@ find_path(Catch_INCLUDE_DIRS NAMES "catch.hpp"
 )
 add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${Catch_INCLUDE_DIRS})
+
+find_package(Irrlicht REQUIRED)
+add_library(Irrlicht STATIC IMPORTED)
+set_target_properties(Irrlicht PROPERTIES
+    IMPORTED_LOCATION ${Irrlicht_LIBRARIES}
+    INTERFACE_INCLUDE_DIRECTORIES ${Irrlicht_INCLUDE_DIRS}
+)
 
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
