@@ -14,15 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(math)
-add_subdirectory(physics)
-add_subdirectory(shell)
-
-add_executable(Insight
-    main.cpp
+add_library(PhysicEngine STATIC
+    PhysicEngine.cpp
+    PhysicalObject.cpp
+    Universe.cpp
 )
 
-target_link_libraries(Insight PRIVATE
-    ShellClass
-    ShellInterpreter
-)
+target_include_directories(PhysicEngine PUBLIC include)
+target_link_libraries(PhysicEngine Math ShellClass)
