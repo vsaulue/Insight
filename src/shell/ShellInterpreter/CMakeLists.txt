@@ -14,8 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(shell)
-
-add_executable(Insight
-    main.cpp
+add_library(ShellInterpreter STATIC
+    ParserFieldSelection.cpp
+    ParserFunctionCall.cpp
+    ParserIdentifierExpression.cpp
+    ShellGrammar.cpp
+    ShellInterpreter.cpp
 )
+
+target_include_directories(ShellInterpreter PUBLIC include/api
+                                            PRIVATE include/private
+)
+
+target_link_libraries(ShellInterpreter PUBLIC ShellClass)

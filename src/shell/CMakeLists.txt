@@ -14,8 +14,5 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(shell)
-
-add_executable(Insight
-    main.cpp
-)
+add_subdirectory(ShellClass)
+add_subdirectory(ShellInterpreter)
