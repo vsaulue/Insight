@@ -40,7 +40,16 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 endif()
 
+find_path(Catch_INCLUDE_DIRS NAMES "catch.hpp"
+    PATHS "external/catch-1.3.4/include"
+    NO_DEFAULT_PATH
+)
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE ${Catch_INCLUDE_DIRS})
+
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
+
+add_custom_target(run-tests)
 
 add_subdirectory(src)
