@@ -59,6 +59,22 @@ set_target_properties(Irrlicht PROPERTIES
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+find_package(Lua REQUIRED)
+add_library(Lua SHARED IMPORTED)
+set_target_properties(Lua PROPERTIES
+    IMPORTED_LOCATION ${LUA_LIBRARIES}
+    INTERFACE_INCLUDE_DIRECTORIES ${LUA_INCLUDE_DIR}
+)
+if (WIN32)
+    # Find import library of the DLL.
+    get_filename_component(LUA_LIBDIR "${LUA_LIBRARIES}" DIRECTORY)
+    get_filename_component(LUA_LIB_BASENAME "${LUA_LIBRARIES}" NAME_WE)
+    find_library(LUA_IMPLIB NAMES "lib${LUA_LIB_BASENAME}.a" PATHS "${LUA_LIBDIR}" NO_DEFAULT_PATH)
+    set_target_properties(Lua PROPERTIES
+        IMPORTED_IMPLIB ${LUA_IMPLIB}
+    )
+endif()
+
 add_custom_target(run-tests)
 
 add_subdirectory(src)
