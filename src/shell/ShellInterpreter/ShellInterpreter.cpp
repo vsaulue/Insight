@@ -15,13 +15,11 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "LuaException.hpp"
+#include "LuaState.hpp"
+
 #include "ShellInterpreter.hpp"
 #include "ShellClass.hpp"
-#include "ShellVoid.hpp"
-#include "NoSuchFieldShellException.hpp"
-#include "NoSuchMethodShellException.hpp"
-
-#include "ShellGrammar.hpp"
 
 #include <iostream>
 
@@ -30,25 +28,15 @@ ShellInterpreter::ShellInterpreter(ShellClass& rootObject) : rootObject(rootObje
 }
 
 void ShellInterpreter::run() {
+    LuaState luaState;
     running = true;
     std::string line;
-    while (running && std::getline(std::cin, line)) {
-        std::shared_ptr<ParserStatement> statement;
-        std::string::const_iterator first = line.begin();
-        std::string::const_iterator last = line.end();
-        bool parsed = parse(first, last, statement);
 
-        if (!parsed || first != last) {
-            std::cerr << "Match failed." << std::endl;
-        } else {
-            try {
-                statement->eval(*this).shellPrint(std::cout);
-                std::cout << std::endl;
-            } catch (const NoSuchFieldShellException &e) {
-                std::cerr << e.what() << std::endl;
-            } catch (const NoSuchMethodShellException &e) {
-                std::cerr << e.what() << std::endl;
-            }
+    while (running && std::getline(std::cin, line)) {
+        try {
+            luaState.doString(line);
+        } catch (const LuaException &e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 }
