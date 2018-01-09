@@ -155,6 +155,13 @@ public:
      * @return The value of the object if the check succeeded.
      */
     double checkNumber(int stackIndex);
+
+    /**
+     * Pop the given number of elements from the stack.
+     *
+     * @param[in] n The number of elements to pop from the stack.
+     */
+    void pop(int n);
 };
 
 #endif /* LUASTATEVIEW_HPP */

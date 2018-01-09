@@ -75,3 +75,7 @@ void LuaStateView::setTable(int stackIndex) {
 }
 
 LuaStateView::~LuaStateView() {}
+
+void LuaStateView::pop(int n) {
+    lua_pop(state, n);
+}
