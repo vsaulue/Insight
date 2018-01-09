@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@
 #ifndef PHYSICENGINE_HPP
 #define	PHYSICENGINE_HPP
 
-#include "ShellClass.hpp"
+#include "LuaVirtualClass.hpp"
 #include "Universe.hpp"
 
-class PhysicEngine : public ShellClass {
+class PhysicEngine : public LuaVirtualClass {
 private:
     Universe universe;
 public:
@@ -32,9 +32,9 @@ public:
 
     void integrate();
 
-    virtual const std::string& getShellClassName() const override;
+    const std::string& luaClassName() override;
 
-    virtual ShellClass& getField(const std::string& fieldName) override;
+    void luaPopulateIndex(LuaStateView& luaState) override;
 };
 
 #endif	/* PHYSICENGINE_HPP */

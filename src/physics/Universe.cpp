@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,3 +20,12 @@
 Universe::Universe() {
 }
 
+const std::string& Universe::luaClassName() {
+    static const std::string className("Universe");
+    return className;
+}
+
+void Universe::luaPopulateIndex(LuaStateView& luaState) {
+    // TODO: implement methods.
+    luaState.pop(1);
+}

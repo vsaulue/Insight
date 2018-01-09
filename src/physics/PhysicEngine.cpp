@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,15 +36,12 @@ void PhysicEngine::integrate() {
     }
 }
 
-
-const std::string& PhysicEngine::getShellClassName() const {
+const std::string& PhysicEngine::luaClassName() {
     static const std::string className("PhysicEngine");
     return className;
 }
 
-ShellClass& PhysicEngine::getField(const std::string& fieldName) {
-    if (fieldName == "universe") {
-        return universe;
-    }
-    return ShellClass::getField(fieldName);
+void PhysicEngine::luaPopulateIndex(LuaStateView& luaState) {
+    // TODO: implement methods.
+    luaState.pop(1);
 }

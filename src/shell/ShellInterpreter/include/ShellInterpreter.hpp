@@ -8,7 +8,7 @@
 #ifndef SHELLINTERPRETER_HPP
 #define	SHELLINTERPRETER_HPP
 
-#include "ShellClass.hpp"
+#include "LuaVirtualClass.hpp"
 
 /**
  * Shell implementation.
@@ -16,7 +16,7 @@
  * Reads statements from standard input, evaluates them and prints the result
  * on standard output.
  */
-class ShellInterpreter : public ShellClass {
+class ShellInterpreter : public LuaVirtualClass {
 public:
     /**
      * Creates a new shell.
@@ -25,9 +25,7 @@ public:
      *
      * @param[in,out] rootObject Main object of the shell.
      */
-    ShellInterpreter(ShellClass& rootObject);
-    
-    virtual const std::string& getShellClassName() const override;
+    ShellInterpreter(LuaVirtualClass& rootObject);
 
     /**
      * Run the shell.
@@ -46,10 +44,14 @@ public:
      *
      * @return The root object of this shell.
      */
-    ShellClass& getRootObject();
+    LuaVirtualClass& getRootObject();
+
+    const std::string& luaClassName() override;
+
+    void luaPopulateIndex(LuaStateView& luaState) override;
 private:
     /** Root object of this shell.*/
-    ShellClass& rootObject;
+    LuaVirtualClass& rootObject;
 
     /** Flag telling if the main loop should keep running. */
     bool running;

@@ -17,13 +17,13 @@
 
 #include "LuaException.hpp"
 #include "LuaState.hpp"
+#include "LuaVirtualClass.hpp"
 
 #include "ShellInterpreter.hpp"
-#include "ShellClass.hpp"
 
 #include <iostream>
 
-ShellInterpreter::ShellInterpreter(ShellClass& rootObject) : rootObject(rootObject) {
+ShellInterpreter::ShellInterpreter(LuaVirtualClass& rootObject) : rootObject(rootObject) {
     running = false;
 }
 
@@ -46,11 +46,15 @@ void ShellInterpreter::quit() {
 }
 
 
-ShellClass& ShellInterpreter::getRootObject() {
+LuaVirtualClass& ShellInterpreter::getRootObject() {
     return rootObject;
 }
 
-const std::string& ShellInterpreter::getShellClassName() const {
-    static const std::string className("Interpreter");
+const std::string& ShellInterpreter::luaClassName() {
+    static const std::string className("ShellInterpreter");
     return className;
+}
+
+void ShellInterpreter::luaPopulateIndex(LuaStateView& luaState) {
+    luaState.pop(1);
 }

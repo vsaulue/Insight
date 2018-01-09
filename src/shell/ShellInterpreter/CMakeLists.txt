@@ -15,15 +15,9 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_library(ShellInterpreter STATIC
-    ParserFieldSelection.cpp
-    ParserFunctionCall.cpp
-    ParserIdentifierExpression.cpp
-    ShellGrammar.cpp
     ShellInterpreter.cpp
 )
 
-target_include_directories(ShellInterpreter PUBLIC include/api
-                                            PRIVATE include/private
-)
+target_include_directories(ShellInterpreter PUBLIC include)
 
 target_link_libraries(ShellInterpreter PUBLIC LuaWrapper ShellClass)

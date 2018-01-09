@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@
 
 #include <unordered_set>
 #include "PhysicalObject.hpp"
-#include "ShellClass.hpp"
+#include "LuaVirtualClass.hpp"
 
-class Universe : public ShellClass {
+class Universe : public LuaVirtualClass {
 public:
     Universe();
 
@@ -38,10 +38,9 @@ public:
         return objects.end();
     }
 
-    virtual const std::string& getShellClassName() const override {
-        static const std::string className("Universe");
-        return className;
-    }
+    const std::string& luaClassName() override;
+
+    void luaPopulateIndex(LuaStateView& luaState) override;
 
 private:
     std::unordered_set<PhysicalObject*> objects;

@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +23,12 @@
 #include <thread>
 
 #include "GraphicEngine.hpp"
+#include "LuaVirtualClass.hpp"
 #include "PhysicEngine.hpp"
 #include "Universe.hpp"
-#include "ShellClass.hpp"
 #include "ShellInterpreter.hpp"
 
-class Insight : public ShellClass {
+class Insight : public LuaVirtualClass {
 private:
     using timer = std::chrono::steady_clock;
 
@@ -40,22 +40,8 @@ private:
     std::chrono::duration<std::int64_t, std::nano> renderPeriod;
 public:
 
-    virtual ShellClass& getField(const std::string& fieldName) override {
-        if (fieldName == "physicEngine") {
-            return physicEngine;
-        } else if (fieldName == "interpreter") {
-            return interpreter;
-        }
-        return ShellClass::getField(fieldName);
-    }
-
     Insight() : graphicEngine(physicEngine), interpreter(*this), isEngineRunning(false), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
         physicEngine.getUniverse().addObject(new PhysicalObject());
-    }
-
-    virtual const std::string& getShellClassName() const override {
-        static const std::string className("Insight");
-        return className;
     }
 
     void runInterpreter() {
@@ -82,12 +68,14 @@ public:
         }
     }
 
-    void evalMethod(const std::string& methodName) override {
-        if (methodName == "quit") {
-            quit();
-        } else {
-            ShellClass::evalMethod(methodName);
-        }
+    const std::string& luaClassName() override {
+        static const std::string className("Insight");
+        return className;
+    }
+
+    void luaPopulateIndex(LuaStateView& luaState) override {
+        // todo: ptu methods.
+        luaState.pop(1);
     }
 };
 
