@@ -18,6 +18,7 @@ add_library(LuaWrapper STATIC
     LuaException
     LuaState
     LuaStateView
+    LuaVirtualClass
 )
 
 target_include_directories(LuaWrapper PUBLIC include)
