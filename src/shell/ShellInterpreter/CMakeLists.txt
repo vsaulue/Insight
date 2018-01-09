@@ -20,4 +20,4 @@ add_library(ShellInterpreter STATIC
 
 target_include_directories(ShellInterpreter PUBLIC include)
 
-target_link_libraries(ShellInterpreter PUBLIC LuaWrapper ShellClass)
+target_link_libraries(ShellInterpreter PUBLIC LuaWrapper)

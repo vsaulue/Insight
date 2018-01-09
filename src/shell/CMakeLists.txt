@@ -15,5 +15,4 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_subdirectory(LuaWrapper)
-add_subdirectory(ShellClass)
 add_subdirectory(ShellInterpreter)

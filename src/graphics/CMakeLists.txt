@@ -1,5 +1,5 @@
 # This file is part of Insight.
-# Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+# Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
 #
 # Insight is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,5 +22,4 @@ target_include_directories(GraphicEngine PUBLIC include)
 target_link_libraries(GraphicEngine PUBLIC
     Irrlicht
     PhysicEngine
-    ShellClass
 )
