@@ -162,6 +162,22 @@ public:
      * @param[in] n The number of elements to pop from the stack.
      */
     void pop(int n);
+
+    /**
+     * Open the base Lua library.
+     *
+     * This can push new elements on the stack.
+     */
+    void open_base();
+
+    /**
+     * Get the index of the highest element in the Lua stack.
+     *
+     * This is also the number of elements on the stack (elements are indexed from 1).
+     *
+     * @return The index of the element on the top of the stack.
+     */
+    int getTop();
 };
 
 #endif /* LUASTATEVIEW_HPP */

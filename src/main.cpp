@@ -40,7 +40,7 @@ private:
     std::chrono::duration<std::int64_t, std::nano> renderPeriod;
 public:
 
-    Insight() : graphicEngine(physicEngine), interpreter(*this), isEngineRunning(false), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
+    Insight() : graphicEngine(physicEngine), interpreter(*this, "insight"), isEngineRunning(false), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
         physicEngine.getUniverse().addObject(new PhysicalObject());
     }
 

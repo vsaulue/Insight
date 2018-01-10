@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-ShellInterpreter::ShellInterpreter(LuaVirtualClass& rootObject) : rootObject(rootObject) {
+ShellInterpreter::ShellInterpreter(LuaVirtualClass& rootObject, const std::string& rootName) : rootObject(rootObject), rootName(rootName) {
     running = false;
 }
 
@@ -31,6 +31,15 @@ void ShellInterpreter::run() {
     LuaState luaState;
     running = true;
     std::string line;
+
+    luaState.open_base();
+
+    luaState.newObject<LuaVirtualClass*>(&rootObject); // stack index 1
+
+    rootObject.luaPushMetatable(luaState);
+    luaState.setMetatable(-2);
+
+    luaState.setGlobal(rootName);
 
     while (running && std::getline(std::cin, line)) {
         try {

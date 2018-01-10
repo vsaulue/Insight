@@ -21,11 +21,10 @@ public:
     /**
      * Creates a new shell.
      *
-     * the rootObject is the object in which fields and methods will be researched first.
-     *
      * @param[in,out] rootObject Main object of the shell.
+     * @param[in] rootName Name of the variable in the shell that will contain rootObject.
      */
-    ShellInterpreter(LuaVirtualClass& rootObject);
+    ShellInterpreter(LuaVirtualClass& rootObject, const std::string& rootName);
 
     /**
      * Run the shell.
@@ -52,6 +51,9 @@ public:
 private:
     /** Root object of this shell.*/
     LuaVirtualClass& rootObject;
+
+    /** Name of the global variable containing rootObject. */
+    std::string rootName;
 
     /** Flag telling if the main loop should keep running. */
     bool running;

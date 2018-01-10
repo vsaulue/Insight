@@ -79,3 +79,11 @@ LuaStateView::~LuaStateView() {}
 void LuaStateView::pop(int n) {
     lua_pop(state, n);
 }
+
+void LuaStateView::open_base() {
+    luaopen_base(state);
+}
+
+int LuaStateView::getTop() {
+    return lua_gettop(state);
+}
