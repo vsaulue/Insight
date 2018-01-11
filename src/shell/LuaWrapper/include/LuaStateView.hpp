@@ -38,6 +38,15 @@ protected:
     lua_State* state;
 
     /**
+     * Creates a new Lua userdata of the specified size.
+     *
+     * @param[in] size Size of the memory block.
+     *
+     * @return A pointer to the new memory block.
+     */
+    void* newUserData(std::size_t size);
+
+    /**
      * Pushes a function on the stack.
      *
      * @param[in] function function to push on the stack.
@@ -67,15 +76,6 @@ public:
     void doString(const std::string& code);
 
     virtual ~LuaStateView();
-
-    /**
-     * Creates a new Lua userdata of the specified size.
-     *
-     * @param[in] size Size of the memory block.
-     *
-     * @return A pointer to the new memory block.
-     */
-    void* newUserData(std::size_t size);
 
     /**
      * Creates a new Lua userdata wrapping a new C++ object.
