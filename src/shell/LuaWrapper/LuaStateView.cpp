@@ -46,6 +46,11 @@ void* LuaStateView::newUserData(std::size_t size) {
     return lua_newuserdata(state, size);
 }
 
+void* LuaStateView::checkUData(int stackIndex, const std::string& metatableName) {
+    return luaL_checkudata(state, stackIndex, metatableName.c_str());
+}
+
+
 void LuaStateView::pushString(const std::string& str) {
     lua_pushstring(state, str.c_str());
 }
@@ -96,4 +101,8 @@ LuaStateView::CFunction LuaStateView::getCFunction(int stackIndex) {
         luaL_error(state, "Error: expected a C Function at index %d\n", stackIndex);
     }
     return result;
+}
+
+void LuaStateView::remove(int stackIndex) {
+    lua_remove(state, 1);
 }

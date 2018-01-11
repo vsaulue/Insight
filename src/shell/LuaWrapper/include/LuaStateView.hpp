@@ -47,6 +47,32 @@ protected:
     void* newUserData(std::size_t size);
 
     /**
+     * Gets an object from the stack it it is an Lua Userdata.
+     *
+     * @param[in] stackIndex Index of the item to get on the stack.
+     * @param[in] metatableName Expected name of its metatable.
+     *
+     * @return A pointer to the memory block of the Userdata.
+     */
+    void* checkUData(int stackIndex, const std::string& metatableName);
+
+    /**
+     * Gets an object from the stack if it is a Userdata of the specified type.
+     *
+     * @tparam UserDataType Expected type of the object in the Lua userdata.
+     *
+     * @param[in] stackIndex Index of the item to get on the stack.
+     * @param[in] metatableName Expected name of its metatable.
+     *
+     * @return A pointer to the object on the stack.
+     */
+    template<typename UserDataType>
+    UserDataType* checkUserData(int stackIndex, const std::string& metatableName) {
+        void *result = checkUData(stackIndex, metatableName);
+        return reinterpret_cast<UserDataType*>(result);
+    }
+
+    /**
      * Pushes a function on the stack.
      *
      * @param[in] function function to push on the stack.
@@ -212,10 +238,18 @@ public:
      * @return The index of the element on the top of the stack.
      */
     int getTop();
+
+    /**
+     * Removes the element on the stack at the given index.
+     *
+     * @param stackIndex Index of the element to remove.
+     */
+    void remove(int stackIndex);
 };
 
 // Bindings for some basic types.
 #include "LuaBindingCFunc.hpp"
+#include "LuaBindingFunc.hpp"
 
 #endif /* LUASTATEVIEW_HPP */
 
