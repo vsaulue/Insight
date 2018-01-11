@@ -87,3 +87,17 @@ void LuaStateView::open_base() {
 int LuaStateView::getTop() {
     return lua_gettop(state);
 }
+
+void LuaStateView::pushCFunction(int(*function)(lua_State*)) {
+    lua_pushcfunction(state, function);
+}
+
+LuaStateView::CFunction LuaStateView::getCFunction(int stackIndex) {
+    int (*result)(lua_State*) = nullptr;
+    if (lua_iscfunction(state, stackIndex)) {
+        result = lua_tocfunction(state, stackIndex);
+    } else {
+        luaL_error(state, "Error: expected a C Function at index %d\n", stackIndex);
+    }
+    return result;
+}

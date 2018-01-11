@@ -20,6 +20,8 @@
 
 #include <string>
 
+#include "LuaBinding.hpp"
+
 struct lua_State;
 struct luaL_Reg;
 
@@ -28,8 +30,28 @@ struct luaL_Reg;
  */
 class LuaStateView {
 protected:
+    template<typename> friend class LuaBinding;
+
+    /** Function type used by the C api of Lua. */
+    using CFunction = int(*)(lua_State*);
+
     /** lua_State from the C API. */
     lua_State* state;
+
+    /**
+     * Pushes a function on the stack.
+     *
+     * @param[in] function function to push on the stack.
+     */
+    void pushCFunction(int (*function)(lua_State*));
+
+    /**
+     * Gets a C function in the Lua stack.
+     *
+     * @param[in] stackIndex Index of the boolean in the stack.
+     * @return
+     */
+    CFunction getCFunction(int stackIndex);
 public:
 
     /**
@@ -71,6 +93,27 @@ public:
         UserDataType* result = new(mem) UserDataType(std::forward<ArgsType>(constructorArgs)...);
         // TODO: set c++ destructor in LUA metatable.
         return result;
+    }
+
+    /**
+     * Creates a new object on top of the Lua stack.
+     *
+     * This function uses LuaBinding<UserDataType> to push the object with binding
+     * informations (metatable with methods, destructor, ...).
+     *
+     * @tparam UserDataType Type of the object to create inside Lua.
+     * @tparam ArgsType Type of the argument of UserDataType constructor.
+     *
+     * @param constructorArgs Arguments of the constructor of UserDataType.
+     */
+    template<typename UserDataType, typename... ArgsType>
+    void push(ArgsType&&... constructorArgs) {
+        LuaBinding<UserDataType>::push(*this, std::forward<ArgsType>(constructorArgs)...);
+    }
+
+    template<typename UserDataType>
+    UserDataType get(int stackIndex) {
+        return LuaBinding<UserDataType>::get(*this, stackIndex);
     }
 
     /**
@@ -179,6 +222,9 @@ public:
      */
     int getTop();
 };
+
+// Bindings for some basic types.
+#include "LuaBindingCFunc.hpp"
 
 #endif /* LUASTATEVIEW_HPP */
 
