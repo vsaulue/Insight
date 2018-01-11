@@ -23,7 +23,6 @@
 #include "LuaBinding.hpp"
 
 struct lua_State;
-struct luaL_Reg;
 
 /**
  * Wraps an existing C lua_State.
@@ -180,14 +179,6 @@ public:
      * @param[in] fieldName Key of the modified value in the table.
      */
     void setField(int stackIndex, const std::string &fieldName);
-
-    /**
-     * Registers C++ functions into the table on the top of the stack.
-     *
-     * @param[in] functions Array of function names & function pointers.
-     * @param[in] nup Number of Upvalues popped from the Lua stack.
-     */
-    void setFuncs(const luaL_Reg *functions, int nup);
 
     /**
      * Checks whether the object in the Lua stack at stackIndex is a number.

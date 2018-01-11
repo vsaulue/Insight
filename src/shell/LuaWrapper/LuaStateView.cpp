@@ -58,10 +58,6 @@ void LuaStateView::setField(int stackIndex, const std::string& fieldName) {
     lua_setfield(state, stackIndex, fieldName.c_str());
 }
 
-void LuaStateView::setFuncs(const luaL_Reg* functions, int nup) {
-    luaL_setfuncs(state, functions, nup);
-}
-
 void LuaStateView::setGlobal(const std::string& name) {
     lua_setglobal(state, name.c_str());
 }
