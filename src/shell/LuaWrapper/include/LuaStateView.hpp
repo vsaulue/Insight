@@ -73,6 +73,20 @@ protected:
     }
 
     /**
+     * Pushes a boolean on the Lua stack.
+     *
+     * @param[in] value Value to push on the stack.
+     */
+    void pushBool(bool value);
+
+    /**
+     * Gets a boolean in the Lua stack.
+     *
+     * @param[in] stackIndex Index of the boolean in the stack.
+     */
+    bool getBool(int stackIndex);
+
+    /**
      * Pushes a function on the stack.
      *
      * @param[in] function function to push on the stack.
@@ -248,7 +262,10 @@ public:
 };
 
 // Bindings for some basic types.
+// C++ types that have a corresponding built-in type in Lua.
 #include "LuaBindingCFunc.hpp"
+#include "LuaBindingBool.hpp"
+// C++ types stored as Lua Userdata.
 #include "LuaBindingFunc.hpp"
 
 #endif /* LUASTATEVIEW_HPP */

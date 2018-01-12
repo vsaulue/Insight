@@ -89,6 +89,14 @@ int LuaStateView::getTop() {
     return lua_gettop(state);
 }
 
+void LuaStateView::pushBool(bool value) {
+    lua_pushboolean(state, value);
+}
+
+bool LuaStateView::getBool(int stackIndex) {
+    return lua_toboolean(state, stackIndex);
+}
+
 void LuaStateView::pushCFunction(int(*function)(lua_State*)) {
     lua_pushcfunction(state, function);
 }
