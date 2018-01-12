@@ -106,11 +106,17 @@ LuaStateView::CFunction LuaStateView::getCFunction(int stackIndex) {
     if (lua_iscfunction(state, stackIndex)) {
         result = lua_tocfunction(state, stackIndex);
     } else {
-        luaL_error(state, "Error: expected a C Function at index %d\n", stackIndex);
+        std::string msg("expected C Function int(*)(lua_State), got");
+        msg += luaL_typename(state, stackIndex);
+        luaL_argerror(state, stackIndex, msg.c_str());
     }
     return result;
 }
 
 void LuaStateView::remove(int stackIndex) {
     lua_remove(state, 1);
+}
+
+void LuaStateView::throwError(const std::string& msg) {
+    luaL_error(state, msg.c_str());
 }

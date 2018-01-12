@@ -19,6 +19,8 @@
 #ifndef LUABINDINGFUNC_HPP
 #define LUABINDINGFUNC_HPP
 
+#include <exception>
+
 #include "LuaBinding.hpp"
 #include "LuaBindingCFunc.hpp"
 #include "LuaStateView.hpp"
@@ -49,9 +51,17 @@ private:
      */
     static int luaCall(lua_State *cState) {
         LuaStateView state(cState);
-        func_ptr function = state.get<func_ptr>(1);
-        state.remove(1);
-        return function(state);
+        int result = 0;
+        try {
+            func_ptr function = state.get<func_ptr>(1);
+            state.remove(1);
+            result = function(state);
+        } catch (const std::exception& e) {
+            std::string msg("C++ exception: ");
+            msg += e.what();
+            state.throwError(msg);
+        }
+        return result;
     }
 
     /**
