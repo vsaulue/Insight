@@ -274,6 +274,7 @@ public:
 #include "LuaBindingBool.hpp"
 // C++ types stored as Lua Userdata.
 #include "LuaBindingFunc.hpp"
+#include "LuaBindingStdFunction.hpp"
 
 #endif /* LUASTATEVIEW_HPP */
 
