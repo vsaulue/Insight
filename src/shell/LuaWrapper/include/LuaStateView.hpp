@@ -100,13 +100,6 @@ protected:
      * @return
      */
     CFunction getCFunction(int stackIndex);
-
-    /**
-     * Throws an Lua error.
-     *
-     * @param[in] msg An error message.
-     */
-    void throwError(const std::string& msg);
 public:
 
     /**
@@ -266,6 +259,13 @@ public:
      * @param stackIndex Index of the element to remove.
      */
     void remove(int stackIndex);
+
+    /**
+     * Throws an Lua error.
+     *
+     * @param[in] msg An error message.
+     */
+    void throwError(const std::string& msg);
 };
 
 // Bindings for some basic types.

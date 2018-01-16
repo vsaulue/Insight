@@ -24,6 +24,7 @@
 #include "LuaBinding.hpp"
 #include "LuaBindingCFunc.hpp"
 #include "LuaStateView.hpp"
+#include "LuaWrapFunction.hpp"
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
@@ -45,23 +46,14 @@ private:
     /**
      * Implementation of Lua metamethod "__call" for this type.
      *
-     * @param cState State calling this function.
+     * @param state State calling this function.
      *
      * @return The number of return values of this Lua function.
      */
-    static int luaCall(lua_State *cState) {
-        LuaStateView state(cState);
-        int result = 0;
-        try {
-            func_ptr function = state.get<func_ptr>(1);
-            state.remove(1);
-            result = function(state);
-        } catch (const std::exception& e) {
-            std::string msg("C++ exception: ");
-            msg += e.what();
-            state.throwError(msg);
-        }
-        return result;
+    static int luaCall(LuaStateView& state) {
+        func_ptr function = state.get<func_ptr>(1);
+        state.remove(1);
+        return function(state);
     }
 
     /**
@@ -72,7 +64,7 @@ private:
     static void pushMetatable(LuaStateView& state) {
         bool newTable = state.newMetatable(luaClassName());
         if (newTable) {
-            state.push<int(*)(lua_State*)>(luaCall);
+            state.push<int(*)(lua_State*)>(luaWrapFunction<luaCall>);
             state.setField(-2, "__call");
         }
     }
