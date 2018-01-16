@@ -14,15 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_library(LuaWrapper STATIC
-    LuaException
-    LuaState
-    LuaStateView
-    LuaVirtualClass
+add_executable(testLuaWrapper LuaWrapper.cpp)
+target_link_libraries(testLuaWrapper Catch LuaWrapper)
+
+add_custom_target(run-testLuaWrapper "./testLuaWrapper"
+    DEPENDS testLuaWrapper
 )
 
-target_include_directories(LuaWrapper PUBLIC include)
-
-target_link_libraries(LuaWrapper PRIVATE Lua)
-
-add_subdirectory(tests)
+add_dependencies(run-tests run-testLuaWrapper)
