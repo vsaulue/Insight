@@ -50,7 +50,7 @@ private:
      * @return The number of return values of this Lua function.
      */
     static int luaCall(LuaStateView& state) {
-        FuncType function = state.get<FuncType>(1);
+        FuncType& function(state.getRef<FuncType>(1));
         state.remove(1);
         return function(state);
     }
@@ -81,6 +81,19 @@ public:
     }
 
     /**
+     * Get a reference to a std::function at the given index from the stack.
+     *
+     * @param state State where the lookup is done.
+     * @param stackIndex Index in the Lua stack to search.
+     *
+     * @return The desired function object, if the object in the stack is of this type.
+     */
+    static std::function<int(LuaStateView&)>& getRef(LuaStateView& state, int stackIndex) {
+        FuncType* result = state.checkUserData<FuncType>(stackIndex, luaClassName());
+        return *result;
+    }
+
+    /**
      * Get a std::function at the given index from the stack.
      *
      * @param state State where the lookup is done.
@@ -89,8 +102,7 @@ public:
      * @return The desired function object, if the object in the stack is of this type.
      */
     static std::function<int(LuaStateView&)> get(LuaStateView& state, int stackIndex) {
-        FuncType* result = state.checkUserData<FuncType>(stackIndex, luaClassName());
-        return *result;
+        return getRef(state, stackIndex);
     }
 };
 

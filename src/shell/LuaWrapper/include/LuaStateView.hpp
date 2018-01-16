@@ -150,9 +150,36 @@ public:
         LuaBinding<UserDataType>::push(*this, std::forward<ArgsType>(constructorArgs)...);
     }
 
+    /**
+     * Gets an object of type Userdata at the given index in the Lua stack.
+     *
+     * This function will throw an exception if the object at the given index is
+     * not of type UserDataType.
+     *
+     * @tparam UserDataType Expected type of the object in the stack.
+     *
+     * @param[in] stackIndex Index of the desired object in the Lua stack.
+     * @return A copy of the object at the given index.
+     */
     template<typename UserDataType>
     UserDataType get(int stackIndex) {
         return LuaBinding<UserDataType>::get(*this, stackIndex);
+    }
+
+    /**
+     * Gets a reference to an object of type Userdata at the given index in the Lua stack.
+     *
+     * The basic types of Lua (CFunctions, bool, int, ...) cannot be returned by reference.
+     *
+     * This function will throw an exception if the object at the given index is
+     * not of type UserDataType.
+     *
+     * @param[in] stackIndex Index of the desired object in the Lua stack.
+     * @return A reference to the object at the given index.
+     */
+    template<typename UserDataType>
+    UserDataType& getRef(int stackIndex) {
+        return LuaBinding<UserDataType>::getRef(*this, stackIndex);
     }
 
     /**

@@ -89,16 +89,27 @@ TEST_CASE("int(*)(LuaStateView&) binding") {
 }
 
 TEST_CASE("std::function<int(LuaStateView&)> binding") {
-    GIVEN("A std::function<LuaStateView&> created from a lambda.") {
+    GIVEN("A std::function<LuaStateView&> pushed on the Lua stack.") {
         LuaState state;
 
         bool called = false;
+
         auto lambda = [&called](LuaStateView& state) -> int {called = true; return 0; };
         std::function<int(LuaStateView&)> function(lambda);
 
-        SECTION("I can push/get it to/from Lua.") {
-            state.push<std::function<int(LuaStateView&)>>(function);
+        state.push<std::function<int(LuaStateView&)>>(function);
+
+        SECTION("I can get a copy from Lua.") {
             std::function<int(LuaStateView&)> funcFromStack = state.get<std::function<int(LuaStateView&)>>(-1);
+            state.pop(1);
+
+            REQUIRE(called == false);
+            funcFromStack(state);
+            REQUIRE(called == true);
+        }
+
+        SECTION("I can get a reference from Lua.") {
+            std::function<int(LuaStateView&)>& funcFromStack(state.getRef<std::function<int(LuaStateView&)>>(-1));
 
             REQUIRE(called == false);
             funcFromStack(state);
@@ -107,7 +118,6 @@ TEST_CASE("std::function<int(LuaStateView&)> binding") {
 
         SECTION("I can call it from Lua.") {
             const std::string luaFuncName("someName");
-            state.push<std::function<int(LuaStateView&)>>(function);
             state.setGlobal(luaFuncName);
 
             state.doString(luaFuncName+"()");
