@@ -45,7 +45,7 @@ private:
     /**
      * Implementation of Lua metamethod "__call" for this type.
      *
-     * @param cState State calling this function.
+     * @param state State calling this function.
      *
      * @return The number of return values of this Lua function.
      */
@@ -53,6 +53,19 @@ private:
         FuncType& function(state.getRef<FuncType>(1));
         state.remove(1);
         return function(state);
+    }
+
+    /**
+     * Implementation of Lua metamethod "__gc" for this type.
+     *
+     * @param state State calling this function.
+     *
+     * @return The number of return values of this Lua function.
+     */
+    static int luaDelete(LuaStateView& state) {
+        FuncType& function(state.getRef<FuncType>(1));
+        function.~FuncType();
+        return 0;
     }
 
     /**
@@ -65,6 +78,8 @@ private:
         if (newTable) {
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaCall>);
             state.setField(-2, "__call");
+            state.push<int(*)(lua_State*)>(luaWrapFunction<luaDelete>);
+            state.setField(-2,"__gc");
         }
     }
 public:
