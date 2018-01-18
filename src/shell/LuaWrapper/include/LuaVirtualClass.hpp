@@ -19,7 +19,7 @@
 #ifndef LUAVIRTUALCLASS_HPP
 #define LUAVIRTUALCLASS_HPP
 
-#include "LuaStateView.hpp"
+class LuaStateView;
 
 #include <string>
 
@@ -58,6 +58,8 @@ public:
 
     virtual ~LuaVirtualClass();
 };
+
+#include "LuaStateView.hpp"
 
 #endif /* LUAVIRTUALCLASS_HPP */
 

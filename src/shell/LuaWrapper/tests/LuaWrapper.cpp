@@ -109,7 +109,7 @@ TEST_CASE("std::function<int(LuaStateView&)> binding") {
         }
 
         SECTION("I can get a reference from Lua.") {
-            std::function<int(LuaStateView&)>& funcFromStack(state.getRef<std::function<int(LuaStateView&)>>(-1));
+            std::function<int(LuaStateView&)>& funcFromStack = state.getRef<std::function<int(LuaStateView&)>>(-1);
 
             REQUIRE(called == false);
             funcFromStack(state);
@@ -150,6 +150,94 @@ TEST_CASE("bool binding") {
             readValue = false;
             state.doString(funcName+"(true)");
             REQUIRE(readValue == true);
+        }
+    }
+}
+
+#include "LuaVirtualClass.hpp"
+#include "LuaException.hpp"
+
+class Derived1 : public LuaVirtualClass {
+public:
+
+    const std::string& luaClassName() const override {
+        static const std::string className("Derived1");
+        return className;
+    }
+
+    void luaPopulateIndex(LuaStateView& luaState) override {
+
+    }
+};
+
+class Derived1A : public Derived1 {
+public:
+    const std::string& luaClassName() const override {
+        static const std::string className("Derived1A");
+        return className;
+    }
+};
+
+class Derived1B : public Derived1 {
+public:
+    const std::string& luaClassName() const override {
+        static const std::string className("Derived1B");
+        return className;
+    }
+};
+
+TEST_CASE("LuaVirtualClass binding") {
+
+    GIVEN("A class hierarchy derived from LuaVirtualClass") {
+        LuaState state;
+
+        SECTION("I can push an object in the Lua stack.") {
+            state.push<Derived1A>();
+
+            SECTION("I can get it from Lua") {
+                const std::string& className = state.get<Derived1A>(-1).luaClassName();
+                REQUIRE(className == "Derived1A");
+            }
+
+            SECTION("I can getRef it from Lua") {
+                Derived1A& ref = state.getRef<Derived1A>(-1);
+                const std::string& className = ref.luaClassName();
+                REQUIRE(className == "Derived1A");
+            }
+
+            SECTION("I can upcast it.") {
+                Derived1& derived = state.getRef<Derived1>(-1);
+                const std::string& derivedClassName = derived.luaClassName();
+                REQUIRE(derivedClassName == "Derived1A");
+
+                LuaVirtualClass& luaClass = state.getRef<LuaVirtualClass>(-1);
+                const std::string& luaClassName = luaClass.luaClassName();
+                REQUIRE(luaClassName == "Derived1A");
+            }
+
+            SECTION("I have an exception in case of invalid 'lateral' cast.") {
+                bool exception = false;
+                try {
+                    state.getRef<Derived1B>(-1);
+                } catch (const LuaException& e) {
+                    exception = true;
+                }
+                REQUIRE(exception);
+            }
+        }
+
+        SECTION("I can push an object in the Lua stack.") {
+            state.push<Derived1>();
+
+            SECTION("I have an exception in case of invalid downcast.") {
+                bool exception = false;
+                try {
+                    state.getRef<Derived1A>(-1);
+                } catch (const LuaException& e) {
+                    exception = true;
+                }
+                REQUIRE(exception);
+            }
         }
     }
 }
