@@ -38,7 +38,7 @@ public:
         return objects.end();
     }
 
-    const std::string& luaClassName() override;
+    const std::string& luaClassName() const override;
 
     void luaPopulateIndex(LuaStateView& luaState) override;
 

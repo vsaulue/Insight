@@ -20,7 +20,7 @@
 Universe::Universe() {
 }
 
-const std::string& Universe::luaClassName() {
+const std::string& Universe::luaClassName() const {
     static const std::string className("Universe");
     return className;
 }

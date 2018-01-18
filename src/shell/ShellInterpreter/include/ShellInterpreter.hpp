@@ -45,7 +45,7 @@ public:
      */
     LuaVirtualClass& getRootObject();
 
-    const std::string& luaClassName() override;
+    const std::string& luaClassName() const override;
 
     void luaPopulateIndex(LuaStateView& luaState) override;
 private:

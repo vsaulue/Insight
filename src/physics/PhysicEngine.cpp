@@ -36,7 +36,7 @@ void PhysicEngine::integrate() {
     }
 }
 
-const std::string& PhysicEngine::luaClassName() {
+const std::string& PhysicEngine::luaClassName() const {
     static const std::string className("PhysicEngine");
     return className;
 }

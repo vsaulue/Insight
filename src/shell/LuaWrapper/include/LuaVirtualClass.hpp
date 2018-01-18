@@ -37,7 +37,7 @@ protected:
      * @param tableIndex Index of the metatable on the stack.
      */
     virtual void luaPopulateIndex(LuaStateView& luaState) = 0;
-
+public:
     /**
      * Get the class name in Lua of this type.
      *
@@ -45,8 +45,8 @@ protected:
      *
      * @return The name of this class in Lua.
      */
-    virtual const std::string& luaClassName() = 0;
-public:
+    virtual const std::string& luaClassName() const = 0;
+
     /**
      * Gets (or creates) the metatable of this C++ type.
      *

@@ -68,7 +68,7 @@ public:
         }
     }
 
-    const std::string& luaClassName() override {
+    const std::string& luaClassName() const override {
         static const std::string className("Insight");
         return className;
     }
