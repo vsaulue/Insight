@@ -20,11 +20,17 @@
 #include "LuaState.hpp"
 
 #include "lua.hpp"
+#include "LuaException.hpp"
+
+static int atPanic(lua_State *state) {
+    throw LuaException(state);
+}
 
 LuaState::LuaState() : LuaStateView(luaL_newstate()) {
     if (this->state == nullptr) {
         throw std::bad_alloc();
     }
+    lua_atpanic(state, atPanic);
 }
 
 LuaState::~LuaState() {
