@@ -120,3 +120,24 @@ void LuaStateView::remove(int stackIndex) {
 void LuaStateView::throwError(const std::string& msg) {
     luaL_error(state, msg.c_str());
 }
+
+void* LuaStateView::checkUserData(int stackIndex) {
+    void* result = nullptr;
+    if (lua_isuserdata(state, stackIndex)) {
+        result = lua_touserdata(state, stackIndex);
+    } else {
+        std::string msg("expected Userdata, got");
+        msg += luaL_typename(state, stackIndex);
+        luaL_argerror(state, stackIndex, msg.c_str());
+    }
+    return result;
+}
+
+bool LuaStateView::pushMetafield(int stackIndex, const std::string& fieldName) {
+    int res = luaL_getmetafield(state, stackIndex, fieldName.c_str());
+    return (res != 0);
+}
+
+void LuaStateView::throwArgError(int stackIndex, const std::string& msg) {
+    luaL_argerror(state, stackIndex, msg.c_str());
+}

@@ -73,6 +73,15 @@ protected:
     }
 
     /**
+     * Gets an object from the stack if it is a Userdata.
+     *
+     * @param[in] stackIndex Index of the item to get on the stack.
+     *
+     * @return A pointer to the object stored in the Userdata.
+     */
+    void* checkUserData(int stackIndex);
+
+    /**
      * Pushes a boolean on the Lua stack.
      *
      * @param[in] value Value to push on the stack.
@@ -97,9 +106,19 @@ protected:
      * Gets a C function in the Lua stack.
      *
      * @param[in] stackIndex Index of the boolean in the stack.
-     * @return
+     * @return A pointer to the function stored at stackIndex.
      */
     CFunction getCFunction(int stackIndex);
+
+    /**
+     * Pushes the specified field of the metatable of the object at the specified index.
+     *
+     * @param[in] stackIndex Index of the object in the stack.
+     * @param[in] fieldName Name of the field in the metatable.
+     * @return true if the field was found. false if the object does not have a metatable,
+     * or does not have a field named fieldName.
+     */
+    bool pushMetafield(int stackIndex, const std::string& fieldName);
 public:
 
     /**
@@ -293,6 +312,14 @@ public:
      * @param[in] msg An error message.
      */
     void throwError(const std::string& msg);
+
+    /**
+     * Throws an Lua error when an argument on the Lua stack is invalid.
+     *
+     * @param[in] stackIndex Index of the invalid argument.
+     * @param[in] msg An error message.
+     */
+    void throwArgError(int stackIndex, const std::string& msg);
 };
 
 // Bindings for some basic types.
