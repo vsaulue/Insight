@@ -42,6 +42,12 @@ public:
 
     void luaPopulateIndex(LuaStateView& luaState) override;
 
+    virtual ~Universe() {
+        for (PhysicalObject* object : objects) {
+            delete object;
+        }
+    }
+
 private:
     std::unordered_set<PhysicalObject*> objects;
 };
