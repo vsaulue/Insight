@@ -40,18 +40,30 @@
  *   </li>
  *   <li>
  *     <code>
- *     BindedType get(LuaStateView& state, int stackIndex)
+ *       BindedType get(LuaStateView& state, int stackIndex)
  *     </code>
  *     <p>
  *       Checks the element at the given index is compatible with the given C++ type. If the check succeeded,
- *       it will return the C++ object.
+ *       it will return a copy the C++ object.
+ *     </p>
+ *   </li>
+ *   <li>
+ *     <code>
+ *       BindedType getRef(LuaStateView& state, int stackIndex) // optional
+ *     </code>
+ *     <p>
+ *       Checks the element at the given index is compatible with the given C++ type. If the check succeeded,
+ *       it will return a reference to the C++ object stored inside Lua.
+ *
+ *       This function might not be defined for basic types of Lua (like bool, double, C functions, ...).
  *     </p>
  *   </li>
  * </ul>
  *
  * @tparam BindedType type that will be binded in Lua.
+ * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
-template <typename BindedType> class LuaBinding;
+template <typename BindedType, typename Enable = void> class LuaBinding;
 
 #endif /* LUABINDING_HPP */
 
