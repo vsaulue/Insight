@@ -23,30 +23,17 @@
 
 #include "LuaBinding.hpp"
 #include "LuaBindingFunc.hpp"
+#include "LuaDefaultBinding.hpp"
 #include "LuaStateView.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"
 
 template<>
-class LuaBinding<LuaVirtualClass*(*)(void*)> {
-private:
-    using BindedType = LuaVirtualClass*(*)(void*);
-
+class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaDefaultBinding<LuaVirtualClass*(*)(void*)> {
+public:
     static const std::string& luaClassName() {
         static const std::string className("LuaVirtualClass*(*)(void*)");
         return className;
-    }
-
-public:
-    static void push(LuaStateView& state, BindedType value) {
-        state.newObject<BindedType>(value);
-        state.newMetatable(luaClassName());
-        state.setMetatable(-2);
-    }
-
-    static BindedType get(LuaStateView& state, int stackIndex) {
-        BindedType* result = state.checkUserData<BindedType>(stackIndex, luaClassName());
-        return *result;
     }
 };
 

@@ -30,6 +30,7 @@ struct lua_State;
 class LuaStateView {
 protected:
     template<typename,typename> friend class LuaBinding;
+    template<typename> friend class LuaDefaultBinding;
 
     /** Function type used by the C api of Lua. */
     using CFunction = int(*)(lua_State*);
