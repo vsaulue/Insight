@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "LuaBinding.hpp"
+#include "LuaDefaultDelete.hpp"
 #include "LuaStateView.hpp"
 
 /**
@@ -53,7 +54,14 @@ private:
      */
     static void pushMetatable(LuaStateView& state) {
         const std::string& className = LuaBinding<BindedType>::luaClassName();
-        state.newMetatable(className);
+        bool newTable = state.newMetatable(className);
+        if (newTable) {
+            using DefaultDelete = LuaDefaultDelete<BindedType>;
+            if (DefaultDelete::hasDeletor) {
+                state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultDelete::luaDelete>);
+                state.setField(-2, "__gc");
+            }
+        }
     }
 public:
     /**
