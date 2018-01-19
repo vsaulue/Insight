@@ -19,6 +19,7 @@
 #define LUASTATEVIEW_HPP
 
 #include <string>
+#include <type_traits>
 
 #include "LuaBinding.hpp"
 
@@ -167,6 +168,7 @@ public:
      */
     template<typename UserDataType, typename... ArgsType>
     void push(ArgsType&&... constructorArgs) {
+        static_assert(std::is_constructible<UserDataType, ArgsType...>::value, "Cannot construct an object of type Userdata with the given arguments.");
         LuaBinding<UserDataType>::push(*this, std::forward<ArgsType>(constructorArgs)...);
     }
 
@@ -183,6 +185,7 @@ public:
      */
     template<typename UserDataType>
     UserDataType get(int stackIndex) {
+        static_assert(std::is_copy_constructible<UserDataType>::value, "This type cannot be returned by value.");
         return LuaBinding<UserDataType>::get(*this, stackIndex);
     }
 
