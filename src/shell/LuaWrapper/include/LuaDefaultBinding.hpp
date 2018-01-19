@@ -37,8 +37,14 @@
 template<typename BindedType>
 class LuaDefaultBinding {
 protected:
-    template<typename Type, typename ReturnType=Type>
-    using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<Type>::value,ReturnType>;
+    /**
+     * Enables a template if a type is copy constructible.
+     *
+     * @tparam T Type checked for a copy constructor.
+     * @tparam ReturnType Type set at enable_if_copy_constructible<T>::type if the condition is true.
+     */
+    template<typename T, typename ReturnType=T>
+    using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<T>::value,ReturnType>;
 private:
     /**
      * Pushes (or create) the metatable of this type on the Lua state.
@@ -84,7 +90,7 @@ public:
      * @param state State where the lookup is done.
      * @param stackIndex Index in the Lua stack to search.
      *
-     * @return A copy of the object at the given index, if it is of type T (or derived).
+     * @return A copy of the object at the given index, if it is of type T.
      */
     template<typename T=BindedType>
     static typename enable_if_copy_constructible<T>::type get(LuaStateView& state, int stackIndex) {
