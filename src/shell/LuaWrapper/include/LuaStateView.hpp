@@ -328,11 +328,9 @@ public:
 
 // Bindings for some basic types.
 // C++ types that have a corresponding built-in type in Lua.
-#include "LuaBindingCFunc.hpp"
-#include "LuaBindingBool.hpp"
+#include "LuaBaseBindings.hpp"
 // C++ types stored as Lua Userdata.
-#include "LuaBindingFunc.hpp"
-#include "LuaBindingStdFunction.hpp"
+#include "LuaFunctionBindings.hpp"
 #include "LuaBindingVirtualClass.hpp"
 
 #endif /* LUASTATEVIEW_HPP */

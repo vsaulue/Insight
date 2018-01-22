@@ -22,20 +22,9 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
-#include "LuaBindingFunc.hpp"
-#include "LuaDefaultBinding.hpp"
 #include "LuaStateView.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"
-
-template<>
-class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaDefaultBinding<LuaVirtualClass*(*)(void*)> {
-public:
-    static const std::string& luaClassName() {
-        static const std::string className("LuaVirtualClass*(*)(void*)");
-        return className;
-    }
-};
 
 /**
  * See LuaBinding in LuaBinding.hpp.

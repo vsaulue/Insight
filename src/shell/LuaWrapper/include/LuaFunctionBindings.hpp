@@ -16,13 +16,28 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUABINDINGSTDFUNCTION_HPP
-#define LUABINDINGSTDFUNCTION_HPP
+#ifndef LUABINDINGFUNC_HPP
+#define LUABINDINGFUNC_HPP
 
 #include <functional>
 
 #include "LuaBinding.hpp"
 #include "LuaDefaultBinding.hpp"
+
+/** See LuaBinding in LuaBinding.hpp. */
+template<>
+class LuaBinding<int(*)(LuaStateView&)> : public LuaDefaultBinding<int(*)(LuaStateView&)> {
+public:
+    /**
+     * Get the name of the metatable of this type.
+     *
+     * @return The name of this C++ type in Lua.
+     */
+    static const std::string& luaClassName() {
+        static const std::string className("int(*)(LuaStateView&)");
+        return className;
+    }
+};
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
@@ -39,5 +54,19 @@ public:
     }
 };
 
-#endif /* LUABINDINGSTDFUNCTION_HPP */
+class LuaVirtualClass;
+
+/** See LuaBinding in LuaBinding.hpp. */
+template<>
+class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaDefaultBinding<LuaVirtualClass*(*)(void*)> {
+public:
+    static const std::string& luaClassName() {
+        static const std::string className("LuaVirtualClass*(*)(void*)");
+        return className;
+    }
+};
+
+
+
+#endif /* LUABINDINGFUNC_HPP */
 

@@ -16,12 +16,45 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUABINDINGBOOL_HPP
-#define LUABINDINGBOOL_HPP
+#ifndef LUABINDINGCFUNC_HPP
+#define LUABINDINGCFUNC_HPP
 
 #include "LuaBinding.hpp"
 #include "LuaStateView.hpp"
 
+struct lua_State;
+
+/** See LuaBinding in LuaBinding.hpp. */
+template<>
+class LuaBinding<int(*)(lua_State*)> {
+private:
+    /** Type binded by this LuaBinding<>. */
+    using func_ptr = int(*)(lua_State*);
+public:
+    /**
+     * Pushes a C function on the LUA stack.
+     *
+     * @param state Lua state in which the push is done.
+     * @param function Function to push on the stack.
+     */
+    static void push(LuaStateView& state, func_ptr function) {
+        state.pushCFunction(function);
+    }
+
+    /**
+     * Get a C function at the given index from the stack.
+     *
+     * @param state State where the lookup is done.
+     * @param stackIndex Index in the Lua stack to search.
+     *
+     * @return The desired function pointer, if the object in the stack is of this type.
+     */
+    static func_ptr get(LuaStateView& state, int stackIndex) {
+        return state.getCFunction(stackIndex);
+    }
+};
+
+/** See LuaBinding in LuaBinding.hpp. */
 template<>
 class LuaBinding<bool> {
 public:
@@ -34,5 +67,5 @@ public:
     }
 };
 
-#endif /* LUABINDINGBOOL_HPP */
+#endif /* LUABINDINGCFUNC_HPP */
 
