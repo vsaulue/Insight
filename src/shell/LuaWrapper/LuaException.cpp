@@ -19,17 +19,16 @@
 
 #include "lua.hpp"
 
-LuaException::LuaException(lua_State* state) : state(state) {
+LuaException::LuaException(lua_State* state) {
+    const char* msg = lua_tostring(state, -1);
+    if(msg == nullptr) {
+        errorMsg = "Unknown LUA error.";
+    } else {
+        errorMsg = msg;
+        lua_pop(state, 1);
+    }
 }
 
 const char* LuaException::what() const noexcept {
-    const char *res = lua_tostring(state, -1);
-    if (res == nullptr) {
-        res = "Unknown LUA error.";
-    }
-    return res;
-}
-
-LuaException::~LuaException() {
-    lua_pop(state, 1);
+    return errorMsg.c_str();
 }

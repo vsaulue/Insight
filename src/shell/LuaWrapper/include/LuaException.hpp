@@ -27,8 +27,8 @@ struct lua_State;
  */
 class LuaException : public std::exception {
 private:
-    /** Underlying C state (used to retrieve an error message). */
-    lua_State* state;
+    /** Error message from Lua. */
+    std::string errorMsg;
 public:
     /**
      * Creates a new LuaException.
@@ -38,8 +38,6 @@ public:
     LuaException(lua_State* state);
 
     virtual const char* what() const noexcept override;
-
-    virtual ~LuaException();
 };
 
 #endif /* LUAEXCEPTION_HPP */
