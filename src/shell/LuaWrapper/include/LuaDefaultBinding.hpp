@@ -23,8 +23,10 @@
 #include <utility>
 
 #include "LuaBinding.hpp"
+#include "LuaDefaultCall.hpp"
 #include "LuaDefaultDelete.hpp"
 #include "LuaStateView.hpp"
+#include "LuaWrapFunction.hpp"
 
 /**
  * Provides default implementations of some functions of LuaBinding.
@@ -60,6 +62,12 @@ private:
             if (DefaultDelete::hasDeletor) {
                 state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultDelete::luaDelete>);
                 state.setField(-2, "__gc");
+            }
+
+            using DefaultCall = LuaDefaultCall<BindedType>;
+            if (DefaultCall::hasCall) {
+                state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultCall::luaCall>);
+                state.setField(-2,"__call");
             }
         }
     }
