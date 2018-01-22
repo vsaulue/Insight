@@ -19,79 +19,21 @@
 #ifndef LUABINDINGFUNC_HPP
 #define LUABINDINGFUNC_HPP
 
-#include <exception>
-
 #include "LuaBinding.hpp"
-#include "LuaBindingCFunc.hpp"
-#include "LuaStateView.hpp"
-#include "LuaWrapFunction.hpp"
+#include "LuaDefaultBinding.hpp"
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<int(*)(LuaStateView&)> {
-private:
-    /** Type binded by this LuaBinding<>. */
-    using func_ptr = int(*)(LuaStateView&);
-
+class LuaBinding<int(*)(LuaStateView&)> : public LuaDefaultBinding<int(*)(LuaStateView&)> {
+public:
     /**
-     * Get the name of the metatable of this table.
+     * Get the name of the metatable of this type.
      *
      * @return The name of this C++ type in Lua.
      */
     static const std::string& luaClassName() {
-        static const std::string className("LuaFunction");
+        static const std::string className("int(*)(LuaStateView&)");
         return className;
-    }
-
-    /**
-     * Implementation of Lua metamethod "__call" for this type.
-     *
-     * @param state State calling this function.
-     *
-     * @return The number of return values of this Lua function.
-     */
-    static int luaCall(LuaStateView& state) {
-        func_ptr function = state.get<func_ptr>(1);
-        state.remove(1);
-        return function(state);
-    }
-
-    /**
-     * Pushes (or create) the metatable of this type on the Lua state.
-     *
-     * @param state State in which to push the metatable.
-     */
-    static void pushMetatable(LuaStateView& state) {
-        bool newTable = state.newMetatable(luaClassName());
-        if (newTable) {
-            state.push<int(*)(lua_State*)>(luaWrapFunction<luaCall>);
-            state.setField(-2, "__call");
-        }
-    }
-public:
-    /**
-     * Pushes a C function on the LUA stack.
-     *
-     * @param state Lua state in which the push is done.
-     * @param function Function to push on the stack.
-     */
-    static void push(LuaStateView& state, func_ptr function) {
-        state.newObject<func_ptr>(function);
-        pushMetatable(state);
-        state.setMetatable(-2);
-    }
-
-    /**
-     * Get a C function at the given index from the stack.
-     *
-     * @param state State where the lookup is done.
-     * @param stackIndex Index in the Lua stack to search.
-     *
-     * @return The desired function pointer, if the object in the stack is of this type.
-     */
-    static func_ptr get(LuaStateView& state, int stackIndex) {
-        func_ptr* result = state.checkUserData<func_ptr>(stackIndex, luaClassName());
-        return *result;
     }
 };
 
