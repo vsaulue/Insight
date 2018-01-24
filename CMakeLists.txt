@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
 project(Insight)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
@@ -34,7 +34,7 @@ if(NOT ("${Insight_VERSION_EXTRA}" MATCHES " *"))
     set(Insight_VERSION ${Insight_VERSION}.${Insight_VERSION_EXTRA})
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -69,7 +69,7 @@ if (WIN32)
     # Find import library of the DLL.
     get_filename_component(LUA_LIBDIR "${LUA_LIBRARIES}" DIRECTORY)
     get_filename_component(LUA_LIB_BASENAME "${LUA_LIBRARIES}" NAME_WE)
-    find_library(LUA_IMPLIB NAMES "lib${LUA_LIB_BASENAME}.a" PATHS "${LUA_LIBDIR}" NO_DEFAULT_PATH)
+    find_library(LUA_IMPLIB NAMES "lib${LUA_LIB_BASENAME}.a" PATHS "${LUA_LIBDIR}" PATH_SUFFIXES "import_lib" NO_DEFAULT_PATH)
     set_target_properties(Lua PROPERTIES
         IMPORTED_IMPLIB ${LUA_IMPLIB}
     )
