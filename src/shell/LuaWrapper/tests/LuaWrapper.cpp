@@ -241,3 +241,39 @@ TEST_CASE("LuaVirtualClass binding") {
         }
     }
 }
+
+TEST_CASE("Pointers binding.") {
+    GIVEN("A boolean.") {
+        LuaState state;
+        bool boolA = false;
+
+        SECTION("I can push/get a pointer to a bool.") {
+            state.push<bool*>(&boolA);
+
+            bool* fromStack = state.get<bool*>(-1);
+            *fromStack = true;
+            REQUIRE(boolA);
+        }
+
+        SECTION("I can get a reference to a bool pointer.") {
+            state.push<bool*>(&boolA);
+
+            bool*& fromStack = state.getRef<bool*>(-1);
+            REQUIRE(*fromStack == false);
+            boolA = true;
+            REQUIRE(*fromStack);
+        }
+
+        SECTION("I can push/get a bool** object.") {
+            bool* boolPtr = &boolA;
+            bool** boolPtr2 = &boolPtr;
+
+            state.push<bool**>(boolPtr2);
+            bool** fromStack = state.get<bool**>(-1);
+
+            REQUIRE(**fromStack == false);
+            boolA = true;
+            REQUIRE(**fromStack == true);
+        }
+    }
+}

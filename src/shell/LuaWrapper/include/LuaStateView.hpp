@@ -32,6 +32,7 @@ class LuaStateView {
 protected:
     template<typename,typename> friend class LuaBinding;
     template<typename> friend class LuaDefaultBinding;
+    template<typename,typename> friend class LuaPointerBinding;
 
     /** Function type used by the C api of Lua. */
     using CFunction = int(*)(lua_State*);
@@ -332,6 +333,7 @@ public:
 // C++ types stored as Lua Userdata.
 #include "LuaFunctionBindings.hpp"
 #include "LuaBindingVirtualClass.hpp"
+#include "LuaPointerBindings.hpp"
 
 #endif /* LUASTATEVIEW_HPP */
 

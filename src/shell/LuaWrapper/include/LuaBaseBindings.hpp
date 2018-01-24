@@ -58,6 +58,16 @@ public:
 template<>
 class LuaBinding<bool> {
 public:
+    /**
+     * Gets the name of the metatable of this type.
+     *
+     * @return The name of this C++ type in Lua.
+     */
+    static const std::string& luaClassName() {
+        static const std::string className("bool");
+        return className;
+    }
+
     static void push(LuaStateView& state, bool value) {
         state.pushBool(value);
     }
