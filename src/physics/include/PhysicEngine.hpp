@@ -34,7 +34,8 @@ public:
 
     const std::string& luaClassName() const override;
 
-    void luaPopulateIndex(LuaStateView& luaState) override;
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
 };
 
 #endif	/* PHYSICENGINE_HPP */

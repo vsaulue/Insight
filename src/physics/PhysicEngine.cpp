@@ -41,7 +41,10 @@ const std::string& PhysicEngine::luaClassName() const {
     return className;
 }
 
-void PhysicEngine::luaPopulateIndex(LuaStateView& luaState) {
-    // TODO: implement methods.
-    luaState.pop(1);
+int PhysicEngine::luaIndex(const std::string& memberName, LuaStateView& state) {
+    if (memberName == "universe") {
+        state.push<Universe*>(&universe);
+        return 1;
+    }
+    return 0;
 }

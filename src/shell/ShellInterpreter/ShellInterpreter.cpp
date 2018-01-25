@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,6 @@ const std::string& ShellInterpreter::luaClassName() const {
     return className;
 }
 
-void ShellInterpreter::luaPopulateIndex(LuaStateView& luaState) {
-    luaState.pop(1);
+int ShellInterpreter::luaIndex(const std::string& memberName, LuaStateView& state) {
+    return 0;
 }

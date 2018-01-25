@@ -18,17 +18,6 @@
 
 #include "LuaVirtualClass.hpp"
 
-void LuaVirtualClass::luaPushMetatable(LuaStateView& luaState) {
-    const std::string& className = luaClassName();
-    bool newTable = luaState.newMetatable(className);
-    if (newTable) {
-        luaState.newTable();
-        luaState.pushValue(-1);
-        luaState.setField(-3, "__index");
-        luaPopulateIndex(luaState);
-    }
-}
-
 LuaVirtualClass::~LuaVirtualClass() {
 
 }

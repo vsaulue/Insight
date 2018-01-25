@@ -27,16 +27,6 @@ class LuaStateView;
  * Interface for C++ types that should support runtime polymorphism with Lua bindings.
  */
 class LuaVirtualClass {
-protected:
-    /**
-     * Pushes the methods of this object into the table on top of the Lua stack.
-     *
-     * The Lua stack must be in the same state when this function returns.
-     *
-     * @param luaState State containing the metatable.
-     * @param tableIndex Index of the metatable on the stack.
-     */
-    virtual void luaPopulateIndex(LuaStateView& luaState) = 0;
 public:
     /**
      * Get the class name in Lua of this type.
@@ -48,13 +38,12 @@ public:
     virtual const std::string& luaClassName() const = 0;
 
     /**
-     * Gets (or creates) the metatable of this C++ type.
+     * Gets a field or method from this object.
      *
-     * The metatable will be returned on the top of the Lua stack.
-     *
-     * @param luaState State in which the metatable must be pushed.
+     * @param state Lua state requesting a member to this object.
+     * @return The number of returned values in the Lua stack.
      */
-    void luaPushMetatable(LuaStateView& luaState);
+    virtual int luaIndex(const std::string& memberName, LuaStateView& state) = 0;
 
     virtual ~LuaVirtualClass();
 };

@@ -40,13 +40,13 @@ public:
 
     const std::string& luaClassName() const override;
 
-    void luaPopulateIndex(LuaStateView& luaState) override;
-
     virtual ~Universe() {
         for (PhysicalObject* object : objects) {
             delete object;
         }
     }
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
 private:
     std::unordered_set<PhysicalObject*> objects;

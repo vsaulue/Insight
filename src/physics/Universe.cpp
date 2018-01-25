@@ -25,7 +25,6 @@ const std::string& Universe::luaClassName() const {
     return className;
 }
 
-void Universe::luaPopulateIndex(LuaStateView& luaState) {
-    // TODO: implement methods.
-    luaState.pop(1);
+int Universe::luaIndex(const std::string& memberName, LuaStateView& state) {
+    return 0;
 }

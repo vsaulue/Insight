@@ -165,9 +165,10 @@ public:
         return className;
     }
 
-    void luaPopulateIndex(LuaStateView& luaState) override {
-
+    int luaIndex(const std::string& memberName, LuaStateView& state) override {
+        return 0;
     }
+
 };
 
 class Derived1A : public Derived1 {

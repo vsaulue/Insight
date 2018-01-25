@@ -73,10 +73,14 @@ public:
         return className;
     }
 
-    void luaPopulateIndex(LuaStateView& luaState) override {
-        // todo: ptu methods.
-        luaState.pop(1);
+    int luaIndex(const std::string& memberName, LuaStateView& state) override {
+        if (memberName == "physicEngine") {
+            state.push<PhysicEngine*>(&physicEngine);
+            return 1;
+        }
+        return 0;
     }
+
 };
 
 static void runInterpreter(Insight &insight) {
