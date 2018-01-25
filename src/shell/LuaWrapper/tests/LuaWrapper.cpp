@@ -276,4 +276,61 @@ TEST_CASE("Pointers binding.") {
             REQUIRE(**fromStack == true);
         }
     }
+
+    GIVEN("A class hierarchy derived from LuaVirtualClass.") {
+        LuaState state;
+
+        SECTION("I can push a pointer to an instance of LuaVirtualClass into the stack.") {
+            Derived1A derived;
+            state.push<Derived1*>(&derived);
+
+            SECTION("I can get it from the stack.") {
+                Derived1* fromStack = state.get<Derived1*>(-1);
+                REQUIRE(fromStack == static_cast<Derived1*>(&derived));
+            }
+
+            SECTION("I can getRef it from the stack.") {
+                Derived1*& fromStack = state.getRef<Derived1*>(-1);
+                REQUIRE(fromStack == static_cast<Derived1*>(&derived));
+            }
+
+            SECTION("I can downcast it from the stack (if type is appropriate).") {
+                Derived1A* fromStack = state.get<Derived1A*>(-1);
+                REQUIRE(fromStack == &derived);
+            }
+
+            SECTION("I have an exception in case of invalid downcast.") {
+                bool error = false;
+                try {
+                    state.get<Derived1B*>(-1);
+                } catch (const LuaException& e) {
+                    error = true;
+                }
+                REQUIRE(error);
+            }
+        }
+
+        SECTION("I can push a pointer to an instance of LuaVirtualClass into the stack.") {
+            Derived1B derived;
+            state.push<Derived1B*>(&derived);
+
+            SECTION("I can upcast it from the stack.") {
+                Derived1* fromStack = state.get<Derived1*>(-1);
+                REQUIRE(fromStack == static_cast<Derived1*>(&derived));
+
+                LuaVirtualClass* fromStack2 = state.get<LuaVirtualClass*>(-1);
+                REQUIRE(fromStack2 == static_cast<LuaVirtualClass*>(&derived));
+            }
+
+            SECTION("I have an exception in case of invalid 'lateral' cast.") {
+                bool error = false;
+                try {
+                    state.get<Derived1A*>(-1);
+                } catch (const LuaException& e) {
+                    error = true;
+                }
+                REQUIRE(error);
+            }
+        }
+    }
 }
