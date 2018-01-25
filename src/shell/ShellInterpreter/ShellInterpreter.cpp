@@ -34,10 +34,7 @@ void ShellInterpreter::run() {
 
     luaState.open_base();
 
-    luaState.newObject<LuaVirtualClass*>(&rootObject); // stack index 1
-
-    rootObject.luaPushMetatable(luaState);
-    luaState.setMetatable(-2);
+    luaState.push<LuaVirtualClass*>(&rootObject); // stack index 1
 
     luaState.setGlobal(rootName);
 

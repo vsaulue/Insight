@@ -122,6 +122,22 @@ protected:
      * or does not have a field named fieldName.
      */
     bool pushMetafield(int stackIndex, const std::string& fieldName);
+
+    /**
+     * Creates a new Lua userdata wrapping a new C++ object.
+     *
+     * @tparam UserDataType Type of the created C++ object.
+     * @tparam ArgsType Types of the constructor arguments of UserDataType.
+     *
+     * @param constructorArgs Arguments passed to the constructor of the new C++ object.
+     * @return A pointer to the new C++ object.
+     */
+    template<typename UserDataType, typename... ArgsType>
+    UserDataType* newObject(ArgsType&&... constructorArgs) {
+        void *mem = newUserData(sizeof(UserDataType));
+        UserDataType* result = new(mem) UserDataType(std::forward<ArgsType>(constructorArgs)...);
+        return result;
+    }
 public:
 
     /**
@@ -138,23 +154,6 @@ public:
     void doString(const std::string& code);
 
     virtual ~LuaStateView();
-
-    /**
-     * Creates a new Lua userdata wrapping a new C++ object.
-     *
-     * @tparam UserDataType Type of the created C++ object.
-     * @tparam ArgsType Types of the constructor arguments of UserDataType.
-     *
-     * @param constructorArgs Arguments passed to the constructor of the new C++ object.
-     * @return A pointer to the new C++ object.
-     */
-    template<typename UserDataType, typename... ArgsType>
-    UserDataType* newObject(ArgsType&&... constructorArgs) {
-        void *mem = newUserData(sizeof(UserDataType));
-        UserDataType* result = new(mem) UserDataType(std::forward<ArgsType>(constructorArgs)...);
-        // TODO: set c++ destructor in LUA metatable.
-        return result;
-    }
 
     /**
      * Creates a new object on top of the Lua stack.
