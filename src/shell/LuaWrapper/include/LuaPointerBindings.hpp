@@ -25,6 +25,7 @@
 #include "LuaDefaultBinding.hpp"
 #include "LuaStateView.hpp"
 #include "LuaVirtualClass.hpp"
+#include "LuaWrapFunction.hpp"
 
 /**
  * Class defining Lua bindings for the C++ type PointedType*.
@@ -59,6 +60,22 @@ public:
     static const std::string& luaClassName() {
         static const std::string className(LuaBinding<PointedType>::luaClassName() + "*");
         return className;
+    }
+
+    /**
+     * Implementation of Lua __index metamethod (wrapped by LuaDefaultBinding).
+     *
+     * @param object Object on which the index function is called.
+     * @param memberName Name of the field requested in object by Lua.
+     * @param state Lua state requesting the field.
+     * @return The number of values returned to Lua.
+     */
+    template<typename T=PointedType>
+    static typename std::enable_if<LuaDefaultIndex<T>::hasIndex, int>::type luaIndexImpl(PointedType* object, const std::string& memberName, LuaStateView& state) {
+        if (object == nullptr) {
+            state.throwArgError(1, "Cannot get field or method from a null pointer.");
+        }
+        return LuaBinding<PointedType>::luaIndexImpl(*object, memberName, state);
     }
 };
 
@@ -100,6 +117,21 @@ private:
     }
 
     /**
+     * Implementation of Lua __index metamethod.
+     *
+     * @param object Object on which the index function is called.
+     * @param memberName Name of the field requested in object by Lua.
+     * @param state Lua state requesting the field.
+     * @return The number of values returned to Lua.
+     */
+    static int luaIndex(LuaStateView& state) {
+        LuaVirtualClass* object = state.get<LuaVirtualClass*>(1);
+        std::string memberName(state.get<const char*>(2));
+
+        return luaIndexImpl(object, memberName, state);
+    }
+
+    /**
      * Pushes (or create) the metatable of this type on the Lua state.
      *
      * @param state State in which to push the metatable.
@@ -109,9 +141,28 @@ private:
         if (newTable) {
             state.push<LuaVirtualClass*(*)(void*)>(luaCastPtr);
             state.setField(-2, "castPtr*");
+            state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
+            state.setField(-2, "__index");
         }
     }
 public:
+    /**
+     * Implementation of Lua __index metamethod.
+     *
+     * This LuaBinding<BindedType> defines a luaIndexImpl so that other bindings can call it (ex: pointer bindings).
+     *
+     * @param object Object on which the index function is called.
+     * @param memberName Name of the field requested in object by Lua.
+     * @param state Lua state requesting the field.
+     * @return The number of values returned to Lua.
+     */
+    static int luaIndexImpl(LuaVirtualClass* object, const std::string& memberName, LuaStateView& state) {
+        if (object == nullptr) {
+            state.throwArgError(1, "Cannot get field or method from a null pointer.");
+        }
+        return object->luaIndex(memberName, state);
+    }
+
     /**
      * Gets the name of the metatable of this type.
      *

@@ -77,6 +77,20 @@ private:
     }
 
     /**
+     * Implementation of Lua metamethod "__index" for this type.
+     *
+     * @param state State calling this function.
+     *
+     * @return The number of return values of this Lua function.
+     */
+    static int luaIndex(LuaStateView& state) {
+        LuaVirtualClass& object = state.getRef<LuaVirtualClass>(1);
+        std::string memberName(state.get<const char*>(2));
+
+        return object.luaIndex(memberName, state);
+    }
+
+    /**
      * Pushes (or create) the metatable of this type on the Lua state.
      *
      * @param state State in which to push the metatable.
@@ -88,7 +102,8 @@ private:
             state.setField(-2, "castPtr");
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaDelete>);
             state.setField(-2,"__gc");
-            // TODO: get methods & fields from object.
+            state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
+            state.setField(-2,"__index");
         }
     }
 public:

@@ -138,6 +138,21 @@ protected:
         UserDataType* result = new(mem) UserDataType(std::forward<ArgsType>(constructorArgs)...);
         return result;
     }
+
+    /**
+     * Pushes a C string on the Lua stack.
+     *
+     * @param[in] value Value pushed on the stack.
+     */
+    void pushString(const char *value);
+
+    /**
+     * Gets a C string from the Lua stack.
+     *
+     * @param[in] stackIndex Index of the string in the stack.
+     * @return A pointer to the string stored inside Lua.
+     */
+    const char* getString(int StackIndex);
 public:
 
     /**
@@ -233,13 +248,6 @@ public:
      * @param[in] stackIndex Index of the object receiving the metatable.
      */
     void setMetatable(int stackIndex);
-
-    /**
-     * Pushes a copy of the given string onto the Lua stack.
-     *
-     * @param[in] str Value to be pushed on the stack.
-     */
-    void pushString(const std::string& str);
 
     /**
      * Set a value in a Lua table.

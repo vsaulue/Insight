@@ -50,11 +50,6 @@ void* LuaStateView::checkUData(int stackIndex, const std::string& metatableName)
     return luaL_checkudata(state, stackIndex, metatableName.c_str());
 }
 
-
-void LuaStateView::pushString(const std::string& str) {
-    lua_pushstring(state, str.c_str());
-}
-
 void LuaStateView::pushValue(int stackIndex) {
     lua_pushvalue(state, stackIndex);
 }
@@ -140,4 +135,12 @@ bool LuaStateView::pushMetafield(int stackIndex, const std::string& fieldName) {
 
 void LuaStateView::throwArgError(int stackIndex, const std::string& msg) {
     luaL_argerror(state, stackIndex, msg.c_str());
+}
+
+void LuaStateView::pushString(const char* value) {
+    lua_pushstring(state, value);
+}
+
+const char* LuaStateView::getString(int stackIndex) {
+    return luaL_checkstring(state, stackIndex);
 }

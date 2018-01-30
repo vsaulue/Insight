@@ -25,6 +25,7 @@
 #include "LuaBinding.hpp"
 #include "LuaDefaultCall.hpp"
 #include "LuaDefaultDelete.hpp"
+#include "LuaDefaultIndex.hpp"
 #include "LuaStateView.hpp"
 #include "LuaWrapFunction.hpp"
 
@@ -32,9 +33,16 @@
  * Provides default implementations of some functions of LuaBinding.
  *
  * LuaBinding<BindedType> can be derived from this object. In this case, the
- * BindedType specialization must provide the following static method:
+ * LuaBinding<BindedType> specialization must provide the following static method:
  * <code>
  *     static const std::string& luaClassName();
+ *     // Gets the name of the Lua class wrapping the C++ type BindedType. Must be unique.
+ * </code>
+ *
+ * Optional static method:
+ * <code>
+ *     static int luaIndex(BindedType& object, const std::string& memberName, LuaStateView& state);
+ *     // Gets the field/method of object named memberName (see lua metamethod __index).
  * </code>
  */
 template<typename BindedType>
@@ -68,6 +76,12 @@ private:
             if (DefaultCall::hasCall) {
                 state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultCall::luaCall>);
                 state.setField(-2,"__call");
+            }
+
+            using DefaultIndex = LuaDefaultIndex<BindedType>;
+            if (DefaultIndex::hasIndex) {
+                state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultIndex::luaIndex>);
+                state.setField(-2,"__index");
             }
         }
     }

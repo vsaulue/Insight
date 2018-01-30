@@ -77,5 +77,23 @@ public:
     }
 };
 
+/** See LuaBinding in LuaBinding.hpp. */
+template<>
+class LuaBinding<const char*> {
+public:
+    static const std::string& luaClassName() {
+        static const std::string className("const char*");
+        return className;
+    }
+
+    static void push(LuaStateView& state, const char *value) {
+        state.pushString(value);
+    }
+
+    static const char* get(LuaStateView& state, int stackIndex) {
+        return state.getString(stackIndex);
+    }
+};
+
 #endif /* LUABINDINGCFUNC_HPP */
 
