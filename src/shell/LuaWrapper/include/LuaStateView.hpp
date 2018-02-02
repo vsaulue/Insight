@@ -221,6 +221,24 @@ public:
     }
 
     /**
+     * Gets a reference to an object of type Basetype at the specified index.
+     *
+     * This function will traverse pointer or reference types and get a reference
+     * to the "base" object. This enables a LuaMethod<T> to be called on Lua userdata of various
+     * types: T, T***** ....
+     *
+     * @tparam Expected type of the base object.
+     *
+     * @param[in] stackIndex Index of the desired object in the Lua stack.
+     * @return A reference to the base object at the given index.
+     */
+    template<typename BaseType>
+    BaseType& dereferenceGet(int stackIndex) {
+        return LuaBinding<BaseType>::dereferenceGet(*this, stackIndex);
+    }
+
+
+    /**
      * Pops a value from the stack and sets it as the new value of global name.
      *
      * @param[in] name Name of the global variable.
