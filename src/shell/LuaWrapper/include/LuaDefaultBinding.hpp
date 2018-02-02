@@ -20,6 +20,9 @@
 #define LUADEFAULTBINDING_HPP
 
 #include "LuaBasicBinding.hpp"
+#include "LuaDefaultDereferencer.hpp"
+#include "LuaDereferenceGetter.hpp"
+#include "LuaStateView.hpp"
 
 /**
  * Provides default implementations of some functions of LuaBinding.
@@ -28,6 +31,7 @@
  * - push
  * - getRef
  * - get (if BindedType is copy constructible).
+ * - dereferenceGet (if BindedType is a "base" type).
  *
  * For reference types, it will add dereferencing functions in the metatable. This enables LuaMethod<LuaBasetype<BindedType>>
  * to work on an object of type BindedType.
@@ -49,7 +53,53 @@
  */
 template<typename BindedType>
 class LuaDefaultBinding : public LuaBasicBinding<BindedType> {
+public:
+    template<typename T=BindedType>
+    static typename std::enable_if<std::is_same<LuaBasetype<T>,T>::value,T>::type& dereferenceGet(LuaStateView& state, int stackIndex) {
+        if(!state.pushMetafield(stackIndex, "dereferenceGetter")) {
+            state.throwArgError(stackIndex, std::string("no metamethod to dereference to base type: ") + LuaBinding<LuaBasetype<T>>::luaClassName());
+        }
+        LuaDereferenceGetter<T> getter = state.get<LuaDereferenceGetter<T>>(-1);
+        return getter(state, stackIndex);
+    }
 
+    /**
+     * Pushes a new object of type BindedType into Lua.
+     *
+     * @tparam ArgsType Types of the constructor arguments for type BindedType.
+     *
+     * @param state Lua state in which the push is done.
+     * @param constructorArgs Arguments for the constructor of type BindedType.
+     */
+    template<typename... ArgTypes>
+    static void push(LuaStateView& state, ArgTypes&&... constructorArgs) {
+        state.newObject<BindedType>(std::forward<ArgTypes>(constructorArgs)...);
+        pushMetatable(state);
+        state.setMetatable(-2);
+    }
+private:
+    /**
+     * Pushes (or create) the metatable of this type on the Lua state.
+     *
+     * @param state State in which to push the metatable.
+     */
+    static void pushMetatable(LuaStateView& state) {
+        const std::string& className = LuaBinding<BindedType>::luaClassName();
+        bool newTable = state.newMetatable(className);
+        if (newTable) {
+            setMetafields(state);
+        }
+    }
+protected:
+    static void setMetafields(LuaStateView& state) {
+        LuaBasicBinding<BindedType>::setMetafields(state);
+
+        using DefaultDereferencer = LuaDefaultDereferencer<BindedType>;
+        if (DefaultDereferencer::hasDereferencer) {
+            state.push<LuaDereferenceGetter<LuaBasetype<BindedType>>>(&DefaultDereferencer::dereferenceGetter);
+            state.setField(-2,"dereferenceGetter");
+        }
+    }
 };
 
 #endif /* LUADEFAULTBINDING_HPP */
