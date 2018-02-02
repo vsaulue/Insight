@@ -22,11 +22,11 @@
 #include <functional>
 
 #include "LuaBinding.hpp"
-#include "LuaDefaultBinding.hpp"
+#include "LuaBasicBinding.hpp"
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<int(*)(LuaStateView&)> : public LuaDefaultBinding<int(*)(LuaStateView&)> {
+class LuaBinding<int(*)(LuaStateView&)> : public LuaBasicBinding<int(*)(LuaStateView&)> {
 public:
     /**
      * Get the name of the metatable of this type.
@@ -41,7 +41,7 @@ public:
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<std::function<int(LuaStateView&)>> : public LuaDefaultBinding<std::function<int(LuaStateView&)>> {
+class LuaBinding<std::function<int(LuaStateView&)>> : public LuaBasicBinding<std::function<int(LuaStateView&)>> {
 public:
     /**
      * Get the name of the metatable of this type.
@@ -58,7 +58,7 @@ class LuaVirtualClass;
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaDefaultBinding<LuaVirtualClass*(*)(void*)> {
+class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaBasicBinding<LuaVirtualClass*(*)(void*)> {
 public:
     static const std::string& luaClassName() {
         static const std::string className("LuaVirtualClass*(*)(void*)");

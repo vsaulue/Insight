@@ -16,8 +16,8 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUADEFAULTBINDING_HPP
-#define LUADEFAULTBINDING_HPP
+#ifndef LUABASICBINDING_HPP
+#define LUABASICBINDING_HPP
 
 #include <type_traits>
 #include <utility>
@@ -31,6 +31,11 @@
 
 /**
  * Provides default implementations of some functions of LuaBinding.
+ *
+ * This will define the following functions for Luabinding:
+ * - push
+ * - getRef
+ * - get (if BindedType is copy constructible).
  *
  * LuaBinding<BindedType> can be derived from this object. In this case, the
  * LuaBinding<BindedType> specialization must provide the following static method:
@@ -46,7 +51,7 @@
  * </code>
  */
 template<typename BindedType>
-class LuaDefaultBinding {
+class LuaBasicBinding {
 protected:
     /**
      * Enables a template if a type is copy constructible.
@@ -56,6 +61,26 @@ protected:
      */
     template<typename T, typename ReturnType=T>
     using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<T>::value,ReturnType>;
+
+    static void setMetafields(LuaStateView& state) {
+        using DefaultDelete = LuaDefaultDelete<BindedType>;
+        if (DefaultDelete::hasDeletor) {
+            state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultDelete::luaDelete>);
+            state.setField(-2, "__gc");
+        }
+
+        using DefaultCall = LuaDefaultCall<BindedType>;
+        if (DefaultCall::hasCall) {
+            state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultCall::luaCall>);
+            state.setField(-2, "__call");
+        }
+
+        using DefaultIndex = LuaDefaultIndex<BindedType>;
+        if (DefaultIndex::hasIndex) {
+            state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultIndex::luaIndex>);
+            state.setField(-2, "__index");
+        }
+    }
 private:
     /**
      * Pushes (or create) the metatable of this type on the Lua state.
@@ -66,23 +91,7 @@ private:
         const std::string& className = LuaBinding<BindedType>::luaClassName();
         bool newTable = state.newMetatable(className);
         if (newTable) {
-            using DefaultDelete = LuaDefaultDelete<BindedType>;
-            if (DefaultDelete::hasDeletor) {
-                state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultDelete::luaDelete>);
-                state.setField(-2, "__gc");
-            }
-
-            using DefaultCall = LuaDefaultCall<BindedType>;
-            if (DefaultCall::hasCall) {
-                state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultCall::luaCall>);
-                state.setField(-2,"__call");
-            }
-
-            using DefaultIndex = LuaDefaultIndex<BindedType>;
-            if (DefaultIndex::hasIndex) {
-                state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultIndex::luaIndex>);
-                state.setField(-2,"__index");
-            }
+            setMetafields(state);
         }
     }
 public:
@@ -128,6 +137,35 @@ public:
     }
 };
 
+/**
+ * Provides default implementations of some functions of LuaBinding.
+ *
+ * This will define the following functions for Luabinding:
+ * - push
+ * - getRef
+ * - get (if BindedType is copy constructible).
+ * - dereferenceGet (if BindedType is a "base" type).
+ *
+ * For reference types, it will add dereferencing functions in the metatable. This enables LuaMethod<LuaBasetype<BindedType>>
+ * to work on an object of type BindedType.
+ *
+ * LuaBinding<BindedType> can be derived from this object. In this case, the
+ * LuaBinding<BindedType> specialization must provide the following static method:
+ * <code>
+ *     static const std::string& luaClassName();
+ *     // Gets the name of the Lua class wrapping the C++ type BindedType. Must be unique.
+ * </code>
+ *
+ * Optional static method:
+ * <code>
+ *     static int luaIndex(BindedType& object, const std::string& memberName, LuaStateView& state);
+ *     // Gets the field/method of object named memberName (see lua metamethod __index).
+ * </code>
+ */
+template<typename T>
+class LuaDefaultBinding : public LuaBasicBinding<T> {
 
-#endif /* LUADEFAULTBINDING_HPP */
+};
+
+#endif /* LUABASICBINDING_HPP */
 

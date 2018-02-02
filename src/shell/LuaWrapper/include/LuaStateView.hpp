@@ -30,6 +30,7 @@ struct lua_State;
  */
 class LuaStateView {
 protected:
+    template<typename> friend class LuaBasicBinding;
     template<typename,typename> friend class LuaBinding;
     template<typename> friend class LuaDefaultBinding;
     template<typename,typename> friend class LuaPointerBinding;
