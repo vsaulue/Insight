@@ -37,6 +37,8 @@ public:
      */
     LuaException(lua_State* state);
 
+    LuaException(const char* msg);
+
     virtual const char* what() const noexcept override;
 };
 

@@ -29,6 +29,10 @@ LuaException::LuaException(lua_State* state) {
     }
 }
 
+LuaException::LuaException(const char* msg) : errorMsg(msg) {
+
+}
+
 const char* LuaException::what() const noexcept {
     return errorMsg.c_str();
 }
