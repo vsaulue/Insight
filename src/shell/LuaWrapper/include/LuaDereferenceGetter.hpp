@@ -31,6 +31,10 @@ class LuaDereferenceGetter {
 private:
     Basetype&(*get)(LuaStateView&, int);
 public:
+    LuaDereferenceGetter() : get(nullptr) {
+
+    }
+
     LuaDereferenceGetter(Basetype&(*getter)(LuaStateView&, int)) : get(getter) {
 
     }

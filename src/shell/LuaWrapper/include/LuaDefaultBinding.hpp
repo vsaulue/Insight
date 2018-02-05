@@ -59,7 +59,12 @@ public:
         if(!state.pushMetafield(stackIndex, "dereferenceGetter")) {
             state.throwArgError(stackIndex, std::string("no metamethod to dereference to base type: ") + LuaBinding<LuaBasetype<T>>::luaClassName());
         }
-        LuaDereferenceGetter<T> getter = state.get<LuaDereferenceGetter<T>>(-1);
+        LuaDereferenceGetter<T> getter;
+        try {
+            getter = state.get<LuaDereferenceGetter<T>>(-1);
+        } catch (const LuaException& e) {
+            state.throwArgError(stackIndex, e.what());
+        }
         return getter(state, stackIndex);
     }
 
