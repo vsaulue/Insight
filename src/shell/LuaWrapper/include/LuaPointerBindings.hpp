@@ -22,7 +22,7 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
-#include "LuaBasicBinding.hpp"
+#include "LuaDefaultBinding.hpp"
 #include "LuaStateView.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"

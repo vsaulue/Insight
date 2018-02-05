@@ -137,35 +137,5 @@ public:
     }
 };
 
-/**
- * Provides default implementations of some functions of LuaBinding.
- *
- * This will define the following functions for Luabinding:
- * - push
- * - getRef
- * - get (if BindedType is copy constructible).
- * - dereferenceGet (if BindedType is a "base" type).
- *
- * For reference types, it will add dereferencing functions in the metatable. This enables LuaMethod<LuaBasetype<BindedType>>
- * to work on an object of type BindedType.
- *
- * LuaBinding<BindedType> can be derived from this object. In this case, the
- * LuaBinding<BindedType> specialization must provide the following static method:
- * <code>
- *     static const std::string& luaClassName();
- *     // Gets the name of the Lua class wrapping the C++ type BindedType. Must be unique.
- * </code>
- *
- * Optional static method:
- * <code>
- *     static int luaIndex(BindedType& object, const std::string& memberName, LuaStateView& state);
- *     // Gets the field/method of object named memberName (see lua metamethod __index).
- * </code>
- */
-template<typename T>
-class LuaDefaultBinding : public LuaBasicBinding<T> {
-
-};
-
 #endif /* LUABASICBINDING_HPP */
 

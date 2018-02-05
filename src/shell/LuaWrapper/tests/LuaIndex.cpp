@@ -19,7 +19,7 @@
 #include <catch.hpp>
 
 #include "LuaState.hpp"
-#include "LuaBasicBinding.hpp"
+#include "LuaDefaultBinding.hpp"
 
 class TestClass {
 public:
