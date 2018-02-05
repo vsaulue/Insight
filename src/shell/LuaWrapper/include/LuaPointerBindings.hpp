@@ -143,6 +143,8 @@ private:
             state.setField(-2, "castPtr*");
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
             state.setField(-2, "__index");
+            state.push<LuaDereferenceGetter<LuaVirtualClass>>(LuaDefaultDereferencer<PointedType*>::dereferenceGetter);
+            state.setField(-2, "dereferenceGetter");
         }
     }
 public:

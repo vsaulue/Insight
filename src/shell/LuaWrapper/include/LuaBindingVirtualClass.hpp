@@ -22,6 +22,8 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
+#include "LuaDefaultDereferenceGet.hpp"
+#include "LuaDereferenceGetter.hpp"
 #include "LuaStateView.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"
@@ -104,7 +106,27 @@ private:
             state.setField(-2,"__gc");
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
             state.setField(-2,"__index");
+            state.push<LuaDereferenceGetter<LuaVirtualClass>>(LuaBinding<LuaVirtualClass>::getRef);
+            state.setField(-2,"dereferenceGetter");
         }
+    }
+
+    /**
+     * Downcast an Lua argument of type LuaVirtualClass* into T*.
+     *
+     * @param basePtr Pointer to downcast.
+     * @param state Current Lua state (used for error reporting).
+     * @param stackIndex Index of the argument in the stack (used for error reporting).
+     * @return basePtr downcasted into type T*.
+     */
+    static T* downcastArg(LuaVirtualClass* basePtr, LuaStateView& state, int stackIndex) {
+        T* result = dynamic_cast<T*>(basePtr);
+        if (result == nullptr) {
+            std::string errorMsg = "Expected ";
+            errorMsg = errorMsg + typeid(T).name() + ", got " + basePtr->luaClassName();
+            state.throwArgError(stackIndex, errorMsg);
+        }
+        return result;
     }
 public:
     static const std::string& luaClassName() {
@@ -148,14 +170,7 @@ public:
         LuaVirtualClass* luaVirtual = castPtr(basePtr);
 
         // Downcast to type T*.
-        T* result = dynamic_cast<T*>(luaVirtual);
-        if (result == nullptr) {
-            std::string errorMsg = "Expected ";
-            errorMsg = errorMsg + typeid(T).name() + ", got " + luaVirtual->luaClassName();
-            state.throwArgError(stackIndex, errorMsg);
-        }
-
-        return *result;
+        return *downcastArg(luaVirtual, state, stackIndex);
     }
 
     /**
@@ -169,6 +184,19 @@ public:
     template<typename U=T>
     static enable_if_copy_constructible<U> get(LuaStateView& state, int stackIndex) {
         return getRef(state, stackIndex);
+    }
+
+    /**
+     * Dereference the object at the specified index into a T&.
+     *
+     * @param state State containing the Lua stack.
+     * @param stackIndex Index in the stack of the item to convert.
+     *
+     * @return A reference to base object stored at the given index.
+     */
+    static T& dereferenceGet(LuaStateView& state, int stackIndex) {
+        LuaVirtualClass* basePtr = &luaDefaultDereferenceGet<LuaVirtualClass>(state, stackIndex);
+        return *downcastArg(basePtr, state, stackIndex);
     }
 };
 

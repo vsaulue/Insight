@@ -19,6 +19,8 @@
 #ifndef LUADEFAULTDEREFERENCER_HPP
 #define LUADEFAULTDEREFERENCER_HPP
 
+#include <type_traits>
+
 #include "LuaException.hpp"
 #include "LuaStateView.hpp"
 
@@ -26,8 +28,9 @@
  * Creates a default dereferencing function for the specified type.
  *
  * @tparam BindedType Type to dereference.
+ * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
-template<typename BindedType>
+template<typename BindedType, typename Enable=void>
 class LuaDefaultDereferencer {
 public:
     static constexpr bool hasDereferencer = true;
@@ -39,6 +42,24 @@ public:
     }
 
     static basetype& dereference(basetype& ref) {
+        return ref;
+    }
+};
+
+
+// Specialization for types derived from LuaVirtualClass.
+template<typename BindedType>
+class LuaDefaultDereferencer<BindedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, BindedType>::value>::type> {
+public:
+    static constexpr bool hasDereferencer = true;
+
+    using basetype = LuaVirtualClass;
+
+    static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
+        return state.getRef<basetype>(stackIndex);
+    }
+
+    static basetype& dereference(BindedType& ref) {
         return ref;
     }
 };
