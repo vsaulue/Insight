@@ -20,6 +20,7 @@
 #define LUADEFAULTBINDING_HPP
 
 #include "LuaBasicBinding.hpp"
+#include "LuaDefaultDereferenceGet.hpp"
 #include "LuaDefaultDereferencer.hpp"
 #include "LuaDereferenceGetter.hpp"
 #include "LuaStateView.hpp"
@@ -56,16 +57,7 @@ class LuaDefaultBinding : public LuaBasicBinding<BindedType> {
 public:
     template<typename T=BindedType>
     static typename std::enable_if<std::is_same<LuaBasetype<T>,T>::value,T>::type& dereferenceGet(LuaStateView& state, int stackIndex) {
-        if(!state.pushMetafield(stackIndex, "dereferenceGetter")) {
-            state.throwArgError(stackIndex, std::string("no metamethod to dereference to base type: ") + LuaBinding<LuaBasetype<T>>::luaClassName());
-        }
-        LuaDereferenceGetter<T> getter;
-        try {
-            getter = state.get<LuaDereferenceGetter<T>>(-1);
-        } catch (const LuaException& e) {
-            state.throwArgError(stackIndex, e.what());
-        }
-        return getter(state, stackIndex);
+        return luaDefaultDereferenceGet<T>(state, stackIndex);
     }
 
     /**
