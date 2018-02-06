@@ -26,19 +26,43 @@
 #include "LuaBasicBinding.hpp"
 #include "LuaVirtualClass.hpp"
 
+/**
+ * Function wrapper used to get a reference to the base type at the specified index.
+ *
+ * A LuaDereferenceGetter<Basetype> is stored in Lua metatable of any C++ type that
+ * can be dereferenced into a Basetype.
+ *
+ * @tparam Basetype Type returned by this function (after dereferencing the value in the stack).
+ */
 template<typename Basetype>
 class LuaDereferenceGetter {
 private:
+    /** Function retrieving the object from the stack, and dereferencing in into Basetype. */
     Basetype&(*get)(LuaStateView&, int);
 public:
+    /**
+     * Constructs a LuaDereferenceGetter initialized with nullptr.
+     */
     LuaDereferenceGetter() : get(nullptr) {
 
     }
 
+    /**
+     * Constructs a LuaDerefenceGetter with an existing function.
+     *
+     * @param getter Function implementing the get & dereferencing from the Lua stack.
+     */
     LuaDereferenceGetter(Basetype&(*getter)(LuaStateView&, int)) : get(getter) {
 
     }
 
+    /**
+     * Gets the object in the Lua stack at the specified index, and dereference it into Basetype&.
+     *
+     * @param state Lua state containing the object.
+     * @param stackIndex Index of the object in the stack.
+     * @return A reference to the basetype of the object at the specified index.
+     */
     Basetype& operator()(LuaStateView& state, int stackIndex) {
         return get(state, stackIndex);
     }

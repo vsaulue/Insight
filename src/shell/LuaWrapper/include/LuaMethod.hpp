@@ -25,15 +25,34 @@
 #include "LuaBasicBinding.hpp"
 #include "LuaStateView.hpp"
 
+/**
+ * Implements a method callable in Lua, working on a C++ type.
+ *
+ * This method will work on any C++ type that can be dereferenced into T (example: T**).
+ */
 template<class T>
 class LuaMethod {
 private:
+    /**
+     * Function implementing the method.
+     */
     int(*method)(T&, LuaStateView&);
 public:
+    /**
+     * Creates a new LuaMethod.
+     *
+     * @param method Implementation of the method.
+     */
     LuaMethod(int(*method)(T&, LuaStateView&)) : method(method) {
 
     }
 
+    /**
+     * Lua __call metamethod implementation.
+     *
+     * @param state State in which this method is called.
+     * @return The number of return values pushed on the Lua stack.
+     */
     int operator()(LuaStateView& state) {
         T& object = state.dereferenceGet<T>(1);
         return method(object, state);
