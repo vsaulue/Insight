@@ -107,6 +107,11 @@ private:
         }
     }
 public:
+    static const std::string& luaClassName() {
+        static const std::string className(typeid(T).name());
+        return className;
+    }
+
     /**
      * Pushes a new object of type T into Lua.
      *

@@ -49,8 +49,8 @@ class LuaBinding<PointedType*> : public LuaPointerBinding<PointedType> {
 };
 
 // Default implementation, for pointers to non-polymorphic types.
-template<typename PointedType>
-class LuaPointerBinding<PointedType, std::void_t<decltype(LuaBinding<PointedType>::luaClassName)>> : public LuaDefaultBinding<PointedType*> {
+template<typename PointedType, typename Enabled>
+class LuaPointerBinding : public LuaDefaultBinding<PointedType*> {
 public:
     /**
      * Gets the name of the metatable of this type.

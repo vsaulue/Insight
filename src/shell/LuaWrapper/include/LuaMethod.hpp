@@ -40,20 +40,12 @@ public:
     }
 };
 
+// See LuaBinding.hpp
 template<class T>
-class LuaBinding<LuaMethod<T>, std::void_t<decltype(LuaBinding<T>::luaClassName)>> : public LuaBasicBinding<LuaMethod<T>> {
+class LuaBinding<LuaMethod<T>> : public LuaBasicBinding<LuaMethod<T>> {
 public:
     static const std::string& luaClassName() {
         static const std::string className = std::string("LuaMethod<") + LuaBinding<T>::luaClassName() + ">";
-        return className;
-    }
-};
-
-template<class T>
-class LuaBinding<LuaMethod<T>, typename std::enable_if<std::is_base_of<LuaVirtualClass,T>::value>::type> : public LuaBasicBinding<LuaMethod<T>> {
-public:
-    static const std::string& luaClassName() {
-        static const std::string className = std::string("LuaMethod<") + typeid(T).name() + ">";
         return className;
     }
 };
