@@ -23,6 +23,8 @@
 
 #include "LuaBinding.hpp"
 #include "LuaDefaultBinding.hpp"
+#include "LuaDereferenceGetter.hpp"
+#include "LuaDereferencer.hpp"
 #include "LuaStateView.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"
@@ -143,7 +145,7 @@ private:
             state.setField(-2, "castPtr*");
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
             state.setField(-2, "__index");
-            state.push<LuaDereferenceGetter<LuaVirtualClass>>(LuaDefaultDereferencer<PointedType*>::dereferenceGetter);
+            state.push<LuaDereferenceGetter<LuaVirtualClass>>(LuaDereferencer<PointedType*>::dereferenceGetter);
             state.setField(-2, "dereferenceGetter");
         }
     }

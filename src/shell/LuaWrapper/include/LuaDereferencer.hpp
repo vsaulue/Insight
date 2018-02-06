@@ -16,8 +16,8 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUADEFAULTDEREFERENCER_HPP
-#define LUADEFAULTDEREFERENCER_HPP
+#ifndef LUADEREFERENCER_HPP
+#define LUADEREFERENCER_HPP
 
 #include <type_traits>
 
@@ -27,32 +27,67 @@
 /**
  * Creates a default dereferencing function for the specified type.
  *
+ * The default template implements a no-op dereferencer: the basetype of BindedType
+ * is BindedType.
+ *
+ * Any specialization should contain the following public members:
+ * <li>
+ *   <ul>
+ *     <code>typedef basetype = ...;</code><br>
+ *     Type returned by this dereferencer.
+ *   </ul>
+ *   <ul>
+ *     <code>static basetype& dereferenceGetter(LuaStateView& state, int stackIndex);</code><br>
+ *     Function reading a value of type BindedType in the Lua stack, and returning it dereferenced into a basetype.
+ *   </ul>
+ *   <ul>
+ *     <code>static basetype& dereference(BindedType& ref); // or BindedType argument.</code><br>
+ *     Function dereferencing a BindedType into a basetype&.
+ *   </ul>
+ * </li>
+ *
  * @tparam BindedType Type to dereference.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
 template<typename BindedType, typename Enable=void>
-class LuaDefaultDereferencer {
+class LuaDereferencer {
 public:
-    static constexpr bool hasDereferencer = true;
-
+    /** Type returned by the dereferencer implemented in this class. */
     using basetype = BindedType;
 
+    /**
+     * Reads a value of type BindedType in the Lua stack, and dereference it into basetype.
+     *
+     * @param state State in which the object of type BindedType is stored.
+     * @param stackIndex Index of the element in the stack.
+     * @return The element dereferenced into BindedType.
+     */
     static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
         return state.getRef<basetype>(stackIndex);
     }
 
-    static basetype& dereference(basetype& ref) {
+    /**
+     * Dereference BindedType& into basetype&.
+     *
+     * @param ref Reference into basetype
+     * @return
+     */
+    static basetype& dereference(BindedType& ref) {
         return ref;
     }
 };
 
 
-// Specialization for types derived from LuaVirtualClass.
+/**
+ * Specialization for types derived from LuaVirtualClass.
+ *
+ * All types derived from LuaVirtualClass have LuaVirtualClass as a basetype.
+ *
+ * @tparam BindedType Type to dereference (must be derived from LuaVirtualClass).
+ */
 template<typename BindedType>
-class LuaDefaultDereferencer<BindedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, BindedType>::value>::type> {
+class LuaDereferencer<BindedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, BindedType>::value>::type> {
 public:
-    static constexpr bool hasDereferencer = true;
-
     using basetype = LuaVirtualClass;
 
     static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
@@ -65,11 +100,9 @@ public:
 };
 
 template<typename PointedType>
-class LuaDefaultDereferencer<PointedType*> {
+class LuaDereferencer<PointedType*> {
 public:
-    static constexpr bool hasDereferencer = true;
-
-    using basetype = typename LuaDefaultDereferencer<PointedType>::basetype;
+    using basetype = typename LuaDereferencer<PointedType>::basetype;
 
     static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
         PointedType* ptr = state.get<PointedType*>(stackIndex);
@@ -80,12 +113,12 @@ public:
         if (ptr == nullptr) {
             throw LuaException("Attempt to dereference nullptr.");
         }
-        return LuaDefaultDereferencer<PointedType>::dereference(*ptr);
+        return LuaDereferencer<PointedType>::dereference(*ptr);
     }
 };
 
 template<typename T>
-using LuaBasetype = typename LuaDefaultDereferencer<T>::basetype;
+using LuaBasetype = typename LuaDereferencer<T>::basetype;
 
-#endif /* LUADEFAULTDEREFERENCER_HPP */
+#endif /* LUADEREFERENCER_HPP */
 

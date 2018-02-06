@@ -21,8 +21,8 @@
 
 #include "LuaBasicBinding.hpp"
 #include "LuaDefaultDereferenceGet.hpp"
-#include "LuaDefaultDereferencer.hpp"
 #include "LuaDereferenceGetter.hpp"
+#include "LuaDereferencer.hpp"
 #include "LuaStateView.hpp"
 
 /**
@@ -91,11 +91,10 @@ protected:
     static void setMetafields(LuaStateView& state) {
         LuaBasicBinding<BindedType>::setMetafields(state);
 
-        using DefaultDereferencer = LuaDefaultDereferencer<BindedType>;
-        if (DefaultDereferencer::hasDereferencer) {
-            state.push<LuaDereferenceGetter<LuaBasetype<BindedType>>>(&DefaultDereferencer::dereferenceGetter);
-            state.setField(-2,"dereferenceGetter");
-        }
+        using Dereferencer = LuaDereferencer<BindedType>;
+        using Basetype = LuaBasetype<BindedType>;
+        state.push<LuaDereferenceGetter<Basetype>>(&Dereferencer::dereferenceGetter);
+        state.setField(-2,"dereferenceGetter");
     }
 };
 
