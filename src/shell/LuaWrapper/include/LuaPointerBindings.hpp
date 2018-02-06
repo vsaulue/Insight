@@ -22,6 +22,7 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
+#include "LuaDefaultClassName.hpp"
 #include "LuaDefaultBinding.hpp"
 #include "LuaDereferenceGetter.hpp"
 #include "LuaDereferencer.hpp"
@@ -54,16 +55,6 @@ class LuaBinding<PointedType*> : public LuaPointerBinding<PointedType> {
 template<typename PointedType, typename Enabled>
 class LuaPointerBinding : public LuaDefaultBinding<PointedType*> {
 public:
-    /**
-     * Gets the name of the metatable of this type.
-     *
-     * @return The name of this C++ type in Lua.
-     */
-    static const std::string& luaClassName() {
-        static const std::string className(LuaBinding<PointedType>::luaClassName() + "*");
-        return className;
-    }
-
     /**
      * Implementation of Lua __index metamethod (wrapped by LuaDefaultBinding).
      *
@@ -99,7 +90,7 @@ public:
  * </code>
  */
 template<typename PointedType>
-class LuaPointerBinding<PointedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, PointedType>::value>::type> {
+class LuaPointerBinding<PointedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, PointedType>::value>::type> : LuaDefaultClassName<PointedType*> {
 private:
 
     /**
@@ -139,7 +130,7 @@ private:
      * @param state State in which to push the metatable.
      */
     static void pushMetatable(LuaStateView& state, LuaVirtualClass* object) {
-        bool newTable = state.newMetatable(luaClassName());
+        bool newTable = state.newMetatable(LuaBinding<PointedType*>::luaClassName());
         if (newTable) {
             state.push<LuaVirtualClass*(*)(void*)>(luaCastPtr);
             state.setField(-2, "castPtr*");
@@ -165,16 +156,6 @@ public:
             state.throwArgError(1, "Cannot get field or method from a null pointer.");
         }
         return object->luaIndex(memberName, state);
-    }
-
-    /**
-     * Gets the name of the metatable of this type.
-     *
-     * @return The name of this C++ type in Lua.
-     */
-    static const std::string& luaClassName() {
-        static const std::string className(std::string(typeid(PointedType).name())+"*");
-        return className;
     }
 
     /**
@@ -237,7 +218,7 @@ public:
      * @return The desired reference to a PointedType* object.
      */
     static PointedType*& getRef(LuaStateView& state, int stackIndex) {
-        PointedType** result = state.checkUserData<PointedType*>(stackIndex, luaClassName());
+        PointedType** result = state.checkUserData<PointedType*>(stackIndex, LuaBinding<PointedType*>::luaClassName());
         return *result;
     }
 };

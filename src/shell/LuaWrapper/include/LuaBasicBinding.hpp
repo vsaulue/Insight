@@ -24,6 +24,7 @@
 
 #include "LuaBinding.hpp"
 #include "LuaDefaultCall.hpp"
+#include "LuaDefaultClassName.hpp"
 #include "LuaDefaultDelete.hpp"
 #include "LuaDefaultIndex.hpp"
 #include "LuaStateView.hpp"
@@ -37,21 +38,26 @@
  * - getRef
  * - get (if BindedType is copy constructible).
  *
- * LuaBinding<BindedType> can be derived from this object. In this case, the
- * LuaBinding<BindedType> specialization must provide the following static method:
- * <code>
- *     static const std::string& luaClassName();
- *     // Gets the name of the Lua class wrapping the C++ type BindedType. Must be unique.
- * </code>
+ * LuaBinding<BindedType> can be derived from this object.
  *
- * Optional static method:
- * <code>
- *     static int luaIndex(BindedType& object, const std::string& memberName, LuaStateView& state);
- *     // Gets the field/method of object named memberName (see lua metamethod __index).
- * </code>
+ * Optional static methods:
+ * <li>
+ *   <ul>
+ *     <code>
+ *       static int luaIndexImpl(BindedType& object, const std::string& memberName, LuaStateView& state);
+ *       // Gets the field/method of object named memberName (see lua metamethod __index).
+ *     </code>
+ *   </ul>
+ *   <ul>
+ *     <code>
+ *       static const std::string& luaClassName();
+ *       // Overrides the auto-generated Lua class name of this type. Must be unique.
+ *     </code>
+ *   </ul>
+ * </li>
  */
 template<typename BindedType>
-class LuaBasicBinding {
+class LuaBasicBinding : public LuaDefaultClassName<BindedType> {
 protected:
     /**
      * Enables a template if a type is copy constructible.

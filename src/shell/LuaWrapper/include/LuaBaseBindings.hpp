@@ -20,13 +20,14 @@
 #define LUABINDINGCFUNC_HPP
 
 #include "LuaBinding.hpp"
+#include "LuaDefaultClassName.hpp"
 #include "LuaStateView.hpp"
 
 struct lua_State;
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<int(*)(lua_State*)> {
+class LuaBinding<int(*)(lua_State*)> : public LuaDefaultClassName<int(*)(lua_State*)> {
 private:
     /** Type binded by this LuaBinding<>. */
     using func_ptr = int(*)(lua_State*);
@@ -56,18 +57,8 @@ public:
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<bool> {
+class LuaBinding<bool> : public LuaDefaultClassName<bool> {
 public:
-    /**
-     * Gets the name of the metatable of this type.
-     *
-     * @return The name of this C++ type in Lua.
-     */
-    static const std::string& luaClassName() {
-        static const std::string className("bool");
-        return className;
-    }
-
     static void push(LuaStateView& state, bool value) {
         state.pushBool(value);
     }
@@ -79,13 +70,8 @@ public:
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
-class LuaBinding<const char*> {
+class LuaBinding<const char*> : public LuaDefaultClassName<const char*> {
 public:
-    static const std::string& luaClassName() {
-        static const std::string className("const char*");
-        return className;
-    }
-
     static void push(LuaStateView& state, const char *value) {
         state.pushString(value);
     }

@@ -37,18 +37,9 @@
  * For reference types, it will add dereferencing functions in the metatable. This enables LuaMethod<LuaBasetype<BindedType>>
  * to work on an object of type BindedType.
  *
- * LuaBinding<BindedType> can be derived from this object. In this case, the
- * LuaBinding<BindedType> specialization must provide the following static method:
- * <code>
- *     static const std::string& luaClassName();
- *     // Gets the name of the Lua class wrapping the C++ type BindedType. Must be unique.
- * </code>
+ * LuaBinding<BindedType> can be derived from this object.
  *
- * Optional static method:
- * <code>
- *     static int luaIndex(BindedType& object, const std::string& memberName, LuaStateView& state);
- *     // Gets the field/method of object named memberName (see lua metamethod __index).
- * </code>
+ * Optional static methods: same as LuaBasicBinding<BindedType>
  *
  * @tparam BindedType C++ type that will be binded into a Lua type.
  */

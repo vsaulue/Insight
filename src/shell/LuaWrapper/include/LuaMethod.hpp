@@ -62,11 +62,7 @@ public:
 // See LuaBinding.hpp
 template<class T>
 class LuaBinding<LuaMethod<T>> : public LuaBasicBinding<LuaMethod<T>> {
-public:
-    static const std::string& luaClassName() {
-        static const std::string className = std::string("LuaMethod<") + LuaBinding<T>::luaClassName() + ">";
-        return className;
-    }
+
 };
 
 #endif /* LUAMETHOD_HPP */

@@ -71,11 +71,6 @@ public:
 // See LuaBinding.hpp
 template<typename T>
 class LuaBinding<LuaDereferenceGetter<T>,std::void_t<decltype(LuaBinding<T>::luaClassName)>> : public LuaBasicBinding<LuaDereferenceGetter<T>> {
-public:
-    static const std::string& luaClassName() {
-        static const std::string className(std::string("LuaDereferenceGetter<") + LuaBinding<T>::luaClassName() + ">");
-        return className;
-    }
 };
 
 #endif /* LUADEREFERENCEGETTER_HPP */

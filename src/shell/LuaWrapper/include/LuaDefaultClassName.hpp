@@ -16,35 +16,31 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUABINDINGFUNC_HPP
-#define LUABINDINGFUNC_HPP
+#ifndef LUADEFAULTCLASSNAME_HPP
+#define LUADEFAULTCLASSNAME_HPP
 
-#include <functional>
+#include <string>
+#include <typeinfo>
 
-#include "LuaBinding.hpp"
-#include "LuaBasicBinding.hpp"
+#include "boost/core/demangle.hpp"
 
-/** See LuaBinding in LuaBinding.hpp. */
-template<>
-class LuaBinding<int(*)(LuaStateView&)> : public LuaBasicBinding<int(*)(LuaStateView&)> {
-
+/**
+ * Provides a default Lua class name for a C++ type.
+ *
+ * @tparam BindedType C++ type to name into Lua.
+ */
+template<typename BindedType>
+class LuaDefaultClassName {
+public:
+    /**
+     * Gets the Lua class name of BindedType.
+     *
+     * @return The Lua class name of BindedType.
+     */
+    static const std::string& luaClassName() {
+        static const std::string className(boost::core::demangle(typeid(BindedType).name()));
+        return className;
+    }
 };
 
-/** See LuaBinding in LuaBinding.hpp. */
-template<>
-class LuaBinding<std::function<int(LuaStateView&)>> : public LuaBasicBinding<std::function<int(LuaStateView&)>> {
-
-};
-
-class LuaVirtualClass;
-
-/** See LuaBinding in LuaBinding.hpp. */
-template<>
-class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaBasicBinding<LuaVirtualClass*(*)(void*)> {
-
-};
-
-
-
-#endif /* LUABINDINGFUNC_HPP */
-
+#endif /* LUADEFAULTCLASSNAME_HPP */

@@ -22,6 +22,7 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
+#include "LuaDefaultClassName.hpp"
 #include "LuaDefaultDereferenceGet.hpp"
 #include "LuaDereferenceGetter.hpp"
 #include "LuaStateView.hpp"
@@ -44,7 +45,7 @@
  * </code>
  */
 template<typename T>
-class LuaBinding<T, typename std::enable_if<std::is_base_of<LuaVirtualClass,T>::value>::type> {
+class LuaBinding<T, typename std::enable_if<std::is_base_of<LuaVirtualClass,T>::value>::type> : public LuaDefaultClassName<T> {
 private:
     template<typename Type>
     using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<Type>::value, Type>::type;
@@ -129,11 +130,6 @@ private:
         return result;
     }
 public:
-    static const std::string& luaClassName() {
-        static const std::string className(typeid(T).name());
-        return className;
-    }
-
     /**
      * Pushes a new object of type T into Lua.
      *
