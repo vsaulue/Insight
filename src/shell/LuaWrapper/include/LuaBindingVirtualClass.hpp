@@ -26,6 +26,7 @@
 #include "LuaDefaultDereferenceGet.hpp"
 #include "LuaDereferenceGetter.hpp"
 #include "LuaStateView.hpp"
+#include "LuaUpcaster.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"
 
@@ -101,7 +102,7 @@ private:
     static void pushMetatable(LuaStateView& state, LuaVirtualClass* object) {
         bool newTable = state.newMetatable(object->luaClassName());
         if (newTable) {
-            state.push<LuaVirtualClass*(*)(void*)>(luaCastPtr);
+            state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
             state.setField(-2, "castPtr");
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaDelete>);
             state.setField(-2,"__gc");
@@ -161,9 +162,9 @@ public:
             std::string errorMsg = "Expected LuaVirtualClass or derived type";
             state.throwArgError(stackIndex, errorMsg);
         }
-        LuaVirtualClass*(*castPtr)(void*) = state.get<LuaVirtualClass*(*)(void*)>(-1);
+        LuaUpcaster<LuaVirtualClass> upcast = state.get<LuaUpcaster<LuaVirtualClass>>(-1);
         state.pop(1);
-        LuaVirtualClass* luaVirtual = castPtr(basePtr);
+        LuaVirtualClass* luaVirtual = upcast(basePtr);
 
         // Downcast to type T*.
         return *downcastArg(luaVirtual, state, stackIndex);

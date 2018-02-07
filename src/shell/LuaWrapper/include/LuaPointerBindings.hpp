@@ -27,6 +27,7 @@
 #include "LuaDereferenceGetter.hpp"
 #include "LuaDereferencer.hpp"
 #include "LuaStateView.hpp"
+#include "LuaUpcaster.hpp"
 #include "LuaVirtualClass.hpp"
 #include "LuaWrapFunction.hpp"
 
@@ -132,7 +133,7 @@ private:
     static void pushMetatable(LuaStateView& state, LuaVirtualClass* object) {
         bool newTable = state.newMetatable(LuaBinding<PointedType*>::luaClassName());
         if (newTable) {
-            state.push<LuaVirtualClass*(*)(void*)>(luaCastPtr);
+            state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
             state.setField(-2, "castPtr*");
             state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
             state.setField(-2, "__index");
@@ -192,9 +193,9 @@ public:
         void* rawPtr = *reinterpret_cast<void**> (userdata);
         PointedType* result = nullptr;
         if (rawPtr != nullptr) {
-            LuaVirtualClass*(*castPtr)(void*) = state.get < LuaVirtualClass * (*)(void*) >(-1);
+            LuaUpcaster<LuaVirtualClass> upcast = state.get<LuaUpcaster<LuaVirtualClass>>(-1);
             state.pop(1);
-            LuaVirtualClass* luaVirtual = castPtr(rawPtr);
+            LuaVirtualClass* luaVirtual = upcast(rawPtr);
 
             result = dynamic_cast<PointedType*>(luaVirtual);
             if (result == nullptr) {

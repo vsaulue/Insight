@@ -36,15 +36,4 @@ class LuaBinding<std::function<int(LuaStateView&)>> : public LuaBasicBinding<std
 
 };
 
-class LuaVirtualClass;
-
-/** See LuaBinding in LuaBinding.hpp. */
-template<>
-class LuaBinding<LuaVirtualClass*(*)(void*)> : public LuaBasicBinding<LuaVirtualClass*(*)(void*)> {
-
-};
-
-
-
 #endif /* LUABINDINGFUNC_HPP */
-
