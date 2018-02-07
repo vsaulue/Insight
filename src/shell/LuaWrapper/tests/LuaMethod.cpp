@@ -20,8 +20,10 @@
 #include <iostream>
 
 #include "LuaState.hpp"
+#include "LuaBaseBindings.hpp"
 #include "LuaDefaultBinding.hpp"
 #include "LuaMethod.hpp"
+#include "LuaPointerBindings.hpp"
 #include "LuaVirtualClass.hpp"
 
 class MethodClass {

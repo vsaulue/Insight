@@ -19,9 +19,9 @@
 #ifndef LUAVIRTUALCLASS_HPP
 #define LUAVIRTUALCLASS_HPP
 
-class LuaStateView;
-
 #include <string>
+
+#include "LuaStateView.hpp"
 
 /**
  * Interface for C++ types that should support runtime polymorphism with Lua bindings.
@@ -47,8 +47,6 @@ public:
 
     virtual ~LuaVirtualClass();
 };
-
-#include "LuaStateView.hpp"
 
 #endif /* LUAVIRTUALCLASS_HPP */
 

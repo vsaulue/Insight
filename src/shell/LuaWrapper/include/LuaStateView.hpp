@@ -354,13 +354,5 @@ public:
     void throwArgError(int stackIndex, const std::string& msg);
 };
 
-// Bindings for some basic types.
-// C++ types that have a corresponding built-in type in Lua.
-#include "LuaBaseBindings.hpp"
-// C++ types stored as Lua Userdata.
-#include "LuaFunctionBindings.hpp"
-#include "LuaBindingVirtualClass.hpp"
-#include "LuaPointerBindings.hpp"
-
 #endif /* LUASTATEVIEW_HPP */
 

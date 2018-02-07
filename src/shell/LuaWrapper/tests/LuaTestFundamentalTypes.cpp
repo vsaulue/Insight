@@ -20,6 +20,8 @@
 
 #include "catch.hpp"
 
+#include "LuaBaseBindings.hpp"
+#include "LuaFunctionBindings.hpp"
 #include "LuaState.hpp"
 
 TEST_CASE("bool binding") {

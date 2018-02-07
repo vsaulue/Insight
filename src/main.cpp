@@ -24,6 +24,7 @@
 
 #include "GraphicEngine.hpp"
 #include "LuaVirtualClass.hpp"
+#include "LuaPointerBindings.hpp"
 #include "PhysicEngine.hpp"
 #include "Universe.hpp"
 #include "ShellInterpreter.hpp"

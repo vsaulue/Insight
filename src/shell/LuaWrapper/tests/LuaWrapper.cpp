@@ -21,6 +21,7 @@
 
 #include <functional>
 
+#include "LuaFunctionBindings.hpp"
 #include "LuaState.hpp"
 
 static bool flagA = false;

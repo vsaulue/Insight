@@ -21,6 +21,7 @@
 
 #include <functional>
 
+#include "LuaBaseBindings.hpp"
 #include "LuaBinding.hpp"
 #include "LuaBasicBinding.hpp"
 

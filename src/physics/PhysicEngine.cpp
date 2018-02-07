@@ -17,6 +17,8 @@
 
 #include "PhysicEngine.hpp"
 
+#include "LuaPointerBindings.hpp"
+
 Universe& PhysicEngine::getUniverse() {
     return universe;
 }

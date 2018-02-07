@@ -16,10 +16,15 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <catch.hpp>
+#include <functional>
+
+#include "catch.hpp"
 
 #include "LuaState.hpp"
+#include "LuaBaseBindings.hpp"
 #include "LuaDefaultBinding.hpp"
+#include "LuaFunctionBindings.hpp"
+#include "LuaPointerBindings.hpp"
 
 class TestClass {
 public:

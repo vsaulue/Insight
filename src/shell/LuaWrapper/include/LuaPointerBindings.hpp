@@ -22,10 +22,12 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
+#include "LuaBindingVirtualClass.hpp"
 #include "LuaDefaultClassName.hpp"
 #include "LuaDefaultBinding.hpp"
 #include "LuaDereferenceGetter.hpp"
 #include "LuaDereferencer.hpp"
+#include "LuaBaseBindings.hpp"
 #include "LuaStateView.hpp"
 #include "LuaUpcaster.hpp"
 #include "LuaVirtualClass.hpp"

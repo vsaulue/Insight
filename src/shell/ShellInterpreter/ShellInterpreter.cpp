@@ -17,7 +17,7 @@
 
 #include "LuaException.hpp"
 #include "LuaState.hpp"
-#include "LuaVirtualClass.hpp"
+#include "LuaPointerBindings.hpp"
 
 #include "ShellInterpreter.hpp"
 
