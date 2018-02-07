@@ -126,34 +126,6 @@ TEST_CASE("std::function<int(LuaStateView&)> binding") {
     }
 }
 
-TEST_CASE("bool binding") {
-    GIVEN("A C++ function reading a bool from Lua.") {
-        bool readValue = false;
-        auto lambda = [&readValue](LuaStateView& state) -> int {
-            readValue = state.get<bool>(1);
-            return 0;
-        };
-        std::function<int(LuaStateView&)> function(lambda);
-
-        const std::string funcName("luaFuncName");
-        LuaState state;
-        state.push<std::function<int(LuaStateView&)>>(function);
-        state.setGlobal(funcName);
-
-        SECTION("It can read false.") {
-            readValue = true;
-            state.doString(funcName+"(false)");
-            REQUIRE(readValue == false);
-        }
-
-        SECTION("It can read true.") {
-            readValue = false;
-            state.doString(funcName+"(true)");
-            REQUIRE(readValue == true);
-        }
-    }
-}
-
 #include "LuaVirtualClass.hpp"
 #include "LuaException.hpp"
 
@@ -244,40 +216,6 @@ TEST_CASE("LuaVirtualClass binding") {
 }
 
 TEST_CASE("Pointers binding.") {
-    GIVEN("A boolean.") {
-        LuaState state;
-        bool boolA = false;
-
-        SECTION("I can push/get a pointer to a bool.") {
-            state.push<bool*>(&boolA);
-
-            bool* fromStack = state.get<bool*>(-1);
-            *fromStack = true;
-            REQUIRE(boolA);
-        }
-
-        SECTION("I can get a reference to a bool pointer.") {
-            state.push<bool*>(&boolA);
-
-            bool*& fromStack = state.getRef<bool*>(-1);
-            REQUIRE(*fromStack == false);
-            boolA = true;
-            REQUIRE(*fromStack);
-        }
-
-        SECTION("I can push/get a bool** object.") {
-            bool* boolPtr = &boolA;
-            bool** boolPtr2 = &boolPtr;
-
-            state.push<bool**>(boolPtr2);
-            bool** fromStack = state.get<bool**>(-1);
-
-            REQUIRE(**fromStack == false);
-            boolA = true;
-            REQUIRE(**fromStack == true);
-        }
-    }
-
     GIVEN("A class hierarchy derived from LuaVirtualClass.") {
         LuaState state;
 

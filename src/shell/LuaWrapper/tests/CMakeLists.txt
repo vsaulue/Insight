@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_executable(testLuaWrapper LuaIndex.cpp LuaMethod.cpp LuaWrapper.cpp)
+add_executable(testLuaWrapper LuaIndex.cpp LuaMethod.cpp LuaTestDefaultPointers.cpp LuaTestFundamentalTypes.cpp LuaWrapper.cpp)
 target_link_libraries(testLuaWrapper Catch LuaWrapper)
 
 add_custom_target(run-testLuaWrapper "./testLuaWrapper"
