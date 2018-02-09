@@ -38,8 +38,6 @@ public:
         return objects.end();
     }
 
-    const std::string& luaClassName() const override;
-
     virtual ~Universe() {
         for (PhysicalObject* object : objects) {
             delete object;

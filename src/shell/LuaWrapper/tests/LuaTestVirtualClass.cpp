@@ -36,11 +36,6 @@ public:
 
     }
 
-    const std::string& luaClassName() const override {
-        static const std::string className("Base");
-        return className;
-    }
-
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
         int result = 1;
         if (memberName=="baseValue") {
@@ -62,11 +57,6 @@ public:
 
     }
 
-    const std::string& luaClassName() const override {
-        static const std::string className("Derived1");
-        return className;
-    }
-
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
         int result = 1;
         if (memberName=="derivedValue") {
@@ -84,11 +74,6 @@ class Derived2 : public Base {
 public:
     Derived2(bool value) : Base(value) {
 
-    }
-
-    const std::string& luaClassName() const override {
-        static const std::string className("Derived2");
-        return className;
     }
 };
 

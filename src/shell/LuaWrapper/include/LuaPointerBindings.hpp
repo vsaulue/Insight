@@ -202,7 +202,7 @@ public:
             result = dynamic_cast<PointedType*>(luaVirtual);
             if (result == nullptr) {
                 std::string errorMsg = "Expected ";
-                errorMsg = errorMsg + typeid(PointedType).name() + "*, got " + luaVirtual->luaClassName() + "*";
+                errorMsg = errorMsg + LuaBinding<PointedType*>::luaClassName() + ", got " + state.getTypename(stackIndex) + "*";
                 state.throwArgError(stackIndex, errorMsg);
             }
         }

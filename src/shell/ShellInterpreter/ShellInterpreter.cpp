@@ -56,11 +56,6 @@ LuaVirtualClass& ShellInterpreter::getRootObject() {
     return rootObject;
 }
 
-const std::string& ShellInterpreter::luaClassName() const {
-    static const std::string className("ShellInterpreter");
-    return className;
-}
-
 int ShellInterpreter::luaIndex(const std::string& memberName, LuaStateView& state) {
     return 0;
 }

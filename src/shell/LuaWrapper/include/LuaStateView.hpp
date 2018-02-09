@@ -352,6 +352,14 @@ public:
      * @param[in] msg An error message.
      */
     void throwArgError(int stackIndex, const std::string& msg);
+
+    /**
+     * Gets the name of the Lua type of the specified stack object.
+     *
+     * @param stackIndex Index of the object to lookup in the stack.
+     * @return The name of the type of the specified object.
+     */
+    const char* getTypename(int stackIndex);
 };
 
 #endif /* LUASTATEVIEW_HPP */

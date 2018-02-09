@@ -69,11 +69,6 @@ public:
         }
     }
 
-    const std::string& luaClassName() const override {
-        static const std::string className("Insight");
-        return className;
-    }
-
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
         if (memberName == "physicEngine") {
             state.push<PhysicEngine*>(&physicEngine);

@@ -100,7 +100,7 @@ private:
      * @param state State in which to push the metatable.
      */
     static void pushMetatable(LuaStateView& state, LuaVirtualClass* object) {
-        bool newTable = state.newMetatable(object->luaClassName());
+        bool newTable = state.newMetatable(LuaBinding<T>::luaClassName());
         if (newTable) {
             state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
             state.setField(-2, "castPtr");
@@ -125,7 +125,7 @@ private:
         T* result = dynamic_cast<T*>(basePtr);
         if (result == nullptr) {
             std::string errorMsg = "Expected ";
-            errorMsg = errorMsg + typeid(T).name() + ", got " + basePtr->luaClassName();
+            errorMsg+= LuaBinding<T>::luaClassName() + ", got " + state.getTypename(stackIndex);
             state.throwArgError(stackIndex, errorMsg);
         }
         return result;

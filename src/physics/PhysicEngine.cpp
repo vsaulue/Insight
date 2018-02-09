@@ -38,11 +38,6 @@ void PhysicEngine::integrate() {
     }
 }
 
-const std::string& PhysicEngine::luaClassName() const {
-    static const std::string className("PhysicEngine");
-    return className;
-}
-
 int PhysicEngine::luaIndex(const std::string& memberName, LuaStateView& state) {
     if (memberName == "universe") {
         state.push<Universe*>(&universe);

@@ -144,3 +144,7 @@ void LuaStateView::pushString(const char* value) {
 const char* LuaStateView::getString(int stackIndex) {
     return luaL_checkstring(state, stackIndex);
 }
+
+const char* LuaStateView::getTypename(int stackIndex) {
+    return luaL_typename(state, stackIndex);
+}

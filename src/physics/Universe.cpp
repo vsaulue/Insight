@@ -20,11 +20,6 @@
 Universe::Universe() {
 }
 
-const std::string& Universe::luaClassName() const {
-    static const std::string className("Universe");
-    return className;
-}
-
 int Universe::luaIndex(const std::string& memberName, LuaStateView& state) {
     return 0;
 }

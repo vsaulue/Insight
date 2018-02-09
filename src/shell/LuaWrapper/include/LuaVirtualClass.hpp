@@ -29,15 +29,6 @@
 class LuaVirtualClass {
 public:
     /**
-     * Get the class name in Lua of this type.
-     *
-     * The returned value should be unique for each C++ type wrapped in Lua.
-     *
-     * @return The name of this class in Lua.
-     */
-    virtual const std::string& luaClassName() const = 0;
-
-    /**
      * Gets a field or method from this object.
      *
      * @param state Lua state requesting a member to this object.
