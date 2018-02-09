@@ -77,28 +77,6 @@ public:
     }
 };
 
-
-/**
- * Specialization for types derived from LuaVirtualClass.
- *
- * All types derived from LuaVirtualClass have LuaVirtualClass as a basetype.
- *
- * @tparam BindedType Type to dereference (must be derived from LuaVirtualClass).
- */
-template<typename BindedType>
-class LuaDereferencer<BindedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, BindedType>::value>::type> {
-public:
-    using basetype = LuaVirtualClass;
-
-    static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
-        return state.getRef<basetype>(stackIndex);
-    }
-
-    static basetype& dereference(BindedType& ref) {
-        return ref;
-    }
-};
-
 template<typename PointedType>
 class LuaDereferencer<PointedType*> {
 public:
