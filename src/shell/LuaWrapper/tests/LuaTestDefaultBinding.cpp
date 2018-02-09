@@ -16,9 +16,11 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <catch.hpp>
 #include <functional>
 #include <iostream>
+
+#include <catch.hpp>
+#include "LuaTestCommon.hpp"
 
 #include "LuaState.hpp"
 #include "LuaBaseBindings.hpp"
@@ -74,15 +76,6 @@ public:
     }
 };
 
-static void pushReadBool(LuaStateView& state, bool& res) {
-    std::function<int(LuaStateView&)> function = [&res](LuaStateView& state) -> int {
-        res = state.get<bool>(1);
-        return 0;
-    };
-    state.push<std::function<int(LuaStateView&)>>(function);
-    state.setGlobal("readBool");
-}
-
 TEST_CASE("TestClass default binding") {
     LuaState state;
 
@@ -112,7 +105,7 @@ TEST_CASE("TestClass default binding") {
         SECTION("Read fields from Lua") {
             state.setGlobal("object");
             bool readValue = false;
-            pushReadBool(state, readValue);
+            defineReadBool(state, readValue);
 
             state.doString("readBool(object.flag)");
             REQUIRE(readValue == flag);
@@ -151,7 +144,7 @@ TEST_CASE("TestClass** default binding") {
         SECTION("Read fields from Lua") {
             state.setGlobal("object");
             bool readValue = false;
-            pushReadBool(state, readValue);
+            defineReadBool(state, readValue);
 
             state.doString("readBool(object.flag)");
             REQUIRE(readValue == flag);

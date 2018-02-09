@@ -15,12 +15,15 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_executable(testLuaWrapper
+    LuaTestCommon.cpp
     LuaTestDefaultBinding.cpp
     LuaTestDefaultPointers.cpp
     LuaTestFundamentalTypes.cpp
+    LuaTestFunctions.cpp
     LuaTestVirtualClass.cpp
-    LuaWrapper.cpp
 )
+
+target_include_directories(testLuaWrapper PUBLIC include)
 
 target_link_libraries(testLuaWrapper Catch LuaWrapper)
 

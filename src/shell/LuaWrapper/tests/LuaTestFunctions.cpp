@@ -16,7 +16,6 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
 #include <functional>

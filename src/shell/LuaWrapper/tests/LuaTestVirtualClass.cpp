@@ -19,6 +19,7 @@
 #include <functional>
 
 #include "catch.hpp"
+#include "LuaTestCommon.hpp"
 
 #include "LuaBaseBindings.hpp"
 #include "LuaBindingVirtualClass.hpp"
@@ -91,15 +92,6 @@ public:
     }
 };
 
-static void pushReadBool(LuaStateView& state, bool& res) {
-    std::function<int(LuaStateView&)> function = [&res](LuaStateView& state) -> int {
-        res = state.get<bool>(1);
-        return 0;
-    };
-    state.push<std::function<int(LuaStateView&)>>(function);
-    state.setGlobal("readBool");
-}
-
 TEST_CASE("LuaVirtualClass (& derived types) binding") {
     LuaState state;
 
@@ -143,7 +135,7 @@ TEST_CASE("LuaVirtualClass (& derived types) binding") {
             state.setGlobal("object");
 
             bool readValue = false;
-            pushReadBool(state, readValue);
+            defineReadBool(state, readValue);
 
             state.doString("readBool(object.baseValue)");
             REQUIRE(readValue == true);
@@ -182,7 +174,7 @@ TEST_CASE("LuaVirtualClass (& derived types) binding") {
             state.setGlobal("object");
 
             bool readValue = false;
-            pushReadBool(state, readValue);
+            defineReadBool(state, readValue);
 
             state.doString("readBool(object.baseValue)");
             REQUIRE(readValue == true);
@@ -272,7 +264,7 @@ TEST_CASE("LuaVirtualClass (& derived types) pointers binding") {
 
         SECTION("Read fields from Lua") {
             bool readValue = false;
-            pushReadBool(state, readValue);
+            defineReadBool(state, readValue);
 
             state.doString("readBool(object.baseValue)");
             REQUIRE(readValue == false);
@@ -317,7 +309,7 @@ TEST_CASE("LuaVirtualClass** (& derived types) bindings") {
 
         SECTION("Read fields from Lua") {
             bool readValue = true;
-            pushReadBool(state, readValue);
+            defineReadBool(state, readValue);
 
             state.doString("readBool(object.baseValue)");
             REQUIRE(readValue == false);
