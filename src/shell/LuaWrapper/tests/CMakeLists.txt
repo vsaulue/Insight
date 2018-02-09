@@ -15,8 +15,7 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_executable(testLuaWrapper
-    LuaIndex.cpp
-    LuaMethod.cpp
+    LuaTestDefaultBinding.cpp
     LuaTestDefaultPointers.cpp
     LuaTestFundamentalTypes.cpp
     LuaTestVirtualClass.cpp

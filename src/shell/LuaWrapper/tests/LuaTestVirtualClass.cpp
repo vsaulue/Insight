@@ -91,7 +91,7 @@ public:
     }
 };
 
-void pushReadBool(LuaStateView& state, bool& res) {
+static void pushReadBool(LuaStateView& state, bool& res) {
     std::function<int(LuaStateView&)> function = [&res](LuaStateView& state) -> int {
         res = state.get<bool>(1);
         return 0;
