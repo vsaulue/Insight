@@ -23,6 +23,7 @@
 #include "lua/bindings/luaVirtualClass/base.hpp"
 #include "lua/bindings/pointers.hpp"
 #include "lua/LuaStateView.hpp"
+#include "lua/types/LuaNativeString.hpp"
 
 /**
  * Specialization for pointer to any class deriving from LuaVirtualClass.
@@ -71,7 +72,7 @@ private:
      */
     static int luaIndex(LuaStateView& state) {
         LuaVirtualClass* object = state.get<LuaVirtualClass*>(1);
-        std::string memberName(state.get<const char*>(2));
+        std::string memberName(state.get<LuaNativeString>(2));
 
         return luaIndexImpl(object, memberName, state);
     }

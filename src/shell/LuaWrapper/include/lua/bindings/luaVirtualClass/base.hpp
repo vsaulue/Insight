@@ -31,6 +31,7 @@
 
 #include "lua/types/LuaDereferenceGetter.hpp"
 #include "lua/types/LuaCFunction.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "lua/types/LuaUpcaster.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 
@@ -114,7 +115,7 @@ private:
      */
     static int luaIndex(LuaStateView& state) {
         LuaVirtualClass& object = state.getRef<LuaVirtualClass>(1);
-        std::string memberName(state.get<const char*>(2));
+        std::string memberName(state.get<LuaNativeString>(2));
 
         return object.luaIndex(memberName, state);
     }

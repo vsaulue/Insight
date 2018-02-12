@@ -16,27 +16,34 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUABINDINGFUNDAMENTALTYPES_HPP
-#define LUABINDINGFUNDAMENTALTYPES_HPP
+#ifndef LUANATIVESTRING_HPP
+#define LUANATIVESTRING_HPP
 
-#include "lua/bindings/helpers/LuaDefaultClassName.hpp"
-#include "lua/LuaBinding.hpp"
 #include "lua/LuaStateView.hpp"
 
-struct lua_State;
+struct LuaNativeString {
+    const char* value;
 
-/** See LuaBinding in LuaBinding.hpp. */
-template<>
-class LuaBinding<bool> : public LuaDefaultClassName<bool> {
-public:
-    static void push(LuaStateView& state, bool value) {
-        state.pushBool(value);
+    LuaNativeString(const char* value) : value(value) {
+
     }
 
-    static bool get(LuaStateView& state, int stackIndex) {
-        return state.getBool(stackIndex);
+    operator const char*() {
+        return value;
     }
 };
 
-#endif /* LUABINDINGFUNDAMENTALTYPES_HPP */
+/** See LuaBinding in LuaBinding.hpp*/
+template<>
+class LuaBinding<LuaNativeString> {
+public:
+    static void push(LuaStateView& state, LuaNativeString value) {
+        state.pushString(value);
+    }
 
+    static LuaNativeString get(LuaStateView& state, int stackIndex) {
+        return state.getString(stackIndex);
+    }
+};
+
+#endif /* LUANATIVESTRING_HPP */

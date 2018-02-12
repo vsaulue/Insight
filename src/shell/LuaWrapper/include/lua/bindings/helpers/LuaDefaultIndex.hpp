@@ -23,6 +23,7 @@
 
 #include "lua/LuaBinding.hpp"
 #include "lua/LuaStateView.hpp"
+#include "lua/types/LuaNativeString.hpp"
 
 /**
  * Generates a default implementation of Lua metamethod __index for a type.
@@ -66,7 +67,7 @@ public:
 
     static int luaIndex(LuaStateView& state) {
         BoundType& object = state.getRef<BoundType>(1);
-        std::string memberName(state.get<const char*>(2));
+        std::string memberName(state.get<LuaNativeString>(2));
 
         return LuaBinding<BoundType>::luaIndexImpl(object, memberName, state);
     }
