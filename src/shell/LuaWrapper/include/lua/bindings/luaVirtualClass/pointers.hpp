@@ -42,7 +42,7 @@
  * </code>
  */
 template<typename PointedType>
-class LuaPointerBinding<PointedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, PointedType>::value>::type> : LuaDefaultClassName<PointedType*> {
+class LuaPointerBinding<PointedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, PointedType>::value>::type> : public LuaDefaultClassName<PointedType*> {
 private:
 
     /**

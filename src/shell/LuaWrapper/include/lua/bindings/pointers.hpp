@@ -36,6 +36,11 @@
 template<typename PointedType, typename Enabled>
 class LuaPointerBinding : public LuaDefaultBinding<PointedType*> {
 public:
+    // Ensure PointedType is properly binded.
+    static_assert(std::is_same<const std::string&, decltype(LuaBinding<PointedType>::luaClassName())>::value,
+                  "Default pointer bindings requires the pointed type to be properly binded."
+    );
+
     /**
      * Implementation of Lua __index metamethod (wrapped by LuaDefaultBinding).
      *
