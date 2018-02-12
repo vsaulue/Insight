@@ -23,6 +23,7 @@
 
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/LuaState.hpp"
+#include "lua/types/LuaFunction.hpp"
 
 TEST_CASE("bool binding") {
     LuaState state;
@@ -48,6 +49,62 @@ TEST_CASE("bool binding") {
                 state.doString("readBool(0)");
                 REQUIRE(readValue == true);
             }
+        }
+    }
+}
+
+TEST_CASE("float & double bindings") {
+    LuaState state;
+
+    SECTION("push<double>") {
+        const double pushedValue = 1.375;
+        state.push<double>(pushedValue);
+
+        SECTION("get<double>") {
+            double fromStack = state.get<double>(-1);
+            REQUIRE(fromStack == pushedValue);
+        }
+
+        SECTION("get<float>") {
+            float fromStack = state.get<float>(-1);
+            REQUIRE(fromStack == pushedValue);
+        }
+    }
+
+    SECTION("push<float>") {
+        const float pushedValue = -123456.75;
+        state.push<float>(pushedValue);
+
+        SECTION("get<float>") {
+            float fromStack = state.get<float>(-1);
+            REQUIRE(fromStack == pushedValue);
+        }
+
+        SECTION("get<double>") {
+            double fromStack = state.get<double>(-1);
+            REQUIRE(fromStack == pushedValue);
+        }
+    }
+
+    SECTION("Interaction with native Lua numbers") {
+        double readValue = 0;
+        state.push<LuaFunction>([&readValue](LuaStateView& state) -> int {
+            readValue = state.get<double>(1);
+            return 0;
+        });
+        state.setGlobal("readDouble");
+
+        SECTION("Read from Lua") {
+            state.doString("readDouble(4.75)");
+            REQUIRE(readValue == 4.75);
+        }
+
+        SECTION("Push to Lua") {
+            state.push<double>(-3.75);
+            state.setGlobal("x");
+
+            state.doString("readDouble(x+4)");
+            REQUIRE(readValue == 0.25);
         }
     }
 }

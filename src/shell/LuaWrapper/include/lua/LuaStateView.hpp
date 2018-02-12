@@ -155,6 +155,21 @@ protected:
      * @return A pointer to the string stored inside Lua.
      */
     const char* getString(int StackIndex);
+
+    /**
+     * Pushes a floating point value on the Lua stack.
+     *
+     * @param[in] value Value pushed on the stack.
+     */
+    void pushDouble(double value);
+
+    /**
+     * Gets a floating point value from the stack.
+     *
+     * @param[in] stackIndex Index of the double on the stack.
+     * @return The value of the double in the stack.
+     */
+    double getDouble(int stackIndex);
 public:
 
     /**

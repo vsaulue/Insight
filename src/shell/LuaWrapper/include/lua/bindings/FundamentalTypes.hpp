@@ -19,11 +19,11 @@
 #ifndef LUABINDINGFUNDAMENTALTYPES_HPP
 #define LUABINDINGFUNDAMENTALTYPES_HPP
 
+#include <type_traits>
+
 #include "lua/bindings/helpers/LuaDefaultClassName.hpp"
 #include "lua/LuaBinding.hpp"
 #include "lua/LuaStateView.hpp"
-
-struct lua_State;
 
 /** See LuaBinding in LuaBinding.hpp. */
 template<>
@@ -35,6 +35,19 @@ public:
 
     static bool get(LuaStateView& state, int stackIndex) {
         return state.getBool(stackIndex);
+    }
+};
+
+/** See LuaBinding in LuaBinding.hpp. */
+template<typename T>
+class LuaBinding<T, typename std::enable_if<std::is_floating_point<T>::value && sizeof(T) <= sizeof(double)>::type> : public LuaDefaultClassName<T> {
+public:
+    static void push(LuaStateView& state, T value) {
+        state.pushDouble(value);
+    }
+
+    static T get(LuaStateView& state, int stackIndex) {
+        return state.getDouble(stackIndex);
     }
 };
 

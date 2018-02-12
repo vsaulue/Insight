@@ -145,6 +145,15 @@ const char* LuaStateView::getString(int stackIndex) {
     return luaL_checkstring(state, stackIndex);
 }
 
+void LuaStateView::pushDouble(double value) {
+    lua_pushnumber(state, value);
+}
+
+double LuaStateView::getDouble(int stackIndex) {
+    return luaL_checknumber(state, stackIndex);
+}
+
+
 const char* LuaStateView::getTypename(int stackIndex) {
     return luaL_typename(state, stackIndex);
 }
