@@ -22,7 +22,8 @@
 #include <catch.hpp>
 #include "LuaTestCommon.hpp"
 
-#include "LuaFunctionBindings.hpp"
+#include "LuaBaseBindings.hpp"
+#include "LuaFunction.hpp"
 #include "LuaStateView.hpp"
 
 void defineReadBool(LuaStateView& state, bool& res) {
@@ -30,6 +31,6 @@ void defineReadBool(LuaStateView& state, bool& res) {
         res = state.get<bool>(1);
         return 0;
     };
-    state.push<std::function<int(LuaStateView&)>>(function);
+    state.push<LuaFunction>(function);
     state.setGlobal("readBool");
 }

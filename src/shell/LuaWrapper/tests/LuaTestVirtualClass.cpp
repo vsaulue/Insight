@@ -23,7 +23,6 @@
 
 #include "LuaBaseBindings.hpp"
 #include "LuaBindingVirtualClass.hpp"
-#include "LuaFunctionBindings.hpp"
 #include "LuaMethod.hpp"
 #include "LuaPointerBindings.hpp"
 #include "LuaState.hpp"

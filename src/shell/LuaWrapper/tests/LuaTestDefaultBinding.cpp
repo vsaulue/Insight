@@ -25,7 +25,6 @@
 #include "LuaState.hpp"
 #include "LuaBaseBindings.hpp"
 #include "LuaDefaultBinding.hpp"
-#include "LuaFunctionBindings.hpp"
 #include "LuaMethod.hpp"
 #include "LuaPointerBindings.hpp"
 #include "LuaVirtualClass.hpp"

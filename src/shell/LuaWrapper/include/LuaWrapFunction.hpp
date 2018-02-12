@@ -24,7 +24,7 @@
 struct lua_State;
 
 /**
- * Wraps a function int(*)(LuaStateView&) into a function int(*)(lua_State*).
+ * Wraps a function int(*)(LuaStateView&) into a function into a native Lua C function.
  *
  * Provides a uniform way to handle exceptions.
  *

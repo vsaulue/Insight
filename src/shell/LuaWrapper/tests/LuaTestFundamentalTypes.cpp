@@ -19,9 +19,9 @@
 #include <functional>
 
 #include "catch.hpp"
+#include "LuaTestCommon.hpp"
 
 #include "LuaBaseBindings.hpp"
-#include "LuaFunctionBindings.hpp"
 #include "LuaState.hpp"
 
 TEST_CASE("bool binding") {
@@ -37,24 +37,15 @@ TEST_CASE("bool binding") {
 
         SECTION("From a C++ function reading booleans from Lua") {
             bool readValue = false;
-            const std::string funcName("readBool");
-
-            // Push a Lua function that can read a Lua boolean into a C++ bool.
-            auto lambda = [&readValue](LuaStateView& state) -> int {
-                readValue = state.get<bool>(1);
-                return 0;
-            };
-            std::function<int(LuaStateView&)> function(lambda);
-            state.push<std::function<int(LuaStateView&)>>(function);
-            state.setGlobal(funcName);
+            defineReadBool(state, readValue);
 
             SECTION("nil is correctly read as false.") {
-                state.doString(funcName+"(nil)");
+                state.doString("readBool(nil)");
                 REQUIRE(readValue == false);
             }
 
             SECTION("0 is correctly read as true.") {
-                state.doString(funcName+"(0)");
+                state.doString("readBool(0)");
                 REQUIRE(readValue == true);
             }
         }

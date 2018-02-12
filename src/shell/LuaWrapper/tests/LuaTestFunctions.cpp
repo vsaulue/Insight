@@ -20,7 +20,8 @@
 
 #include <functional>
 
-#include "LuaFunctionBindings.hpp"
+#include "LuaCFunction.hpp"
+#include "LuaFunction.hpp"
 #include "LuaState.hpp"
 
 static bool flagA = false;
@@ -30,77 +31,37 @@ static int setFlagA(lua_State* state) {
     return 0;
 }
 
-TEST_CASE("int(*)(lua_State*) binding") {
+TEST_CASE("LuaCFunction binding") {
+    LuaState state;
+    flagA = false;
 
-    GIVEN("A C function wrapped in Lua.") {
-        flagA = false;
-        LuaState state;
-        state.push<int(*)(lua_State*)>(setFlagA); // stack index 1
+    SECTION("push<LuaCFunction>") {
+        state.push<LuaCFunction>(setFlagA); // stack index 1
 
-        SECTION("I can push it into Lua.") {
-            REQUIRE(flagA == false);
-        }
-
-        SECTION("I can execute it from a Lua script.") {
+        SECTION("Call from Lua") {
             std::string funcName("fooBar");
             state.setGlobal(funcName);
             state.doString(funcName + "()");
             REQUIRE(flagA == true);
         }
 
-        SECTION("I can read it from the Lua stack.") {
-            int (*fromStack)(lua_State*) = state.get<int(*)(lua_State*)>(1);
-            REQUIRE(fromStack == &setFlagA);
+        SECTION("get<LuaCFunction>") {
+            LuaCFunction fromStack = state.get<LuaCFunction>(1);
+            REQUIRE(fromStack.function == &setFlagA);
             REQUIRE(flagA == false);
         }
     }
 }
 
-static bool flagB = false;
+TEST_CASE("LuaFunction binding") {
+    LuaState state;
 
-static int setFlagB(LuaStateView& state) {
-    flagB = true;
-    return 0;
-}
-
-TEST_CASE("int(*)(LuaStateView&) binding") {
-    GIVEN("A C++ function wrapped in Lua.") {
-        flagB = false;
-        LuaState state;
-        state.push<int(*)(LuaStateView&)>(setFlagB); // stack index 1
-
-        SECTION("I can push it into Lua.") {
-            REQUIRE(flagB == false);
-        }
-
-        SECTION("I can execute it from a Lua script.") {
-            std::string funcName("fooBar");
-            state.setGlobal(funcName);
-            state.doString(funcName + "()");
-            REQUIRE(flagB == true);
-        }
-
-        SECTION("I can read it from the Lua stack.") {
-            int (*fromStack)(LuaStateView&) = state.get<int(*)(LuaStateView&)>(1);
-            REQUIRE(fromStack == &setFlagB);
-            REQUIRE(flagB == false);
-        }
-    }
-}
-
-TEST_CASE("std::function<int(LuaStateView&)> binding") {
-    GIVEN("A std::function<LuaStateView&> pushed on the Lua stack.") {
-        LuaState state;
-
+    SECTION("push<LuaFunction>") {
         bool called = false;
+        state.push<LuaFunction>([&called](LuaStateView& state) -> int { called = true; return 0;});
 
-        auto lambda = [&called](LuaStateView& state) -> int {called = true; return 0; };
-        std::function<int(LuaStateView&)> function(lambda);
-
-        state.push<std::function<int(LuaStateView&)>>(function);
-
-        SECTION("I can get a copy from Lua.") {
-            std::function<int(LuaStateView&)> funcFromStack = state.get<std::function<int(LuaStateView&)>>(-1);
+        SECTION("get<LuaFunction>") {
+            LuaFunction funcFromStack = state.get<LuaFunction>(-1);
             state.pop(1);
 
             REQUIRE(called == false);
@@ -108,19 +69,19 @@ TEST_CASE("std::function<int(LuaStateView&)> binding") {
             REQUIRE(called == true);
         }
 
-        SECTION("I can get a reference from Lua.") {
-            std::function<int(LuaStateView&)>& funcFromStack = state.getRef<std::function<int(LuaStateView&)>>(-1);
+        SECTION("getRef<LuaFunction>") {
+            LuaFunction& funcFromStack = state.getRef<LuaFunction>(-1);
 
             REQUIRE(called == false);
             funcFromStack(state);
             REQUIRE(called == true);
         }
 
-        SECTION("I can call it from Lua.") {
+        SECTION("Call from Lua") {
             const std::string luaFuncName("someName");
             state.setGlobal(luaFuncName);
 
-            state.doString(luaFuncName+"()");
+            state.doString(luaFuncName + "()");
             REQUIRE(called == true);
         }
     }

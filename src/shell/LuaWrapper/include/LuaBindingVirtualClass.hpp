@@ -22,6 +22,7 @@
 #include <type_traits>
 
 #include "LuaBinding.hpp"
+#include "LuaCFunction.hpp"
 #include "LuaDefaultClassName.hpp"
 #include "LuaDefaultDereferenceGet.hpp"
 #include "LuaDereferenceGetter.hpp"
@@ -127,9 +128,9 @@ private:
         if (newTable) {
             state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
             state.setField(-2, "castPtr");
-            state.push<int(*)(lua_State*)>(luaWrapFunction<luaDelete>);
+            state.push<LuaCFunction>(luaWrapFunction<luaDelete>);
             state.setField(-2,"__gc");
-            state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
+            state.push<LuaCFunction>(luaWrapFunction<luaIndex>);
             state.setField(-2,"__index");
             state.push<LuaDereferenceGetter<LuaVirtualClass>>(LuaBinding<LuaVirtualClass>::getRef);
             state.setField(-2,"dereferenceGetter");
@@ -282,7 +283,7 @@ private:
         if (newTable) {
             state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
             state.setField(-2, "castPtr*");
-            state.push<int(*)(lua_State*)>(luaWrapFunction<luaIndex>);
+            state.push<LuaCFunction>(luaWrapFunction<luaIndex>);
             state.setField(-2, "__index");
             state.push<LuaDereferenceGetter<LuaVirtualClass>>(LuaDereferencer<PointedType*>::dereferenceGetter);
             state.setField(-2, "dereferenceGetter");

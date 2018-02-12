@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "LuaBinding.hpp"
+#include "LuaCFunction.hpp"
 #include "LuaDefaultCall.hpp"
 #include "LuaDefaultClassName.hpp"
 #include "LuaDefaultDelete.hpp"
@@ -71,19 +72,19 @@ protected:
     static void setMetafields(LuaStateView& state) {
         using DefaultDelete = LuaDefaultDelete<BindedType>;
         if (DefaultDelete::hasDeletor) {
-            state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultDelete::luaDelete>);
+            state.push<LuaCFunction>(luaWrapFunction<DefaultDelete::luaDelete>);
             state.setField(-2, "__gc");
         }
 
         using DefaultCall = LuaDefaultCall<BindedType>;
         if (DefaultCall::hasCall) {
-            state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultCall::luaCall>);
+            state.push<LuaCFunction>(luaWrapFunction<DefaultCall::luaCall>);
             state.setField(-2, "__call");
         }
 
         using DefaultIndex = LuaDefaultIndex<BindedType>;
         if (DefaultIndex::hasIndex) {
-            state.push<int(*)(lua_State*)>(luaWrapFunction<DefaultIndex::luaIndex>);
+            state.push<LuaCFunction>(luaWrapFunction<DefaultIndex::luaIndex>);
             state.setField(-2, "__index");
         }
     }

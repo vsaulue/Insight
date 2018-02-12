@@ -18,7 +18,6 @@
 
 #include "catch.hpp"
 
-#include "LuaFunctionBindings.hpp"
 #include "LuaPointerBindings.hpp"
 #include "LuaState.hpp"
 
