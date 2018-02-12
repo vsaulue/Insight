@@ -22,9 +22,9 @@
 #include <type_traits>
 #include <typeinfo>
 
-#include "LuaBinding.hpp"
-#include "LuaBasicBinding.hpp"
-#include "LuaVirtualClass.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/bindings/LuaBasicBinding.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 /**
  * Function wrapper used to get a reference to the base type at the specified index.

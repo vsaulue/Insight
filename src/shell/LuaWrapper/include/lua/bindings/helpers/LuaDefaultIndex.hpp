@@ -21,8 +21,8 @@
 
 #include <type_traits>
 
-#include "LuaBinding.hpp"
-#include "LuaStateView.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Generates a default implementation of Lua metamethod __index for a type.

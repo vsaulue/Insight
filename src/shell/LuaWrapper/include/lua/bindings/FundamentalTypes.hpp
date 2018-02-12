@@ -16,12 +16,12 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LUABINDINGCFUNC_HPP
-#define LUABINDINGCFUNC_HPP
+#ifndef LUABINDINGFUNDAMENTALTYPES_HPP
+#define LUABINDINGFUNDAMENTALTYPES_HPP
 
-#include "LuaBinding.hpp"
-#include "LuaDefaultClassName.hpp"
-#include "LuaStateView.hpp"
+#include "lua/bindings/helpers/LuaDefaultClassName.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaStateView.hpp"
 
 struct lua_State;
 
@@ -51,5 +51,5 @@ public:
     }
 };
 
-#endif /* LUABINDINGCFUNC_HPP */
+#endif /* LUABINDINGFUNDAMENTALTYPES_HPP */
 

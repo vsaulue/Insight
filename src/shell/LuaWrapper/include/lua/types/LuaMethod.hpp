@@ -21,9 +21,9 @@
 
 #include <type_traits>
 
-#include "LuaBinding.hpp"
-#include "LuaBasicBinding.hpp"
-#include "LuaStateView.hpp"
+#include "lua/bindings/LuaBasicBinding.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Implements a method callable in Lua, working on a C++ type.

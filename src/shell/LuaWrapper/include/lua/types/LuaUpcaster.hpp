@@ -19,8 +19,8 @@
 #ifndef LUAUPCASTER_HPP
 #define LUAUPCASTER_HPP
 
-#include "LuaBinding.hpp"
-#include "LuaBasicBinding.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/bindings/LuaBasicBinding.hpp"
 
 /**
  * Wraps a function used to upcast a derived object of unkown type into a known base type.

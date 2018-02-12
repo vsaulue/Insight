@@ -22,14 +22,16 @@
 #include <type_traits>
 #include <utility>
 
-#include "LuaBinding.hpp"
-#include "LuaCFunction.hpp"
-#include "LuaDefaultCall.hpp"
-#include "LuaDefaultClassName.hpp"
-#include "LuaDefaultDelete.hpp"
-#include "LuaDefaultIndex.hpp"
-#include "LuaStateView.hpp"
-#include "LuaWrapFunction.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaStateView.hpp"
+
+#include "lua/types/LuaCFunction.hpp"
+
+#include "lua/bindings/helpers/LuaDefaultCall.hpp"
+#include "lua/bindings/helpers/LuaDefaultClassName.hpp"
+#include "lua/bindings/helpers/LuaDefaultDelete.hpp"
+#include "lua/bindings/helpers/LuaDefaultIndex.hpp"
+#include "lua/bindings/helpers/LuaWrapFunction.hpp"
 
 /**
  * Provides default implementations of some functions of LuaBinding.

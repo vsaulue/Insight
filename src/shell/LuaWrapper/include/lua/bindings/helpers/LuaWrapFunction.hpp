@@ -19,7 +19,7 @@
 #ifndef LUAWRAPFUNCTION_HPP
 #define LUAWRAPFUNCTION_HPP
 
-#include "LuaStateView.hpp"
+#include "lua/LuaStateView.hpp"
 
 struct lua_State;
 

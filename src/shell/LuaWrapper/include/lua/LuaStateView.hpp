@@ -21,7 +21,7 @@
 #include <string>
 #include <type_traits>
 
-#include "LuaBinding.hpp"
+#include "lua/LuaBinding.hpp"
 
 struct lua_State;
 

@@ -18,8 +18,9 @@
 
 #include "catch.hpp"
 
-#include "LuaPointerBindings.hpp"
-#include "LuaState.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/pointers.hpp"
+#include "lua/LuaState.hpp"
 
 TEST_CASE("Default pointers binding: bool") {
     LuaState state;

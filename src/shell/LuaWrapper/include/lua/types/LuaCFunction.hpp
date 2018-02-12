@@ -19,9 +19,9 @@
 #ifndef LUACFUNCTION_HPP
 #define LUACFUNCTION_HPP
 
-#include "LuaBinding.hpp"
-#include "LuaDefaultClassName.hpp"
-#include "LuaStateView.hpp"
+#include "lua/bindings/helpers/LuaDefaultClassName.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaStateView.hpp"
 
 struct lua_State;
 

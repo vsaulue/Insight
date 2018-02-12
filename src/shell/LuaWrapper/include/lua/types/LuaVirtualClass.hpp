@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "LuaStateView.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Interface for C++ types that should support runtime polymorphism with Lua bindings.

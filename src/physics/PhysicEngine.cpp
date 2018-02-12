@@ -17,7 +17,7 @@
 
 #include "PhysicEngine.hpp"
 
-#include "LuaBindingVirtualClass.hpp"
+#include "lua/bindings/luaVirtualClass/base.hpp"
 
 Universe& PhysicEngine::getUniverse() {
     return universe;

@@ -23,8 +23,8 @@
 #include <thread>
 
 #include "GraphicEngine.hpp"
-#include "LuaBindingVirtualClass.hpp"
-#include "LuaVirtualClass.hpp"
+#include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "PhysicEngine.hpp"
 #include "Universe.hpp"
 #include "ShellInterpreter.hpp"

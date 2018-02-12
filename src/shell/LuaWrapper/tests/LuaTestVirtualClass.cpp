@@ -21,11 +21,11 @@
 #include "catch.hpp"
 #include "LuaTestCommon.hpp"
 
-#include "LuaBaseBindings.hpp"
-#include "LuaBindingVirtualClass.hpp"
-#include "LuaMethod.hpp"
-#include "LuaPointerBindings.hpp"
-#include "LuaState.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
+#include "lua/types/LuaMethod.hpp"
+#include "lua/LuaState.hpp"
 
 class Base : public LuaVirtualClass {
 public:

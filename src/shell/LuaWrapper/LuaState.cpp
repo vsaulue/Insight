@@ -17,10 +17,10 @@
 
 #include <new>
 
-#include "LuaState.hpp"
-
 #include "lua.hpp"
-#include "LuaException.hpp"
+
+#include "lua/LuaException.hpp"
+#include "lua/LuaState.hpp"
 
 static int atPanic(lua_State *state) {
     throw LuaException(state);

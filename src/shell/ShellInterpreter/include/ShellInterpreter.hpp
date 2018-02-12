@@ -19,7 +19,7 @@
 #ifndef SHELLINTERPRETER_HPP
 #define	SHELLINTERPRETER_HPP
 
-#include "LuaVirtualClass.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 /**
  * Shell implementation.

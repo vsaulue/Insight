@@ -21,15 +21,16 @@
 
 #include <type_traits>
 
-#include "LuaBinding.hpp"
-#include "LuaDefaultClassName.hpp"
-#include "LuaDefaultBinding.hpp"
-#include "LuaDereferenceGetter.hpp"
-#include "LuaDereferencer.hpp"
-#include "LuaBaseBindings.hpp"
-#include "LuaStateView.hpp"
-#include "LuaUpcaster.hpp"
-#include "LuaWrapFunction.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaDereferencer.hpp"
+#include "lua/LuaStateView.hpp"
+
+#include "lua/bindings/helpers/LuaDefaultClassName.hpp"
+#include "lua/bindings/helpers/LuaWrapFunction.hpp"
+#include "lua/bindings/LuaDefaultBinding.hpp"
+
+#include "lua/types/LuaDereferenceGetter.hpp"
+#include "lua/types/LuaUpcaster.hpp"
 
 /**
  * Class defining Lua bindings for the C++ type PointedType*.

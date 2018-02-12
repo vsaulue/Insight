@@ -20,7 +20,7 @@
 
 #include <unordered_set>
 #include "PhysicalObject.hpp"
-#include "LuaVirtualClass.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 class Universe : public LuaVirtualClass {
 public:

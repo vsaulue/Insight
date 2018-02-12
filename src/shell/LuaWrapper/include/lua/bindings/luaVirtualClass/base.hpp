@@ -21,17 +21,19 @@
 
 #include <type_traits>
 
-#include "LuaBinding.hpp"
-#include "LuaCFunction.hpp"
-#include "LuaDefaultClassName.hpp"
-#include "LuaDefaultDereferenceGet.hpp"
-#include "LuaDereferenceGetter.hpp"
-#include "LuaDereferencer.hpp"
-#include "LuaPointerBindings.hpp"
-#include "LuaStateView.hpp"
-#include "LuaUpcaster.hpp"
-#include "LuaVirtualClass.hpp"
-#include "LuaWrapFunction.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaDereferencer.hpp"
+#include "lua/LuaStateView.hpp"
+
+#include "lua/bindings/helpers/LuaDefaultClassName.hpp"
+#include "lua/bindings/helpers/LuaDefaultDereferenceGet.hpp"
+#include "lua/bindings/helpers/LuaWrapFunction.hpp"
+#include "lua/bindings/pointers.hpp"
+
+#include "lua/types/LuaDereferenceGetter.hpp"
+#include "lua/types/LuaCFunction.hpp"
+#include "lua/types/LuaUpcaster.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 /**
  * Specialization for types derived from LuaVirtualClass.

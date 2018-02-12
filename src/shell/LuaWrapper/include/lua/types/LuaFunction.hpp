@@ -22,9 +22,9 @@
 #include <functional>
 #include <utility>
 
-#include "LuaBasicBinding.hpp"
-#include "LuaBinding.hpp"
-#include "LuaStateView.hpp"
+#include "lua/bindings/LuaBasicBinding.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Wrapper of a std::function that can be called from Lua.

@@ -21,8 +21,8 @@
 #include "catch.hpp"
 #include "LuaTestCommon.hpp"
 
-#include "LuaBaseBindings.hpp"
-#include "LuaState.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/LuaState.hpp"
 
 TEST_CASE("bool binding") {
     LuaState state;

@@ -19,11 +19,13 @@
 #ifndef LUADEFAULTBINDING_HPP
 #define LUADEFAULTBINDING_HPP
 
-#include "LuaBasicBinding.hpp"
-#include "LuaDefaultDereferenceGet.hpp"
-#include "LuaDereferenceGetter.hpp"
-#include "LuaDereferencer.hpp"
-#include "LuaStateView.hpp"
+#include "lua/LuaDereferencer.hpp"
+#include "lua/LuaStateView.hpp"
+
+#include "lua/bindings/LuaBasicBinding.hpp"
+#include "lua/bindings/helpers/LuaDefaultDereferenceGet.hpp"
+
+#include "lua/types/LuaDereferenceGetter.hpp"
 
 /**
  * Provides default implementations of some functions of LuaBinding.

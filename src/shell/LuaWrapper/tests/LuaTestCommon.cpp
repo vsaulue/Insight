@@ -22,9 +22,9 @@
 #include <catch.hpp>
 #include "LuaTestCommon.hpp"
 
-#include "LuaBaseBindings.hpp"
-#include "LuaFunction.hpp"
-#include "LuaStateView.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/LuaStateView.hpp"
+#include "lua/types/LuaFunction.hpp"
 
 void defineReadBool(LuaStateView& state, bool& res) {
     std::function<int(LuaStateView&)> function = [&res](LuaStateView& state) -> int {

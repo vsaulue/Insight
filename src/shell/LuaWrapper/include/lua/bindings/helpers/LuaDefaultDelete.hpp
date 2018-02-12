@@ -21,7 +21,7 @@
 
 #include <type_traits>
 
-#include "LuaStateView.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Generates a default implementation of Lua metamethod __gc for a type.

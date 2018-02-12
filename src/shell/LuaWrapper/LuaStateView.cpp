@@ -15,10 +15,10 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LuaException.hpp"
-#include "LuaStateView.hpp"
-
 #include "lua.hpp"
+
+#include "lua/LuaException.hpp"
+#include "lua/LuaStateView.hpp"
 
 LuaStateView::LuaStateView(lua_State* state) : state(state) {}
 

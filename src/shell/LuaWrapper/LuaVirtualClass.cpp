@@ -16,7 +16,7 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LuaVirtualClass.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 LuaVirtualClass::~LuaVirtualClass() {
 

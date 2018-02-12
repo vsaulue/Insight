@@ -21,10 +21,10 @@
 
 #include <string>
 
-#include "LuaBinding.hpp"
-#include "LuaDereferenceGetter.hpp"
-#include "LuaException.hpp"
-#include "LuaStateView.hpp"
+#include "lua/LuaBinding.hpp"
+#include "lua/types/LuaDereferenceGetter.hpp"
+#include "lua/LuaException.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Provides a default implementation of LuaBinding

@@ -22,12 +22,11 @@
 #include <catch.hpp>
 #include "LuaTestCommon.hpp"
 
-#include "LuaState.hpp"
-#include "LuaBaseBindings.hpp"
-#include "LuaDefaultBinding.hpp"
-#include "LuaMethod.hpp"
-#include "LuaPointerBindings.hpp"
-#include "LuaVirtualClass.hpp"
+#include "lua/LuaState.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/LuaDefaultBinding.hpp"
+#include "lua/types/LuaMethod.hpp"
+#include "lua/bindings/pointers.hpp"
 
 class TestClass {
 private:

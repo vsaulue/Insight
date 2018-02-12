@@ -18,7 +18,7 @@
 #ifndef PHYSICENGINE_HPP
 #define	PHYSICENGINE_HPP
 
-#include "LuaVirtualClass.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "Universe.hpp"
 
 class PhysicEngine : public LuaVirtualClass {

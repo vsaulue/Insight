@@ -19,7 +19,7 @@
 #ifndef LUATESTCOMMON_HPP
 #define LUATESTCOMMON_HPP
 
-#include "LuaStateView.hpp"
+#include "lua/LuaStateView.hpp"
 
 /**
  * Defines the global function "readBool" in Lua, reading a Lua bool into a C++ variable.

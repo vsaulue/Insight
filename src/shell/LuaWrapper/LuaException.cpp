@@ -15,7 +15,7 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LuaException.hpp"
+#include "lua/LuaException.hpp"
 
 #include "lua.hpp"
 

@@ -20,9 +20,9 @@
 
 #include <functional>
 
-#include "LuaCFunction.hpp"
-#include "LuaFunction.hpp"
-#include "LuaState.hpp"
+#include "lua/LuaState.hpp"
+#include "lua/types/LuaCFunction.hpp"
+#include "lua/types/LuaFunction.hpp"
 
 static bool flagA = false;
 
