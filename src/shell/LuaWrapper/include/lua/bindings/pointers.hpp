@@ -32,27 +32,6 @@
 #include "lua/types/LuaDereferenceGetter.hpp"
 #include "lua/types/LuaUpcaster.hpp"
 
-/**
- * Class defining Lua bindings for the C++ type PointedType*.
- *
- * This class should define the static methods of LuaBinding<PointedType*>.
- *
- * @tparam PointedType Type which pointer will be binded in Lua.
- * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
- */
-template<typename PointedType, typename Enabled=void>
-class LuaPointerBinding;
-
-/** 
- * See LuaBinding in LuaBinding.hpp. 
- * 
- * Default template specialization for pointer types.
- */
-template <typename PointedType>
-class LuaBinding<PointedType*> : public LuaPointerBinding<PointedType> {
-
-};
-
 // Default implementation, for pointers to non-polymorphic types.
 template<typename PointedType, typename Enabled>
 class LuaPointerBinding : public LuaDefaultBinding<PointedType*> {

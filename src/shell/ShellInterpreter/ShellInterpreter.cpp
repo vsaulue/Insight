@@ -15,7 +15,7 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/LuaException.hpp"
 #include "lua/LuaState.hpp"
 

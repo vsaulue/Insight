@@ -23,6 +23,7 @@
 
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/LuaState.hpp"

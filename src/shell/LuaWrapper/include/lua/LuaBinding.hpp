@@ -65,5 +65,24 @@
  */
 template <typename BindedType, typename Enable = void> class LuaBinding;
 
+/**
+ * Class defining Lua bindings for the C++ type PointedType*.
+ *
+ * This class should define the static methods of LuaBinding<PointedType*>.
+ *
+ * @tparam PointedType Type which pointer will be binded in Lua.
+ * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
+ */
+template<typename PointedType, typename Enabled=void>
+class LuaPointerBinding;
+
+/**
+ * Default template specialization for pointer types.
+ */
+template <typename PointedType>
+class LuaBinding<PointedType*> : public LuaPointerBinding<PointedType> {
+
+};
+
 #endif /* LUABINDING_HPP */
 
