@@ -27,18 +27,18 @@
 /**
  * Provides a default Lua class name for a C++ type.
  *
- * @tparam BindedType C++ type to name into Lua.
+ * @tparam BoundType C++ type to name into Lua.
  */
-template<typename BindedType>
+template<typename BoundType>
 class LuaDefaultClassName {
 public:
     /**
-     * Gets the Lua class name of BindedType.
+     * Gets the Lua class name of BoundType.
      *
-     * @return The Lua class name of BindedType.
+     * @return The Lua class name of BoundType.
      */
     static const std::string& luaClassName() {
-        static const std::string className(boost::core::demangle(typeid(BindedType).name()));
+        static const std::string className(boost::core::demangle(typeid(BoundType).name()));
         return className;
     }
 };

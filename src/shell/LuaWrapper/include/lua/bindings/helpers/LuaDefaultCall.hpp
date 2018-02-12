@@ -27,10 +27,10 @@
 /**
  * Generates a default implementation of Lua metamethod __call for a type.
  *
- * @tparam BindedType Type for which the __call method is generated.
+ * @tparam BoundType Type for which the __call method is generated.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
-template<typename BindedType, typename Enable=void>
+template<typename BoundType, typename Enable=void>
 class LuaDefaultCall {
 public:
     static constexpr bool hasCall = false;
@@ -40,13 +40,13 @@ public:
     }
 };
 
-template<typename BindedType>
-class LuaDefaultCall<BindedType, typename std::enable_if<std::is_same<int,decltype(std::declval<BindedType>()(std::declval<LuaStateView&>()))>::value>::type> {
+template<typename BoundType>
+class LuaDefaultCall<BoundType, typename std::enable_if<std::is_same<int,decltype(std::declval<BoundType>()(std::declval<LuaStateView&>()))>::value>::type> {
 public:
     static constexpr bool hasCall = true;
 
     static int luaCall(LuaStateView& state) {
-        BindedType& object = state.getRef<BindedType>(1);
+        BoundType& object = state.getRef<BoundType>(1);
         state.remove(1);
         return object(state);
     }

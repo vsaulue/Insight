@@ -29,10 +29,10 @@
  *
  * Default case: no metamethod.
  *
- * @tparam BindedType Type for which the __index method is generated.
+ * @tparam BoundType Type for which the __index method is generated.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
-template<typename BindedType, typename Enable = void>
+template<typename BoundType, typename Enable = void>
 class LuaDefaultIndex {
 public:
     /** Tells if this type defines a useful Lua __index metamethod. */
@@ -50,25 +50,25 @@ using void_t_hasIndexImpl = std::void_t<decltype(LuaBinding<T>::luaIndexImpl(std
 /**
  * Generates a default implementation of Lua metamethod __index for a type.
  *
- * Specialization enabled if LuaBinding of BindedType defines the following static function:
+ * Specialization enabled if LuaBinding of BoundType defines the following static function:
  * <code>
- * int luaIndexImpl(BindedType&, const std::string& memberName, LuaStateView& state);
+ * int luaIndexImpl(BoundType&, const std::string& memberName, LuaStateView& state);
  * </code>
  * In this case, the metamethod __index of the type will be a wrapper of
  * luaIndexImpl.
  *
- * @tparam BindedType Type for which the __index method is generated.
+ * @tparam BoundType Type for which the __index method is generated.
  */
-template<typename BindedType>
-class LuaDefaultIndex<BindedType, void_t_hasIndexImpl<BindedType>> {
+template<typename BoundType>
+class LuaDefaultIndex<BoundType, void_t_hasIndexImpl<BoundType>> {
 public:
     static constexpr bool hasIndex = true;
 
     static int luaIndex(LuaStateView& state) {
-        BindedType& object = state.getRef<BindedType>(1);
+        BoundType& object = state.getRef<BoundType>(1);
         std::string memberName(state.get<const char*>(2));
 
-        return LuaBinding<BindedType>::luaIndexImpl(object, memberName, state);
+        return LuaBinding<BoundType>::luaIndexImpl(object, memberName, state);
     }
 };
 

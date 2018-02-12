@@ -96,7 +96,7 @@ public:
     /**
      * Implementation of Lua __index metamethod.
      *
-     * This LuaBinding<BindedType> defines a luaIndexImpl so that other bindings can call it (ex: pointer bindings).
+     * This LuaBinding<BoundType> defines a luaIndexImpl so that other bindings can call it (ex: pointer bindings).
      *
      * @param object Object on which the index function is called.
      * @param memberName Name of the field requested in object by Lua.

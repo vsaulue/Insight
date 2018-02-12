@@ -27,8 +27,8 @@
 /**
  * Creates a default dereferencing function for the specified type.
  *
- * The default template implements a no-op dereferencer: the basetype of BindedType
- * is BindedType.
+ * The default template implements a no-op dereferencer: the basetype of BoundType
+ * is BoundType.
  *
  * Any specialization should contain the following public members:
  * <li>
@@ -38,41 +38,41 @@
  *   </ul>
  *   <ul>
  *     <code>static basetype& dereferenceGetter(LuaStateView& state, int stackIndex);</code><br>
- *     Function reading a value of type BindedType in the Lua stack, and returning it dereferenced into a basetype.
+ *     Function reading a value of type BoundType in the Lua stack, and returning it dereferenced into a basetype.
  *   </ul>
  *   <ul>
- *     <code>static basetype& dereference(BindedType& ref); // or BindedType argument.</code><br>
- *     Function dereferencing a BindedType into a basetype&.
+ *     <code>static basetype& dereference(BoundType& ref); // or BoundType argument.</code><br>
+ *     Function dereferencing a BoundType into a basetype&.
  *   </ul>
  * </li>
  *
- * @tparam BindedType Type to dereference.
+ * @tparam BoundType Type to dereference.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
-template<typename BindedType, typename Enable=void>
+template<typename BoundType, typename Enable=void>
 class LuaDereferencer {
 public:
     /** Type returned by the dereferencer implemented in this class. */
-    using basetype = BindedType;
+    using basetype = BoundType;
 
     /**
-     * Reads a value of type BindedType in the Lua stack, and dereference it into basetype.
+     * Reads a value of type BoundType in the Lua stack, and dereference it into basetype.
      *
-     * @param state State in which the object of type BindedType is stored.
+     * @param state State in which the object of type BoundType is stored.
      * @param stackIndex Index of the element in the stack.
-     * @return The element dereferenced into BindedType.
+     * @return The element dereferenced into BoundType.
      */
     static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
         return state.getRef<basetype>(stackIndex);
     }
 
     /**
-     * Dereference BindedType& into basetype&.
+     * Dereference BoundType& into basetype&.
      *
      * @param ref Reference into basetype
      * @return
      */
-    static basetype& dereference(BindedType& ref) {
+    static basetype& dereference(BoundType& ref) {
         return ref;
     }
 };

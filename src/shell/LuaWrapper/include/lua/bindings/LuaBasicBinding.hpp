@@ -39,15 +39,15 @@
  * This will define the following functions for Luabinding:
  * - push
  * - getRef
- * - get (if BindedType is copy constructible).
+ * - get (if BoundType is copy constructible).
  *
- * LuaBinding<BindedType> can be derived from this object.
+ * LuaBinding<BoundType> can be derived from this object.
  *
  * Optional static methods:
  * <li>
  *   <ul>
  *     <code>
- *       static int luaIndexImpl(BindedType& object, const std::string& memberName, LuaStateView& state);
+ *       static int luaIndexImpl(BoundType& object, const std::string& memberName, LuaStateView& state);
  *       // Gets the field/method of object named memberName (see lua metamethod __index).
  *     </code>
  *   </ul>
@@ -59,8 +59,8 @@
  *   </ul>
  * </li>
  */
-template<typename BindedType>
-class LuaBasicBinding : public LuaDefaultClassName<BindedType> {
+template<typename BoundType>
+class LuaBasicBinding : public LuaDefaultClassName<BoundType> {
 protected:
     /**
      * Enables a template if a type is copy constructible.
@@ -72,19 +72,19 @@ protected:
     using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<T>::value,ReturnType>;
 
     static void setMetafields(LuaStateView& state) {
-        using DefaultDelete = LuaDefaultDelete<BindedType>;
+        using DefaultDelete = LuaDefaultDelete<BoundType>;
         if (DefaultDelete::hasDeletor) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultDelete::luaDelete>);
             state.setField(-2, "__gc");
         }
 
-        using DefaultCall = LuaDefaultCall<BindedType>;
+        using DefaultCall = LuaDefaultCall<BoundType>;
         if (DefaultCall::hasCall) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultCall::luaCall>);
             state.setField(-2, "__call");
         }
 
-        using DefaultIndex = LuaDefaultIndex<BindedType>;
+        using DefaultIndex = LuaDefaultIndex<BoundType>;
         if (DefaultIndex::hasIndex) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultIndex::luaIndex>);
             state.setField(-2, "__index");
@@ -97,7 +97,7 @@ private:
      * @param state State in which to push the metatable.
      */
     static void pushMetatable(LuaStateView& state) {
-        const std::string& className = LuaBinding<BindedType>::luaClassName();
+        const std::string& className = LuaBinding<BoundType>::luaClassName();
         bool newTable = state.newMetatable(className);
         if (newTable) {
             setMetafields(state);
@@ -105,30 +105,30 @@ private:
     }
 public:
     /**
-     * Pushes a new object of type BindedType into Lua.
+     * Pushes a new object of type BoundType into Lua.
      *
-     * @tparam ArgsType Types of the constructor arguments for type BindedType.
+     * @tparam ArgsType Types of the constructor arguments for type BoundType.
      *
      * @param state Lua state in which the push is done.
-     * @param constructorArgs Arguments for the constructor of type BindedType.
+     * @param constructorArgs Arguments for the constructor of type BoundType.
      */
     template<typename... ArgTypes>
     static void push(LuaStateView& state, ArgTypes&&... constructorArgs) {
-        state.newObject<BindedType>(std::forward<ArgTypes>(constructorArgs)...);
+        state.newObject<BoundType>(std::forward<ArgTypes>(constructorArgs)...);
         pushMetatable(state);
         state.setMetatable(-2);
     }
 
     /**
-     * Get a reference to an object of type BindedType at the given index from the stack.
+     * Get a reference to an object of type BoundType at the given index from the stack.
      *
      * @param state State where the lookup is done.
      * @param stackIndex Index in the Lua stack to search.
      *
-     * @return The desired BindedType object, if the object in the stack is of this type.
+     * @return The desired BoundType object, if the object in the stack is of this type.
      */
-    static BindedType& getRef(LuaStateView& state, int stackIndex) {
-        BindedType* result = state.checkUserData<BindedType>(stackIndex, LuaBinding<BindedType>::luaClassName());
+    static BoundType& getRef(LuaStateView& state, int stackIndex) {
+        BoundType* result = state.checkUserData<BoundType>(stackIndex, LuaBinding<BoundType>::luaClassName());
         return *result;
     }
 
@@ -140,7 +140,7 @@ public:
      *
      * @return A copy of the object at the given index, if it is of type T.
      */
-    template<typename T=BindedType>
+    template<typename T=BoundType>
     static typename enable_if_copy_constructible<T>::type get(LuaStateView& state, int stackIndex) {
         return getRef(state, stackIndex);
     }

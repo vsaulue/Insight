@@ -28,7 +28,7 @@ struct lua_State;
 /**
  * Wrapper of a Lua native C function.
  *
- * This C++ type is directly binded as a Lua native type (not userdata).
+ * This C++ type is directly bound as a Lua native type (not userdata).
  */
 struct LuaCFunction {
     /**

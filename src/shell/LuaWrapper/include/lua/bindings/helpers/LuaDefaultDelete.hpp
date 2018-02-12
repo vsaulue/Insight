@@ -26,10 +26,10 @@
 /**
  * Generates a default implementation of Lua metamethod __gc for a type.
  *
- * @tparam BindedType Type for which the __gc method is generated.
+ * @tparam BoundType Type for which the __gc method is generated.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */
-template<typename BindedType, typename Enable=void>
+template<typename BoundType, typename Enable=void>
 class LuaDefaultDelete {
 public:
     /**
@@ -40,8 +40,8 @@ public:
      * @return The number of return values of this Lua function.
      */
     static int luaDelete(LuaStateView& state) {
-        BindedType& object = state.getRef<BindedType>(1);
-        object.~BindedType();
+        BoundType& object = state.getRef<BoundType>(1);
+        object.~BoundType();
         return 0;
     }
 
@@ -49,8 +49,8 @@ public:
     static constexpr bool hasDeletor = true;
 };
 
-template<typename BindedType>
-class LuaDefaultDelete<BindedType, typename std::enable_if<std::is_trivially_destructible<BindedType>::value>::type> {
+template<typename BoundType>
+class LuaDefaultDelete<BoundType, typename std::enable_if<std::is_trivially_destructible<BoundType>::value>::type> {
 public:
     /**
      * Implementation of Lua metamethod "__gc" for this type.

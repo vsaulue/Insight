@@ -36,9 +36,9 @@
 template<typename PointedType, typename Enabled>
 class LuaPointerBinding : public LuaDefaultBinding<PointedType*> {
 public:
-    // Ensure PointedType is properly binded.
+    // Ensure PointedType is properly bound.
     static_assert(std::is_same<const std::string&, decltype(LuaBinding<PointedType>::luaClassName())>::value,
-                  "Default pointer bindings requires the pointed type to be properly binded."
+                  "Default pointer bindings requires the pointed type to be properly bound."
     );
 
     /**

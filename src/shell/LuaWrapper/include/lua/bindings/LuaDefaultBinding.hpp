@@ -33,37 +33,37 @@
  * This will define the following functions for Luabinding:
  * - push
  * - getRef
- * - get (if BindedType is copy constructible).
- * - dereferenceGet (if BindedType is a "base" type).
+ * - get (if BoundType is copy constructible).
+ * - dereferenceGet (if BoundType is a "base" type).
  *
- * For reference types, it will add dereferencing functions in the metatable. This enables LuaMethod<LuaBasetype<BindedType>>
- * to work on an object of type BindedType.
+ * For reference types, it will add dereferencing functions in the metatable. This enables LuaMethod<LuaBasetype<BoundType>>
+ * to work on an object of type BoundType.
  *
- * LuaBinding<BindedType> can be derived from this object.
+ * LuaBinding<BoundType> can be derived from this object.
  *
- * Optional static methods: same as LuaBasicBinding<BindedType>
+ * Optional static methods: same as LuaBasicBinding<BoundType>
  *
- * @tparam BindedType C++ type that will be binded into a Lua type.
+ * @tparam BoundType C++ type that will be bound into a Lua type.
  */
-template<typename BindedType>
-class LuaDefaultBinding : public LuaBasicBinding<BindedType> {
+template<typename BoundType>
+class LuaDefaultBinding : public LuaBasicBinding<BoundType> {
 public:
-    template<typename T=BindedType>
+    template<typename T=BoundType>
     static typename std::enable_if<std::is_same<LuaBasetype<T>,T>::value,T>::type& dereferenceGet(LuaStateView& state, int stackIndex) {
         return luaDefaultDereferenceGet<T>(state, stackIndex);
     }
 
     /**
-     * Pushes a new object of type BindedType into Lua.
+     * Pushes a new object of type BoundType into Lua.
      *
-     * @tparam ArgsType Types of the constructor arguments for type BindedType.
+     * @tparam ArgsType Types of the constructor arguments for type BoundType.
      *
      * @param state Lua state in which the push is done.
-     * @param constructorArgs Arguments for the constructor of type BindedType.
+     * @param constructorArgs Arguments for the constructor of type BoundType.
      */
     template<typename... ArgTypes>
     static void push(LuaStateView& state, ArgTypes&&... constructorArgs) {
-        state.newObject<BindedType>(std::forward<ArgTypes>(constructorArgs)...);
+        state.newObject<BoundType>(std::forward<ArgTypes>(constructorArgs)...);
         pushMetatable(state);
         state.setMetatable(-2);
     }
@@ -74,7 +74,7 @@ private:
      * @param state State in which to push the metatable.
      */
     static void pushMetatable(LuaStateView& state) {
-        const std::string& className = LuaBinding<BindedType>::luaClassName();
+        const std::string& className = LuaBinding<BoundType>::luaClassName();
         bool newTable = state.newMetatable(className);
         if (newTable) {
             setMetafields(state);
@@ -82,10 +82,10 @@ private:
     }
 protected:
     static void setMetafields(LuaStateView& state) {
-        LuaBasicBinding<BindedType>::setMetafields(state);
+        LuaBasicBinding<BoundType>::setMetafields(state);
 
-        using Dereferencer = LuaDereferencer<BindedType>;
-        using Basetype = LuaBasetype<BindedType>;
+        using Dereferencer = LuaDereferencer<BoundType>;
+        using Basetype = LuaBasetype<BoundType>;
         state.push<LuaDereferenceGetter<Basetype>>(&Dereferencer::dereferenceGetter);
         state.setField(-2,"dereferenceGetter");
     }

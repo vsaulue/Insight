@@ -39,10 +39,10 @@
  *
  * All types derived from LuaVirtualClass have LuaVirtualClass as a basetype.
  *
- * @tparam BindedType Type to dereference (must be derived from LuaVirtualClass).
+ * @tparam BoundType Type to dereference (must be derived from LuaVirtualClass).
  */
-template<typename BindedType>
-class LuaDereferencer<BindedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, BindedType>::value>::type> {
+template<typename BoundType>
+class LuaDereferencer<BoundType, typename std::enable_if<std::is_base_of<LuaVirtualClass, BoundType>::value>::type> {
 public:
     using basetype = LuaVirtualClass;
 
@@ -50,7 +50,7 @@ public:
         return state.getRef<basetype>(stackIndex);
     }
 
-    static basetype& dereference(BindedType& ref) {
+    static basetype& dereference(BoundType& ref) {
         return ref;
     }
 };
