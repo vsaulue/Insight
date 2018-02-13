@@ -43,7 +43,7 @@ private:
 public:
 
     Insight() : graphicEngine(physicEngine), interpreter(*this, "insight"), isEngineRunning(false), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
-        physicEngine.getUniverse().addObject(new PhysicalObject());
+
     }
 
     void runInterpreter() {

@@ -16,10 +16,23 @@
  */
 
 #include "Universe.hpp"
+#include "lua/LuaStateView.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/types/LuaMethod.hpp"
 
 Universe::Universe() {
 }
 
 int Universe::luaIndex(const std::string& memberName, LuaStateView& state) {
-    return 0;
+    int result = 0;
+    if (memberName=="newObject") {
+        state.push<LuaMethod<Universe>>([](Universe& universe, LuaStateView& state) -> int {
+            PhysicalObject* object = new PhysicalObject();
+            universe.objects.insert(object);
+            state.push<PhysicalObject*>(object);
+            return 1;
+        });
+        result = 1;
+    }
+    return result;
 }
