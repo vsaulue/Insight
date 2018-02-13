@@ -19,8 +19,9 @@
 #define	PHYSICALOBJECT_H
 
 #include "Units.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
-class PhysicalObject {
+class PhysicalObject : public LuaVirtualClass {
 public:
     PhysicalObject();
 
@@ -35,6 +36,8 @@ public:
     Speed (&getVelocity())[3] {
         return velocity;
     }
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     Distance position[3];
     Speed velocity[3];
