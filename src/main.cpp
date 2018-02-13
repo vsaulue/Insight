@@ -24,6 +24,7 @@
 
 #include "GraphicEngine.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "PhysicEngine.hpp"
 #include "Universe.hpp"
@@ -72,6 +73,12 @@ public:
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
         if (memberName == "physicEngine") {
             state.push<PhysicEngine*>(&physicEngine);
+            return 1;
+        } else if (memberName == "quit") {
+            state.push<LuaMethod<Insight>>([](Insight& object, LuaStateView& state) -> int {
+                object.quit();
+                return 0;
+            });
             return 1;
         }
         return 0;
