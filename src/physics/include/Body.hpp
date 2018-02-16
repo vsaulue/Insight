@@ -23,13 +23,18 @@
 
 #include "btBulletDynamicsCommon.h"
 
-class Body {
+#include "lua/types/LuaVirtualClass.hpp"
+
+class Body : public LuaVirtualClass {
 public:
     Body();
 
     const btVector3& getPosition() const;
 
     btRigidBody* getBulletBody();
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
 private:
     std::unique_ptr<btMotionState> motionState;
     std::unique_ptr<btRigidBody> btBody;

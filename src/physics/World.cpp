@@ -18,6 +18,10 @@
 
 #include "World.hpp"
 
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/types/LuaMethod.hpp"
+#include "lua/LuaStateView.hpp"
+
 World::World() :
     broadPhase(std::make_unique<btDbvtBroadphase>()),
     collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
@@ -31,4 +35,19 @@ World::World() :
 void World::addObject(std::unique_ptr<Body>&& object) {
     world->addRigidBody(object->getBulletBody());
     objects.insert(std::move(object));
+}
+
+int World::luaIndex(const std::string& memberName, LuaStateView& state) {
+    using Method = LuaMethod<World>;
+    int result = 0;
+    if (memberName=="newObject") {
+        state.push<Method>([](World& object, LuaStateView& state) -> int {
+            std::unique_ptr<Body> newObject = std::make_unique<Body>();
+            state.push<Body*>(newObject.get());
+            object.addObject(std::move(newObject));
+            return 1;
+        });
+        result = 1;
+    }
+    return result;
 }

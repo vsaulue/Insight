@@ -23,9 +23,11 @@
 #include <unordered_set>
 
 #include "btBulletDynamicsCommon.h"
-#include "Body.hpp"
 
-class World {
+#include "Body.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
+
+class World : public LuaVirtualClass {
 public:
     using const_iterator = std::unordered_set<std::unique_ptr<Body>>::const_iterator;
 
@@ -40,6 +42,9 @@ public:
     }
 
     void addObject(std::unique_ptr<Body>&& object);
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
 private:
     std::unique_ptr<btBroadphaseInterface> broadPhase;
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
