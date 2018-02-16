@@ -59,6 +59,8 @@ set_target_properties(Irrlicht PROPERTIES
 find_package(Boost REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+find_package(Bullet REQUIRED)
+
 find_package(Lua REQUIRED)
 add_library(Lua SHARED IMPORTED)
 set_target_properties(Lua PROPERTIES
