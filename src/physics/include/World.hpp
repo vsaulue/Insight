@@ -45,6 +45,10 @@ public:
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
+    void stepSimulation(double timeStep) {
+        world->stepSimulation(timeStep);
+    }
+
 private:
     std::unique_ptr<btBroadphaseInterface> broadPhase;
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
