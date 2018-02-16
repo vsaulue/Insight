@@ -16,19 +16,23 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "World.hpp"
+#ifndef BODY_HPP
+#define BODY_HPP
 
-World::World() :
-    broadPhase(std::make_unique<btDbvtBroadphase>()),
-    collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
-    dispatcher(std::make_unique<btCollisionDispatcher>(collisionConfig.get())),
-    solver(std::make_unique<btSequentialImpulseConstraintSolver>()),
-    world(std::make_unique<btDiscreteDynamicsWorld>(dispatcher.get(), broadPhase.get(), solver.get(), collisionConfig.get()))
-{
+#include <memory>
 
-}
+#include "btBulletDynamicsCommon.h"
 
-void World::addObject(std::unique_ptr<Body>&& object) {
-    world->addRigidBody(object->getBulletBody());
-    objects.insert(std::move(object));
-}
+class Body {
+public:
+    Body();
+
+    const btVector3& getPosition() const;
+
+    btRigidBody* getBulletBody();
+private:
+    std::unique_ptr<btMotionState> motionState;
+    std::unique_ptr<btRigidBody> btBody;
+};
+
+#endif /* BODY_HPP */

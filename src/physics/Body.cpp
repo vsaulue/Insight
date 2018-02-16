@@ -16,19 +16,29 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "World.hpp"
+#include "Body.hpp"
 
-World::World() :
-    broadPhase(std::make_unique<btDbvtBroadphase>()),
-    collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
-    dispatcher(std::make_unique<btCollisionDispatcher>(collisionConfig.get())),
-    solver(std::make_unique<btSequentialImpulseConstraintSolver>()),
-    world(std::make_unique<btDiscreteDynamicsWorld>(dispatcher.get(), broadPhase.get(), solver.get(), collisionConfig.get()))
+static btSphereShape defaultShape(1);
+
+static btVector3 initDefaultInertia() {
+    btVector3 result;
+    defaultShape.calculateLocalInertia(1, result);
+    return result;
+}
+
+static btVector3 defaultInertia = initDefaultInertia();
+
+Body::Body() :
+    motionState(std::make_unique<btDefaultMotionState>()),
+    btBody(std::make_unique<btRigidBody>(1, motionState.get(), &defaultShape, defaultInertia))
 {
 
 }
 
-void World::addObject(std::unique_ptr<Body>&& object) {
-    world->addRigidBody(object->getBulletBody());
-    objects.insert(std::move(object));
+const btVector3& Body::getPosition() const {
+    return btBody->getWorldTransform().getOrigin();
+}
+
+btRigidBody* Body::getBulletBody() {
+    return btBody.get();
 }

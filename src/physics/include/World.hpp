@@ -20,18 +20,34 @@
 #define WORLD_HPP
 
 #include <memory>
+#include <unordered_set>
 
 #include "btBulletDynamicsCommon.h"
+#include "Body.hpp"
 
 class World {
 public:
+    using const_iterator = std::unordered_set<std::unique_ptr<Body>>::const_iterator;
+
     World();
+
+    const_iterator begin() const {
+        return objects.begin();
+    }
+
+    const_iterator end() const {
+        return objects.end();
+    }
+
+    void addObject(std::unique_ptr<Body>&& object);
 private:
     std::unique_ptr<btBroadphaseInterface> broadPhase;
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
     std::unique_ptr<btDispatcher> dispatcher;
     std::unique_ptr<btConstraintSolver> solver;
     std::unique_ptr<btDiscreteDynamicsWorld> world;
+
+    std::unordered_set<std::unique_ptr<Body>> objects;
 };
 
 #endif /* WORLD_HPP */

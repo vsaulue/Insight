@@ -15,6 +15,7 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_library(PhysicEngine STATIC
+    Body.cpp
     PhysicEngine.cpp
     PhysicalObject.cpp
     Universe.cpp
