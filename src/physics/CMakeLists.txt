@@ -24,5 +24,4 @@ target_include_directories(PhysicEngine PUBLIC ${BULLET_INCLUDE_DIRS})
 target_link_libraries(PhysicEngine
     ${BULLET_LIBRARIES}
     LuaWrapper
-    Math
 )

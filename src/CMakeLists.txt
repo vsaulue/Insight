@@ -15,7 +15,6 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_subdirectory(graphics)
-add_subdirectory(math)
 add_subdirectory(physics)
 add_subdirectory(shell)
 
