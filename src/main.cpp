@@ -26,7 +26,6 @@
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
-#include "Universe.hpp"
 #include "ShellInterpreter.hpp"
 #include "World.hpp"
 
