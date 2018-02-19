@@ -17,11 +17,14 @@
 
 
 #include <cstdlib>
+
+#include "btBulletDynamicsCommon.h"
+
 #include "GraphicEngine.hpp"
 
 using namespace irr;
 
-GraphicEngine::GraphicEngine(const PhysicEngine& physicEngine) : physicEngine(physicEngine) {
+GraphicEngine::GraphicEngine(const World& world) : world(world) {
 
     device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, NULL);
 
@@ -54,20 +57,19 @@ GraphicEngine::~GraphicEngine() {
 void GraphicEngine::doRender() {
     driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
-    const Universe& universe = physicEngine.getUniverse();
-    for (auto it = universe.begin(); it != universe.end(); ++it) {
+    for (auto it = world.begin(); it != world.end(); ++it) {
 
-        auto map_it = mapping.find(*it);
+        auto map_it = mapping.find((*it).get());
         scene::IAnimatedMeshSceneNode *node;
         if (map_it == mapping.end()) {
             node = sceneManager->addAnimatedMeshSceneNode(monkey);
-            mapping[*it] = node;
+            mapping[(*it).get()] = node;
         } else {
             node = (*map_it).second;
         }
 
-        const Distance(&position)[3] = (*it)->getPosition();
-        node->setPosition(core::vector3df(position[0].toDouble(), position[1].toDouble(), position[2].toDouble()));
+        const btVector3& pos = (*it)->getPosition();
+        node->setPosition(core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
     }
     sceneManager->drawAll();
     guienv->drawAll();

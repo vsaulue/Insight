@@ -26,15 +26,15 @@
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
-#include "PhysicEngine.hpp"
 #include "Universe.hpp"
 #include "ShellInterpreter.hpp"
+#include "World.hpp"
 
 class Insight : public LuaVirtualClass {
 private:
     using timer = std::chrono::steady_clock;
 
-    PhysicEngine physicEngine;
+    World world;
     GraphicEngine graphicEngine;
     ShellInterpreter interpreter;
 
@@ -42,7 +42,7 @@ private:
     std::chrono::duration<std::int64_t, std::nano> renderPeriod;
 public:
 
-    Insight() : graphicEngine(physicEngine), interpreter(*this, "insight"), isEngineRunning(false), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
+    Insight() : graphicEngine(world), interpreter(*this, "insight"), isEngineRunning(false), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
 
     }
 
@@ -59,7 +59,7 @@ public:
         isEngineRunning = true;
         while (isEngineRunning && graphicEngine.run()) {
             auto start = timer::now();
-            physicEngine.integrate();
+            world.stepSimulation(std::chrono::duration<double>(renderPeriod).count());
             graphicEngine.doRender();
             auto ellapsed = timer::now() - start;
 
@@ -71,8 +71,8 @@ public:
     }
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
-        if (memberName == "physicEngine") {
-            state.push<PhysicEngine*>(&physicEngine);
+        if (memberName == "world") {
+            state.push<World*>(&world);
             return 1;
         } else if (memberName == "quit") {
             state.push<LuaMethod<Insight>>([](Insight& object, LuaStateView& state) -> int {

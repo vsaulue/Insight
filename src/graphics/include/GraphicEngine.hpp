@@ -21,7 +21,7 @@
 #include <irrlicht.h>
 #include <unordered_map>
 
-#include "PhysicEngine.hpp"
+#include "World.hpp"
 
 class GraphicEngine {
 private:
@@ -31,12 +31,12 @@ private:
     irr::video::IVideoDriver *driver;
     irr::scene::IAnimatedMesh *monkey;
 
-    const PhysicEngine& physicEngine;
-    std::unordered_map<PhysicalObject*, irr::scene::IAnimatedMeshSceneNode*> mapping;
+    const World& world;
+    std::unordered_map<const Body*, irr::scene::IAnimatedMeshSceneNode*> mapping;
 
 public:
 
-    GraphicEngine(const PhysicEngine& physicEngine);
+    GraphicEngine(const World& world);
 
     virtual ~GraphicEngine();
 
