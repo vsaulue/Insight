@@ -16,28 +16,22 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BODY_HPP
-#define BODY_HPP
+#ifndef SPHERE_HPP
+#define SPHERE_HPP
 
 #include <memory>
 
 #include "btBulletDynamicsCommon.h"
 
-#include "lua/types/LuaVirtualClass.hpp"
+#include "Body.hpp"
 
-class Body : public LuaVirtualClass {
+class Sphere : public Body {
 public:
-    Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia);
-
-    const btVector3& getPosition() const;
-
-    btRigidBody* getBulletBody();
-
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
-
+    Sphere(btScalar mass, btScalar radius);
 private:
-    std::unique_ptr<btMotionState> motionState;
-    std::unique_ptr<btRigidBody> btBody;
+    std::unique_ptr<btSphereShape> shape;
+
+    Sphere(btScalar mass, std::unique_ptr<btSphereShape>&& shape);
 };
 
-#endif /* BODY_HPP */
+#endif /* SPHERE_HPP */

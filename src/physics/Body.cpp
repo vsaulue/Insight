@@ -21,19 +21,9 @@
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 
-static btSphereShape defaultShape(1);
-
-static btVector3 initDefaultInertia() {
-    btVector3 result;
-    defaultShape.calculateLocalInertia(1, result);
-    return result;
-}
-
-static btVector3 defaultInertia = initDefaultInertia();
-
-Body::Body() :
+Body::Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia) :
     motionState(std::make_unique<btDefaultMotionState>()),
-    btBody(std::make_unique<btRigidBody>(1, motionState.get(), &defaultShape, defaultInertia))
+    btBody(std::make_unique<btRigidBody>(mass, motionState.get(), &shape, inertia))
 {
 
 }

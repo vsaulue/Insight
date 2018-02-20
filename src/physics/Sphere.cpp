@@ -16,28 +16,21 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BODY_HPP
-#define BODY_HPP
+#include "Sphere.hpp"
 
-#include <memory>
+static btVector3 calculateInertia(btCollisionShape* shape, btScalar mass) {
+    btVector3 result;
+    shape->calculateLocalInertia(mass, result);
+    return result;
+}
 
-#include "btBulletDynamicsCommon.h"
+Sphere::Sphere(btScalar mass, btScalar radius) : Sphere(mass, std::make_unique<btSphereShape>(radius)) {
 
-#include "lua/types/LuaVirtualClass.hpp"
+}
 
-class Body : public LuaVirtualClass {
-public:
-    Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia);
+Sphere::Sphere(btScalar mass, std::unique_ptr<btSphereShape>&& shape) :
+    Body(mass, *shape, calculateInertia(shape.get(), mass)),
+    shape(std::move(shape))
+{
 
-    const btVector3& getPosition() const;
-
-    btRigidBody* getBulletBody();
-
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
-
-private:
-    std::unique_ptr<btMotionState> motionState;
-    std::unique_ptr<btRigidBody> btBody;
-};
-
-#endif /* BODY_HPP */
+}
