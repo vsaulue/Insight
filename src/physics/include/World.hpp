@@ -48,6 +48,8 @@ public:
     void stepSimulation(double timeStep) {
         world->stepSimulation(timeStep);
     }
+
+    virtual ~World();
 private:
     std::unique_ptr<btBroadphaseInterface> broadPhase;
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;

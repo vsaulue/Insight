@@ -61,3 +61,9 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     }
     return result;
 }
+
+World::~World() {
+    for (auto& object : objects) {
+        world->removeRigidBody(object->getBulletBody());
+    }
+}
