@@ -22,6 +22,7 @@
 #include "lua/types/LuaMethod.hpp"
 #include "lua/LuaStateView.hpp"
 #include "Sphere.hpp"
+#include "Terrain.hpp"
 
 World::World() :
     broadPhase(std::make_unique<btDbvtBroadphase>()),
@@ -44,6 +45,14 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     if (memberName=="newSphere") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
             std::unique_ptr<Sphere> newObject = std::make_unique<Sphere>(1,1);
+            state.push<Body*>(newObject.get());
+            object.addObject(std::move(newObject));
+            return 1;
+        });
+        result = 1;
+    } else if (memberName=="newTerrain") {
+        state.push<Method>([](World& object, LuaStateView& state) -> int {
+            std::unique_ptr<Terrain> newObject = std::make_unique<Terrain>();
             state.push<Body*>(newObject.get());
             object.addObject(std::move(newObject));
             return 1;
