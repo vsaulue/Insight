@@ -239,13 +239,45 @@ public:
         insightState.stop();
     }
 
+    /**
+     * Pauses the worker thread.
+     *
+     * This function sends a pause request to the worker thread, and waits
+     * until the worker acknowledges the request.
+     */
+    void pauseWorker() {
+        insightState.pause();
+    }
+
+    /**
+     * Resumes the worker thread.
+     *
+     * This function just sends a resume request to the worker thread.
+     */
+    void resumeWorker() {
+        insightState.resume();
+    }
+
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
+        using Method = LuaMethod<Insight>;
         if (memberName == "world") {
             state.push<World*>(&world);
             return 1;
         } else if (memberName == "quit") {
-            state.push<LuaMethod<Insight>>([](Insight& object, LuaStateView& state) -> int {
+            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.quit();
+                return 0;
+            });
+            return 1;
+        } else if (memberName == "pauseWorker") {
+            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
+                object.pauseWorker();
+                return 0;
+            });
+            return 1;
+        } else if (memberName == "resumeWorker") {
+            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
+                object.resumeWorker();
                 return 0;
             });
             return 1;
