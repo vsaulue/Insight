@@ -170,6 +170,83 @@ public:
     }
 };
 
+/** State of the simulation in the Insight class. */
+class SimulationState {
+public:
+    /**
+     * Creates a new SimulationState, paused by default.
+     */
+    SimulationState() : state(State::paused) {
+
+    }
+
+    /**
+     * Transition from State::paused to State::running.
+     */
+    void resume() {
+        std::lock_guard<std::mutex> lock(mutex);
+        switch(state) {
+        case State::running:
+            break;
+        case State::paused:
+            state = State::running;
+            break;
+        default:
+            throw std::logic_error("Cannot resume: object is not in 'paused' state.");
+        }
+    }
+
+    /**
+     * Transition from State::running to State::paused.
+     *
+     * Sends a pause command to the worker thread (using State::pausing), and wait
+     * for an acknowledgment.
+     */
+    void pause() {
+        std::unique_lock<std::mutex> lock(mutex);
+        switch(state) {
+        case State::paused:
+            break;
+        case State::running:
+            state = State::pausing;
+            condition.wait(lock, [this]() -> bool { return this->state != State::pausing; });
+            break;
+        default:
+            throw std::logic_error("Cannot resume: object is not in 'running' state.");
+        }
+    }
+
+    /**
+     * Checks if this object is in a 'running' state.
+     *
+     * If the control thread requested the simulation to be paused, sends an acknowledgment.
+     *
+     * @return True if the simulation is in running state.
+     */
+    bool isRunning() {
+        State readState = state;
+        if (readState == State::pausing) {
+            state = readState = State::paused;
+            condition.notify_all();
+        }
+        return (readState == State::running);
+    }
+private:
+    /** Enumeration of possible states. */
+    enum class State {
+        running, /**< Simulation is progressing. */
+        pausing, /**< Worker thread asked to pause the simulation. */
+        paused   /**< Worker thread acknowledged the pause order. */
+    };
+
+    /** State of this object. */
+    std::atomic<State> state;
+    /** Condition variable used by the control thread to wait for acknowledgments from the worker thread. */
+    std::condition_variable condition;
+    /** Mutex protecting the state variable. */
+    std::mutex mutex;
+};
+
 class Insight : public LuaVirtualClass {
 private:
     using timer = std::chrono::steady_clock;
@@ -182,7 +259,8 @@ private:
 
     /** Holds the state of this object, and handles worker thread control (stop & pause). */
     InsightState insightState;
-
+    /** Holds the state of the simulation, and handles worker thread control (can skip simulation and run the GUI only). */
+    SimulationState simulationState;
 
     /**
      * Worker thread main loop : computes the simulation.
@@ -193,7 +271,9 @@ private:
     void workerMainLoop() {
         while (insightState.waitRunningState() && graphicEngine.run()) {
             auto start = timer::now();
-            world.stepSimulation(std::chrono::duration<double>(renderPeriod).count());
+            if (simulationState.isRunning()) {
+                world.stepSimulation(std::chrono::duration<double>(renderPeriod).count());
+            }
             graphicEngine.doRender();
             auto ellapsed = timer::now() - start;
 
@@ -225,6 +305,20 @@ public:
     }
 
     /**
+     * Pauses the simulation.
+     */
+    void pause() {
+        simulationState.pause();
+    }
+
+    /**
+     * Resumes the simulation.
+     */
+    void resume() {
+        simulationState.resume();
+    }
+
+    /**
      * Starts the different components (Lua interpreter, simulation).
      *
      * This function will return when quit() has been called and all components
@@ -232,6 +326,8 @@ public:
      */
     void run() {
         insightState.boot();
+        simulationState.pause();
+
         std::thread shellThread([this]() { this->interpreter.run(); });
         workerMainLoop();
 
@@ -278,6 +374,18 @@ public:
         } else if (memberName == "resumeWorker") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.resumeWorker();
+                return 0;
+            });
+            return 1;
+        } else if (memberName == "pause") {
+            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
+                object.pause();
+                return 0;
+            });
+            return 1;
+        } else if (memberName == "resume") {
+            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
+                object.resume();
                 return 0;
             });
             return 1;
