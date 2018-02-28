@@ -26,6 +26,9 @@
 class Terrain : public Body {
 public:
     Terrain();
+
+    void drawShape(ShapeDrawer& drawer) const override;
+
 private:
     Terrain(std::unique_ptr<btStaticPlaneShape>&& shape);
 

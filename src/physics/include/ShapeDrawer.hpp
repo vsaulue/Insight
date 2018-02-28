@@ -16,38 +16,34 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BODY_HPP
-#define BODY_HPP
-
-#include <memory>
+#ifndef SHAPEDRAWER_HPP
+#define SHAPEDRAWER_HPP
 
 #include "btBulletDynamicsCommon.h"
 
-#include "lua/types/LuaVirtualClass.hpp"
-#include "ShapeDrawer.hpp"
-
-class Body : public LuaVirtualClass {
+/** 
+ * Interface for reading the geometry of a Body outside the Physics engine.
+ */
+class ShapeDrawer {
 public:
-    Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia);
-
-    const btVector3& getPosition() const;
-
-    btRigidBody* getBulletBody();
-
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+    /**
+     * Draw a sphere.
+     *
+     * @param[in] center Center of the sphere (relative to the center of mass of the Body).
+     * @param[in] radius Radius of the sphere.
+     */
+    virtual void drawSphere(const btVector3& center, btScalar radius) = 0;
 
     /**
-     * Draws the collision shape of this Body into the specified Drawer object.
+     * Draw an infinite plane.
      *
-     * A Body will be represented by one or several "basic" collision shapes (sphere,
-     * plane)
-     *
-     * @param drawer Object in which the shape should be drawn.
+     * @param[in] normal Normal vector of the surface (relative to the orientation of the Body).
+     * @param[in] offset Offset of the plane from the origin (= center of mass of the Body), on the normal vector.
      */
-    virtual void drawShape(ShapeDrawer& drawer) const = 0;
-private:
-    std::unique_ptr<btMotionState> motionState;
-    std::unique_ptr<btRigidBody> btBody;
+    virtual void drawPlane(const btVector3& normal, btScalar offset) = 0;
+
+    virtual ~ShapeDrawer() = default;
 };
 
-#endif /* BODY_HPP */
+#endif /* SHAPEDRAWER_HPP */
+

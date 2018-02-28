@@ -18,10 +18,16 @@
 
 #include "Terrain.hpp"
 
-Terrain::Terrain() : Terrain(std::make_unique<btStaticPlaneShape>(btVector3(0,1,0), 0)) {
+static const btVector3 normal = {0,1,0};
+
+Terrain::Terrain() : Terrain(std::make_unique<btStaticPlaneShape>(normal, 0)) {
 
 }
 
 Terrain::Terrain(std::unique_ptr<btStaticPlaneShape>&& shape) : Body(0, *shape, btVector3(0,0,0)), shape(std::move(shape)) {
 
+}
+
+void Terrain::drawShape(ShapeDrawer& drawer) const {
+    drawer.drawPlane(normal,0);
 }

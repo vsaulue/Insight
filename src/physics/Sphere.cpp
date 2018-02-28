@@ -34,3 +34,8 @@ Sphere::Sphere(btScalar mass, std::unique_ptr<btSphereShape>&& shape) :
 {
 
 }
+
+void Sphere::drawShape(ShapeDrawer& drawer) const {
+    static const btVector3 center = {0,0,0};
+    drawer.drawSphere(center, shape->getRadius());
+}

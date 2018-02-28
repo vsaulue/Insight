@@ -28,6 +28,8 @@
 class Sphere : public Body {
 public:
     Sphere(btScalar mass, btScalar radius);
+
+    void drawShape(ShapeDrawer& drawer) const override;
 private:
     std::unique_ptr<btSphereShape> shape;
 
