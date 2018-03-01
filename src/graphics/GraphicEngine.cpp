@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,10 +24,10 @@
 
 using namespace irr;
 
-GraphicEngine::GraphicEngine(const World& world) : world(world) {
-
-    device = createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, NULL);
-
+GraphicEngine::GraphicEngine(const World& world) :
+    device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, NULL)),
+    world(world)
+{
     sceneManager = device->getSceneManager();
     guienv = device->getGUIEnvironment();
     driver = device->getVideoDriver();
@@ -48,10 +48,6 @@ GraphicEngine::GraphicEngine(const World& world) : world(world) {
     lightData.Direction = core::vector3df(-.5f, -.5f, -.5f);
     lightData.DiffuseColor = video::SColorf(.6f, .6f, .6f);
     lightData.AmbientColor = video::SColorf(.2f, .2f, .2f);
-}
-
-GraphicEngine::~GraphicEngine() {
-    device->drop();
 }
 
 void GraphicEngine::doRender() {

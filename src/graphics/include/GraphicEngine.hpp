@@ -22,10 +22,11 @@
 #include <unordered_map>
 
 #include "World.hpp"
+#include "irrlicht_ptr.hpp"
 
 class GraphicEngine {
 private:
-    irr::IrrlichtDevice *device;
+    irrlicht_ptr<irr::IrrlichtDevice> device;
     irr::scene::ISceneManager *sceneManager;
     irr::gui::IGUIEnvironment *guienv;
     irr::video::IVideoDriver *driver;
@@ -37,8 +38,6 @@ private:
 public:
 
     GraphicEngine(const World& world);
-
-    virtual ~GraphicEngine();
 
     void doRender();
 
