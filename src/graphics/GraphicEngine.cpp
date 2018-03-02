@@ -35,10 +35,6 @@ GraphicEngine::GraphicEngine(const World& world) :
     device->setWindowCaption(L"Insight - Renderer");
     sceneManager->addCameraSceneNode(NULL, core::vector3df(0, 0, 10), core::vector3df(0, 0, -1));
 
-    monkey = sceneManager->getMesh("monkey.obj");
-    /* scene::IAnimatedMeshSceneNode *node = */
-    //sceneManager->addAnimatedMeshSceneNode(monkey);
-
     scene::ILightSceneNode *light = sceneManager->addLightSceneNode(NULL, core::vector3df(2.0f, 2.0f, 2.0f), video::SColorf(1.0f, 1.0f, 1.0f));
 
     light->setLightType(video::ELT_DIRECTIONAL);
@@ -54,18 +50,20 @@ void GraphicEngine::doRender() {
     driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 
     for (auto it = world.begin(); it != world.end(); ++it) {
+        const Body& body = *it->get();
 
-        auto map_it = mapping.find((*it).get());
-        scene::IAnimatedMeshSceneNode *node;
+        auto map_it = mapping.find(&body);
+        GraphicObject* object;
         if (map_it == mapping.end()) {
-            node = sceneManager->addAnimatedMeshSceneNode(monkey);
-            mapping[(*it).get()] = node;
+            std::unique_ptr<GraphicObject> ptr = std::make_unique<GraphicObject>(body, sceneManager);
+            object = ptr.get();
+            mapping[(*it).get()] = std::move(ptr);
         } else {
-            node = (*map_it).second;
+            object = (*map_it).second.get();
         }
 
-        const btVector3& pos = (*it)->getPosition();
-        node->setPosition(core::vector3df(pos.getX(), pos.getY(), pos.getZ()));
+        const btVector3& pos = body.getPosition();
+        object->setPosition(pos);
     }
     sceneManager->drawAll();
     guienv->drawAll();

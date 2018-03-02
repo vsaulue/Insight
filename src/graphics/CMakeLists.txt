@@ -16,6 +16,7 @@
 
 add_library(GraphicEngine STATIC
     GraphicEngine.cpp
+    GraphicObject.cpp
 )
 
 target_include_directories(GraphicEngine PUBLIC include)

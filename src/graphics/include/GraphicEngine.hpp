@@ -21,26 +21,46 @@
 #include <irrlicht.h>
 #include <unordered_map>
 
+#include "GraphicObject.hpp"
 #include "World.hpp"
 #include "irrlicht_ptr.hpp"
 
 class GraphicEngine {
 private:
+    /** Irrlicht device. */
     irrlicht_ptr<irr::IrrlichtDevice> device;
+    /** Irrlicht scene manager. */
     irr::scene::ISceneManager *sceneManager;
+    /** Irrlicht GUI environment. */
     irr::gui::IGUIEnvironment *guienv;
+    /** Irrlicht driver. */
     irr::video::IVideoDriver *driver;
-    irr::scene::IAnimatedMesh *monkey;
 
+    /** Physics world rendered by this GraphicEngine. */
     const World& world;
-    std::unordered_map<const Body*, irr::scene::IAnimatedMeshSceneNode*> mapping;
+    /** Map givind the 3d object of a given Body. */
+    std::unordered_map<const Body*, std::unique_ptr<GraphicObject>> mapping;
 
 public:
-
+    /**
+     * Creates a new graphic engine.
+     *
+     * @param[in] world World to display.
+     */
     GraphicEngine(const World& world);
 
+    /**
+     * Render the next frame.
+     */
     void doRender();
 
+    /**
+     * Run the engine.
+     *
+     * This function will handle events (mouse clicks, window resize, ...)
+     *
+     * @return True if the window was not closed.
+     */
     bool run();
 };
 
