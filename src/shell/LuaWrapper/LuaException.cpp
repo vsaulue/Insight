@@ -17,7 +17,9 @@
 
 #include "lua/LuaException.hpp"
 
-#include "lua.hpp"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 
 LuaException::LuaException(lua_State* state) {
     const char* msg = lua_tostring(state, -1);

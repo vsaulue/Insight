@@ -17,7 +17,9 @@
 
 #include <new>
 
-#include "lua.hpp"
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 
 #include "lua/LuaException.hpp"
 #include "lua/LuaState.hpp"
