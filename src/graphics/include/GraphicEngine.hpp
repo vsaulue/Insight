@@ -23,10 +23,11 @@
 
 #include "Camera.hpp"
 #include "GraphicObject.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "World.hpp"
 #include "irrlicht_ptr.hpp"
 
-class GraphicEngine {
+class GraphicEngine : public LuaVirtualClass {
 private:
     /** Irrlicht device. */
     irrlicht_ptr<irr::IrrlichtDevice> device;
@@ -66,6 +67,8 @@ public:
      * @return True if the window was not closed.
      */
     bool run();
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 };
 
 #endif	/* GRAPHICENGINE_HPP */

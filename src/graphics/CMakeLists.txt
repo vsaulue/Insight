@@ -23,5 +23,6 @@ add_library(GraphicEngine STATIC
 target_include_directories(GraphicEngine PUBLIC include)
 target_link_libraries(GraphicEngine PUBLIC
     Irrlicht
+    LuaWrapper
     PhysicEngine
 )

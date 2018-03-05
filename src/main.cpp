@@ -359,6 +359,9 @@ public:
         if (memberName == "world") {
             state.push<World*>(&world);
             return 1;
+        } else if (memberName == "graphicEngine") {
+            state.push<GraphicEngine*>(&graphicEngine);
+            return 1;
         } else if (memberName == "quit") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.quit();

@@ -23,3 +23,7 @@ Camera::Camera(irr::scene::ISceneManager& scene) :
 {
 
 }
+
+int Camera::luaIndex(const std::string& memberName, LuaStateView& state) {
+    return 0;
+}

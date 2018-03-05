@@ -22,11 +22,12 @@
 #include <memory>
 
 #include "irrlicht.h"
+#include "lua/types/LuaVirtualClass.hpp"
 
 /**
  * Camera of the graphics engine.
  */
-class Camera {
+class Camera : public LuaVirtualClass {
 public:
     /**
      * Creates a new camera.
@@ -34,6 +35,8 @@ public:
      * @param scene Scene in which the camera is created.
      */
     Camera(irr::scene::ISceneManager& scene);
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     /** Custom deleter for a camera scene node (for unique_ptr). */
     struct CameraDeleter {

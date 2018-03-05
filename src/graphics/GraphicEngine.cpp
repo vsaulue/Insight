@@ -21,6 +21,7 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "GraphicEngine.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
 
 using namespace irr;
 
@@ -73,4 +74,12 @@ void GraphicEngine::doRender() {
 
 bool GraphicEngine::run() {
     return device->run();
+}
+
+int GraphicEngine::luaIndex(const std::string& memberName, LuaStateView& state) {
+    if (memberName=="camera") {
+        state.push<Camera*>(&camera);
+        return 1;
+    }
+    return 0;
 }
