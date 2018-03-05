@@ -26,6 +26,7 @@ using namespace irr;
 
 GraphicEngine::GraphicEngine(const World& world) :
     device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, NULL)),
+    camera(*device->getSceneManager()),
     world(world)
 {
     sceneManager = device->getSceneManager();
@@ -33,7 +34,6 @@ GraphicEngine::GraphicEngine(const World& world) :
     driver = device->getVideoDriver();
 
     device->setWindowCaption(L"Insight - Renderer");
-    sceneManager->addCameraSceneNode(NULL, core::vector3df(0, 0, 10), core::vector3df(0, 0, -1));
 
     scene::ILightSceneNode *light = sceneManager->addLightSceneNode(NULL, core::vector3df(2.0f, 2.0f, 2.0f), video::SColorf(1.0f, 1.0f, 1.0f));
 

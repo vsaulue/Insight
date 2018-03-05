@@ -21,6 +21,7 @@
 #include <irrlicht.h>
 #include <unordered_map>
 
+#include "Camera.hpp"
 #include "GraphicObject.hpp"
 #include "World.hpp"
 #include "irrlicht_ptr.hpp"
@@ -35,6 +36,9 @@ private:
     irr::gui::IGUIEnvironment *guienv;
     /** Irrlicht driver. */
     irr::video::IVideoDriver *driver;
+
+    /** Camera in the Irrlicht scene. */
+    Camera camera;
 
     /** Physics world rendered by this GraphicEngine. */
     const World& world;
