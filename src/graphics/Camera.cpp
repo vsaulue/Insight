@@ -27,14 +27,27 @@ Camera::Camera(irr::scene::ISceneManager& scene) :
 
 }
 
+/**
+ * Reads a vector3df from Lua stack.
+ *
+ * @param state State containing the stack.
+ * @param firstIndex Stack index of the first coordinate of the vector.
+ *
+ * @return The vector read from the Lua stack.
+ */
+static irr::core::vector3df readVector3df(LuaStateView& state, int firstIndex) {
+    float x = state.get<float>(firstIndex);
+    float y = state.get<float>(firstIndex+1);
+    float z = state.get<float>(firstIndex+2);
+    return irr::core::vector3df(x,y,z);
+}
+
 int Camera::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<Camera>;
     if (memberName == "setPosition") {
         state.push<Method>([](Camera& object, LuaStateView& state) -> int {
-            float x = state.get<float>(2);
-            float y = state.get<float>(3);
-            float z = state.get<float>(4);
-            object.camera->setPosition(irr::core::vector3df(x,y,z));
+            irr::core::vector3df pos = readVector3df(state, 2);
+            object.camera->setPosition(pos);
             return 0;
         });
         return 1;
@@ -45,6 +58,13 @@ int Camera::luaIndex(const std::string& memberName, LuaStateView& state) {
             state.push<float>(pos.Y);
             state.push<float>(pos.Z);
             return 3;
+        });
+        return 1;
+    } else if (memberName == "lookAt") {
+        state.push<Method>([](Camera& object, LuaStateView& state) -> int {
+            irr::core::vector3df pos = readVector3df(state, 2);
+            object.camera->setTarget(pos);
+            return 0;
         });
         return 1;
     }
