@@ -17,6 +17,9 @@
  */
 
 #include "Camera.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/types/LuaMethod.hpp"
 
 Camera::Camera(irr::scene::ISceneManager& scene) :
     camera(scene.addCameraSceneNode(nullptr, irr::core::vector3df(0, 0, 10), irr::core::vector3df(0, 0, -1)))
@@ -25,5 +28,25 @@ Camera::Camera(irr::scene::ISceneManager& scene) :
 }
 
 int Camera::luaIndex(const std::string& memberName, LuaStateView& state) {
+    using Method = LuaMethod<Camera>;
+    if (memberName == "setPosition") {
+        state.push<Method>([](Camera& object, LuaStateView& state) -> int {
+            float x = state.get<float>(2);
+            float y = state.get<float>(3);
+            float z = state.get<float>(4);
+            object.camera->setPosition(irr::core::vector3df(x,y,z));
+            return 0;
+        });
+        return 1;
+    } else if (memberName == "position") {
+        state.push<Method>([](Camera& object, LuaStateView& state) -> int {
+            const irr::core::vector3df& pos = object.camera->getPosition();
+            state.push<float>(pos.X);
+            state.push<float>(pos.Y);
+            state.push<float>(pos.Z);
+            return 3;
+        });
+        return 1;
+    }
     return 0;
 }
