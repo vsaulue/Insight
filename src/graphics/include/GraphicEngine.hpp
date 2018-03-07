@@ -23,12 +23,16 @@
 
 #include "Camera.hpp"
 #include "GraphicObject.hpp"
+#include "InputHandler.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "World.hpp"
 #include "irrlicht_ptr.hpp"
 
 class GraphicEngine : public LuaVirtualClass {
 private:
+    /** Object managing mouse & keyboard inputs. */
+    InputHandler inputs;
+
     /** Irrlicht device. */
     irrlicht_ptr<irr::IrrlichtDevice> device;
     /** Irrlicht scene manager. */

@@ -26,8 +26,8 @@
 using namespace irr;
 
 GraphicEngine::GraphicEngine(const World& world) :
-    device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, NULL)),
-    camera(*device->getSceneManager()),
+    device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, &inputs)),
+    camera(*device->getSceneManager(), inputs),
     world(world)
 {
     sceneManager = device->getSceneManager();

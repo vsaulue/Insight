@@ -22,6 +22,8 @@
 #include <memory>
 
 #include "irrlicht.h"
+
+#include "InputHandler.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 
 /**
@@ -33,8 +35,9 @@ public:
      * Creates a new camera.
      *
      * @param scene Scene in which the camera is created.
+     * @param inputHandler Object used to read user actions from the keyboard & mouse.
      */
-    Camera(irr::scene::ISceneManager& scene);
+    Camera(irr::scene::ISceneManager& scene, const InputHandler& inputHandler);
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:

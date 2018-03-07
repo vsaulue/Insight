@@ -15,9 +15,11 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_library(GraphicEngine STATIC
+    Bindings.cpp
     Camera.cpp
     GraphicEngine.cpp
     GraphicObject.cpp
+    InputHandler.cpp
 )
 
 target_include_directories(GraphicEngine PUBLIC include)

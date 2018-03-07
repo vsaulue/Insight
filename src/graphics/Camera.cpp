@@ -16,15 +16,65 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Action.hpp"
 #include "Camera.hpp"
+#include "irrlicht_ptr.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 
-Camera::Camera(irr::scene::ISceneManager& scene) :
+class CameraAnimator : public irr::scene::ISceneNodeAnimator {
+public:
+    void animateNode(irr::scene::ISceneNode* node, irr::u32 timeMs) override {
+        using irr::core::vector3df;
+        /** Translation speed on each axis (in meters/second). */
+        static const float translationSpeed = 5.0f;
+
+        irr::scene::ICameraSceneNode& camera = *static_cast<irr::scene::ICameraSceneNode*>(node);
+
+        vector3df translation = {0,0,0};
+        float translationOffset = translationSpeed * (timeMs-lastTime) / 1000;
+        if (inputs.isKeyDown(Action::CameraForward)) {
+            translation.Z += translationOffset;
+        }
+        if (inputs.isKeyDown(Action::CameraBackward)) {
+            translation.Z -= translationOffset;
+        }
+        if (inputs.isKeyDown(Action::CameraLeft)) {
+            translation.X -= translationOffset;
+        }
+        if (inputs.isKeyDown(Action::CameraRight)) {
+            translation.X += translationOffset;
+        }
+        if (inputs.isKeyDown(Action::CameraUp)) {
+            translation.Y += translationOffset;
+        }
+        if (inputs.isKeyDown(Action::CameraDown)) {
+            translation.Y -= translationOffset;
+        }
+
+        camera.getViewMatrix().inverseRotateVect(translation);
+        camera.setPosition(node->getPosition() + translation);
+        lastTime = timeMs;
+    }
+
+    ISceneNodeAnimator* createClone(irr::scene::ISceneNode* node, irr::scene::ISceneManager* newManager) override {
+        return new CameraAnimator(*this);
+    }
+
+    CameraAnimator(const InputHandler& inputHandler) : lastTime(0), inputs(inputHandler) {
+
+    }
+private:
+    irr::u32 lastTime;
+    const InputHandler& inputs;
+};
+
+Camera::Camera(irr::scene::ISceneManager& scene, const InputHandler& inputHandler) :
     camera(scene.addCameraSceneNode(nullptr, irr::core::vector3df(0, 0, 10), irr::core::vector3df(0, 0, -1)))
 {
-
+    irrlicht_ptr<CameraAnimator> animator(new CameraAnimator(inputHandler));
+    camera->addAnimator(animator.get());
 }
 
 /**
