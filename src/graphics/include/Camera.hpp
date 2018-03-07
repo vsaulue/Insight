@@ -39,6 +39,13 @@ public:
      */
     Camera(irr::scene::ISceneManager& scene, const InputHandler& inputHandler);
 
+    /**
+     * Sets the position of this camera.
+     *
+     * @param[in] pos New position of the camera.
+     */
+    void setPosition(const irr::core::vector3df& pos);
+
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     /** Custom deleter for a camera scene node (for unique_ptr). */

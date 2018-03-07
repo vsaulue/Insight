@@ -53,8 +53,11 @@ public:
             translation.Y -= translationOffset;
         }
 
-        camera.getViewMatrix().inverseRotateVect(translation);
-        camera.setPosition(node->getPosition() + translation);
+        if (translation != irr::core::vector3df(0,0,0)) {
+            camera.getViewMatrix().inverseRotateVect(translation);
+            camera.setPosition(node->getPosition() + translation);
+            camera.setTarget(camera.getTarget() + translation);
+        }
         lastTime = timeMs;
     }
 
@@ -71,11 +74,18 @@ private:
 };
 
 Camera::Camera(irr::scene::ISceneManager& scene, const InputHandler& inputHandler) :
-    camera(scene.addCameraSceneNode(nullptr, irr::core::vector3df(0, 0, 10), irr::core::vector3df(0, 0, -1)))
+    camera(scene.addCameraSceneNode(nullptr, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, -1)))
 {
     irrlicht_ptr<CameraAnimator> animator(new CameraAnimator(inputHandler));
     camera->addAnimator(animator.get());
 }
+
+void Camera::setPosition(const irr::core::vector3df& pos) {
+    irr::core::vector3df translation = pos - camera->getPosition();
+    camera->setPosition(pos);
+    camera->setTarget(camera->getTarget()+translation);
+}
+
 
 /**
  * Reads a vector3df from Lua stack.
@@ -97,7 +107,7 @@ int Camera::luaIndex(const std::string& memberName, LuaStateView& state) {
     if (memberName == "setPosition") {
         state.push<Method>([](Camera& object, LuaStateView& state) -> int {
             irr::core::vector3df pos = readVector3df(state, 2);
-            object.camera->setPosition(pos);
+            object.setPosition(pos);
             return 0;
         });
         return 1;
