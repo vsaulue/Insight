@@ -36,11 +36,11 @@ private:
     /** Irrlicht device. */
     irrlicht_ptr<irr::IrrlichtDevice> device;
     /** Irrlicht scene manager. */
-    irr::scene::ISceneManager *sceneManager;
+    irr::scene::ISceneManager& sceneManager;
     /** Irrlicht GUI environment. */
-    irr::gui::IGUIEnvironment *guienv;
+    irr::gui::IGUIEnvironment& guienv;
     /** Irrlicht driver. */
-    irr::video::IVideoDriver *driver;
+    irr::video::IVideoDriver& driver;
 
     /** Camera in the Irrlicht scene. */
     Camera camera;

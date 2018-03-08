@@ -98,9 +98,9 @@ private:
     }
 };
 
-GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager* scene) :
+GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager& scene) :
     body(body),
-    node(scene->addEmptySceneNode(nullptr))
+    node(scene.addEmptySceneNode(nullptr))
 {
     IrrlichtDrawer drawer(*node);
     body.drawShape(drawer);

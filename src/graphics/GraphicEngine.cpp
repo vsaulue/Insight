@@ -27,16 +27,15 @@ using namespace irr;
 
 GraphicEngine::GraphicEngine(const World& world) :
     device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, &inputs)),
-    camera(*device->getSceneManager(), inputs),
+    sceneManager(*device->getSceneManager()),
+    guienv(*device->getGUIEnvironment()),
+    driver(*device->getVideoDriver()),
+    camera(sceneManager, inputs),
     world(world)
 {
-    sceneManager = device->getSceneManager();
-    guienv = device->getGUIEnvironment();
-    driver = device->getVideoDriver();
-
     device->setWindowCaption(L"Insight - Renderer");
 
-    scene::ILightSceneNode *light = sceneManager->addLightSceneNode(NULL, core::vector3df(2.0f, 2.0f, 2.0f), video::SColorf(1.0f, 1.0f, 1.0f));
+    scene::ILightSceneNode *light = sceneManager.addLightSceneNode(NULL, core::vector3df(2.0f, 2.0f, 2.0f), video::SColorf(1.0f, 1.0f, 1.0f));
 
     light->setLightType(video::ELT_DIRECTIONAL);
     light->setRotation(core::vector3df(135.0f, .0f, 45.0f));
@@ -48,7 +47,7 @@ GraphicEngine::GraphicEngine(const World& world) :
 }
 
 void GraphicEngine::doRender() {
-    driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
+    driver.beginScene(true, true, video::SColor(255, 0, 0, 0));
 
     for (auto it = world.begin(); it != world.end(); ++it) {
         const Body& body = *it->get();
@@ -66,10 +65,10 @@ void GraphicEngine::doRender() {
         const btVector3& pos = body.getPosition();
         object->setPosition(pos);
     }
-    sceneManager->drawAll();
-    guienv->drawAll();
+    sceneManager.drawAll();
+    guienv.drawAll();
 
-    driver->endScene();
+    driver.endScene();
 }
 
 bool GraphicEngine::run() {

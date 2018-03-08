@@ -36,7 +36,7 @@ public:
      * @param body Object of the simulation to render.
      * @param scene Scene in which this object should be rendered.
      */
-    GraphicObject(const Body& body, irr::scene::ISceneManager* scene);
+    GraphicObject(const Body& body, irr::scene::ISceneManager& scene);
 
     void setPosition(const btVector3& pos) {
         node->setPosition({pos.x(),pos.y(),pos.z()});
