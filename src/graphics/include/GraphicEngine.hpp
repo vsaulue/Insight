@@ -59,18 +59,14 @@ public:
     GraphicEngine(const World& world);
 
     /**
-     * Render the next frame.
-     */
-    void doRender();
-
-    /**
      * Run the engine.
      *
-     * This function will handle events (mouse clicks, window resize, ...)
+     * This function will handle events (mouse clicks, window resize, ...), and
+     * render the next frame.
      *
      * @return True if the window was not closed.
      */
-    bool run();
+    void run();
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 };

@@ -269,12 +269,15 @@ private:
      * insightState.
      */
     void workerMainLoop() {
-        while (insightState.waitRunningState() && graphicEngine.run()) {
+        while (insightState.waitRunningState()) {
             auto start = timer::now();
+            // physics
             if (simulationState.isRunning()) {
                 world.stepSimulation(std::chrono::duration<double>(renderPeriod).count());
             }
-            graphicEngine.doRender();
+            // gui
+            graphicEngine.run();
+
             auto ellapsed = timer::now() - start;
 
             if (ellapsed < renderPeriod) {

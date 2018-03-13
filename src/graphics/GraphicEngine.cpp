@@ -46,33 +46,31 @@ GraphicEngine::GraphicEngine(const World& world) :
     lightData.AmbientColor = video::SColorf(.2f, .2f, .2f);
 }
 
-void GraphicEngine::doRender() {
-    driver.beginScene(true, true, video::SColor(255, 0, 0, 0));
+void GraphicEngine::run() {
+    if(device->run()) {
+        driver.beginScene(true, true, video::SColor(255, 0, 0, 0));
 
-    for (auto it = world.begin(); it != world.end(); ++it) {
-        const Body& body = *it->get();
+        for (auto it = world.begin(); it != world.end(); ++it) {
+            const Body& body = *it->get();
 
-        auto map_it = mapping.find(&body);
-        GraphicObject* object;
-        if (map_it == mapping.end()) {
-            std::unique_ptr<GraphicObject> ptr = std::make_unique<GraphicObject>(body, sceneManager);
-            object = ptr.get();
-            mapping[(*it).get()] = std::move(ptr);
-        } else {
-            object = (*map_it).second.get();
+            auto map_it = mapping.find(&body);
+            GraphicObject* object;
+            if (map_it == mapping.end()) {
+                std::unique_ptr<GraphicObject> ptr = std::make_unique<GraphicObject>(body, sceneManager);
+                object = ptr.get();
+                mapping[(*it).get()] = std::move(ptr);
+            } else {
+                object = (*map_it).second.get();
+            }
+
+            const btVector3& pos = body.getPosition();
+            object->setPosition(pos);
         }
+        sceneManager.drawAll();
+        guienv.drawAll();
 
-        const btVector3& pos = body.getPosition();
-        object->setPosition(pos);
+        driver.endScene();
     }
-    sceneManager.drawAll();
-    guienv.drawAll();
-
-    driver.endScene();
-}
-
-bool GraphicEngine::run() {
-    return device->run();
 }
 
 int GraphicEngine::luaIndex(const std::string& memberName, LuaStateView& state) {
