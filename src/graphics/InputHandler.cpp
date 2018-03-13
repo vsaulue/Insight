@@ -20,11 +20,7 @@
 
 bool InputHandler::OnEvent(const irr::SEvent& event) {
     if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-        irr::EKEY_CODE key = event.KeyInput.Key;
-        Action action;
-        if (bindings.getAction(key, action)) {
-            keyDown[action] = event.KeyInput.PressedDown;
-        }
+        keyboard.OnEvent(event.KeyInput);
     }
     return false;
 }

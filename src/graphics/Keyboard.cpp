@@ -16,37 +16,30 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INPUTHANDLER_HPP
-#define INPUTHANDLER_HPP
-
-#include "irrlicht.h"
-
-#include "Action.hpp"
-#include "Bindings.hpp"
 #include "Keyboard.hpp"
 
-/**
- * Handles user inputs in the GUI.
- */
-class InputHandler : public irr::IEventReceiver {
-public:
-    /**
-     * Check if the key associated to a given action is pressed.
-     *
-     * @param[in] action Action to check.
-     * @return True if the button associated to the action is pressed.
-     */
-    bool isKeyDown(Action action) const {
-        return keyboard.isKeyDown(bindings.getKey(action));
-    };
+static bool readMap(const std::unordered_map<irr::EKEY_CODE,bool>& map, irr::EKEY_CODE key) {
+    const auto it = map.find(key);
+    bool result = false;
+    if (it != map.end()) {
+        result = it->second;
+    }
+    return result;
+}
 
-    bool OnEvent(const irr::SEvent& event) override;
-private:
-    /** Object mapping keyboard & mouse button to GUI actions. */
-    Bindings bindings;
-    /** Keyboard handler. */
-    Keyboard keyboard;
-};
+bool Keyboard::isKeyDown(irr::EKEY_CODE key) const {
+    return readMap(keyDown, key);
+}
 
-#endif /* INPUTHANDLER_HPP */
+bool Keyboard::isKeyMovingDown(irr::EKEY_CODE key) const {
+    return readMap(keyMoving, key) && readMap(keyDown, key);
+}
 
+bool Keyboard::isKeyMovingUp(irr::EKEY_CODE key) const {
+    return readMap(keyMoving, key) && !readMap(keyDown, key);
+}
+
+void Keyboard::OnEvent(const irr::SEvent::SKeyInput& event) {
+    keyMoving[event.Key] = (keyDown[event.Key] != event.PressedDown);
+    keyDown[event.Key] = event.PressedDown;
+}

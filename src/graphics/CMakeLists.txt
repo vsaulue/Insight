@@ -20,6 +20,7 @@ add_library(GraphicEngine STATIC
     GraphicEngine.cpp
     GraphicObject.cpp
     InputHandler.cpp
+    Keyboard.cpp
 )
 
 target_include_directories(GraphicEngine PUBLIC include)
