@@ -41,6 +41,14 @@ public:
     };
 
     bool OnEvent(const irr::SEvent& event) override;
+
+    /**
+     * Tells the input handlers that a new frame will be rendered.
+     *
+     * This function is used to reset all temporary status from the different inputs
+     * (example: key passed from "up" to "down" in the last frame).
+     */
+    void newFrame();
 private:
     /** Object mapping keyboard & mouse button to GUI actions. */
     Bindings bindings;

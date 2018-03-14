@@ -47,6 +47,7 @@ GraphicEngine::GraphicEngine(const World& world) :
 }
 
 void GraphicEngine::run() {
+    inputs.newFrame();
     if(device->run()) {
         driver.beginScene(true, true, video::SColor(255, 0, 0, 0));
 

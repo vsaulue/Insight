@@ -24,3 +24,7 @@ bool InputHandler::OnEvent(const irr::SEvent& event) {
     }
     return false;
 }
+
+void InputHandler::newFrame() {
+    keyboard.newFrame();
+}

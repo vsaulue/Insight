@@ -62,6 +62,11 @@ public:
      * @param[in] event Event to process.
      */
     void OnEvent(const irr::SEvent::SKeyInput& event);
+
+    /**
+     * Resets "moving" key list.
+     */
+    void newFrame();
 private:
     /** Map indicating if a given key is pressed. */
     std::unordered_map<irr::EKEY_CODE, bool> keyDown;

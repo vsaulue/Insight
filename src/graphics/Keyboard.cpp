@@ -43,3 +43,7 @@ void Keyboard::OnEvent(const irr::SEvent::SKeyInput& event) {
     keyMoving[event.Key] = (keyDown[event.Key] != event.PressedDown);
     keyDown[event.Key] = event.PressedDown;
 }
+
+void Keyboard::newFrame() {
+    keyMoving.clear();
+}
