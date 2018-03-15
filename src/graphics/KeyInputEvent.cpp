@@ -16,15 +16,24 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Bindings.hpp"
 #include "KeyInputEvent.hpp"
 
-Bindings::Bindings() {
-    using KE = KeyInputEvent::KeyEvent;
-    actionToKey[Action::CameraForward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_W, KE::ButtonDown);
-    actionToKey[Action::CameraBackward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_S, KE::ButtonDown);
-    actionToKey[Action::CameraLeft] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_A, KE::ButtonDown);
-    actionToKey[Action::CameraRight] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_D, KE::ButtonDown);
-    actionToKey[Action::CameraUp] = std::make_unique<KeyInputEvent>(irr::KEY_LSHIFT, KE::ButtonDown);
-    actionToKey[Action::CameraDown] = std::make_unique<KeyInputEvent>(irr::KEY_LCONTROL, KE::ButtonDown);
+KeyInputEvent::KeyInputEvent(irr::EKEY_CODE key, KeyEvent event) : key(key), event(event) {
+
+}
+
+bool KeyInputEvent::happened(const Keyboard& keyboard) {
+    bool result;
+    switch (event) {
+    case KeyEvent::ButtonMovingDown:
+        result = keyboard.isKeyMovingDown(key);
+        break;
+    case KeyEvent::ButtonDown:
+        result = keyboard.isKeyDown(key);
+        break;
+    case KeyEvent::ButtonMovingUp:
+        result = keyboard.isKeyMovingUp(key);
+        break;
+    }
+    return result;
 }

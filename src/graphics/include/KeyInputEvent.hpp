@@ -16,34 +16,36 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BINDINGS_HPP
-#define BINDINGS_HPP
+#ifndef KEYINPUTEVENT_HPP
+#define KEYINPUTEVENT_HPP
 
-#include <memory>
-#include <unordered_map>
-
-#include "irrlicht.h"
-
-#include "Action.hpp"
 #include "InputEvent.hpp"
 
-/** Maps user actions in the GUI to mouse & keyboard buttons. */
-class Bindings {
+/** Class representing a keyboard input from the user. */
+class KeyInputEvent : public InputEvent {
 public:
-    /**
-     * Gets the event binded to the given action.
-     * @param[in] action Action to check.
-     * @return The event used to trigger this action.
-     */
-    InputEvent& getEvent(Action action) const {
-        return *actionToKey.at(action);
-    }
 
-    /** Constructs a new bindings with a default mapping for QWERTY keyboards. */
-    Bindings();
+    /** Possible key event that can be watched. */
+    enum class KeyEvent {
+        ButtonMovingDown, /**< The key was just pressed. */
+        ButtonDown, /**< The key is currently pressed. */
+        ButtonMovingUp /**< The key was just released. */
+    };
+
+    /**
+     * Creates a new input event.
+     * @param key
+     * @param event
+     */
+    KeyInputEvent(irr::EKEY_CODE key, KeyEvent event);
+
+    bool happened(const Keyboard& keyboard) override;
+
 private:
-    std::unordered_map<Action, std::unique_ptr<InputEvent>> actionToKey;
+    /** Key watched by this event. */
+    irr::EKEY_CODE key;
+    /** Key state watched by this event. */
+    KeyEvent event;
 };
 
-#endif /* BINDINGS_HPP */
-
+#endif /* KEYINPUTEVENT_HPP */

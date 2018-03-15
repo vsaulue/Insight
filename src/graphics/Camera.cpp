@@ -34,22 +34,22 @@ public:
 
         vector3df translation = {0,0,0};
         float translationOffset = translationSpeed * (timeMs-lastTime) / 1000;
-        if (inputs.isKeyDown(Action::CameraForward)) {
+        if (inputs.happened(Action::CameraForward)) {
             translation.Z += translationOffset;
         }
-        if (inputs.isKeyDown(Action::CameraBackward)) {
+        if (inputs.happened(Action::CameraBackward)) {
             translation.Z -= translationOffset;
         }
-        if (inputs.isKeyDown(Action::CameraLeft)) {
+        if (inputs.happened(Action::CameraLeft)) {
             translation.X -= translationOffset;
         }
-        if (inputs.isKeyDown(Action::CameraRight)) {
+        if (inputs.happened(Action::CameraRight)) {
             translation.X += translationOffset;
         }
-        if (inputs.isKeyDown(Action::CameraUp)) {
+        if (inputs.happened(Action::CameraUp)) {
             translation.Y += translationOffset;
         }
-        if (inputs.isKeyDown(Action::CameraDown)) {
+        if (inputs.happened(Action::CameraDown)) {
             translation.Y -= translationOffset;
         }
 

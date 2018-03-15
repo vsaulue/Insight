@@ -36,8 +36,9 @@ public:
      * @param[in] action Action to check.
      * @return True if the button associated to the action is pressed.
      */
-    bool isKeyDown(Action action) const {
-        return keyboard.isKeyDown(bindings.getKey(action));
+    bool happened(Action action) const {
+        InputEvent& event = bindings.getEvent(action);
+        return event.happened(keyboard);
     };
 
     bool OnEvent(const irr::SEvent& event) override;

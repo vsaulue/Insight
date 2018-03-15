@@ -16,15 +16,25 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Bindings.hpp"
-#include "KeyInputEvent.hpp"
+#ifndef INPUTEVENT_HPP
+#define INPUTEVENT_HPP
 
-Bindings::Bindings() {
-    using KE = KeyInputEvent::KeyEvent;
-    actionToKey[Action::CameraForward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_W, KE::ButtonDown);
-    actionToKey[Action::CameraBackward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_S, KE::ButtonDown);
-    actionToKey[Action::CameraLeft] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_A, KE::ButtonDown);
-    actionToKey[Action::CameraRight] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_D, KE::ButtonDown);
-    actionToKey[Action::CameraUp] = std::make_unique<KeyInputEvent>(irr::KEY_LSHIFT, KE::ButtonDown);
-    actionToKey[Action::CameraDown] = std::make_unique<KeyInputEvent>(irr::KEY_LCONTROL, KE::ButtonDown);
-}
+#include "irrlicht.h"
+
+#include "Keyboard.hpp"
+
+/** Generic class to describe any input from the user. */
+class InputEvent {
+public:
+    virtual ~InputEvent() = default;
+
+    /**
+     * Tells if this event is occuring on the given devices.
+     *
+     * @param[in] keyboard Dvice on which the event is tested.
+     * @return True if the event occured on the given devices.
+     */
+    virtual bool happened(const Keyboard& keyboard) = 0;
+};
+
+#endif /* INPUTEVENT_HPP */
