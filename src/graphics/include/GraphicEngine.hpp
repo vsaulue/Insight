@@ -30,9 +30,6 @@
 
 class GraphicEngine : public LuaVirtualClass {
 private:
-    /** Object managing mouse & keyboard inputs. */
-    InputHandler inputs;
-
     /** Irrlicht device. */
     irrlicht_ptr<irr::IrrlichtDevice> device;
     /** Irrlicht scene manager. */
@@ -41,6 +38,9 @@ private:
     irr::gui::IGUIEnvironment& guienv;
     /** Irrlicht driver. */
     irr::video::IVideoDriver& driver;
+
+    /** Object managing mouse & keyboard inputs. */
+    InputHandler inputs;
 
     /** Camera in the Irrlicht scene. */
     Camera camera;

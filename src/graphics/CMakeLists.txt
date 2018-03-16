@@ -22,6 +22,7 @@ add_library(GraphicEngine STATIC
     InputHandler.cpp
     Keyboard.cpp
     KeyInputEvent.cpp
+    Mouse.cpp
 )
 
 target_include_directories(GraphicEngine PUBLIC include)

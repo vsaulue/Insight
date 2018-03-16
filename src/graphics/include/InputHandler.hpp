@@ -24,6 +24,7 @@
 #include "Action.hpp"
 #include "Bindings.hpp"
 #include "Keyboard.hpp"
+#include "Mouse.hpp"
 
 /**
  * Handles user inputs in the GUI.
@@ -50,11 +51,22 @@ public:
      * (example: key passed from "up" to "down" in the last frame).
      */
     void newFrame();
+
+    /**
+     * Creates a new input handler.
+     *
+     * @param cursor Handle of the mouse cursor.
+     */
+    InputHandler(irr::gui::ICursorControl& cursor) : mouse(cursor) {
+
+    }
 private:
     /** Object mapping keyboard & mouse button to GUI actions. */
     Bindings bindings;
     /** Keyboard handler. */
     Keyboard keyboard;
+    /** Mouse handler. */
+    Mouse mouse;
 };
 
 #endif /* INPUTHANDLER_HPP */

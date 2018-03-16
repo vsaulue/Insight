@@ -26,13 +26,15 @@
 using namespace irr;
 
 GraphicEngine::GraphicEngine(const World& world) :
-    device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, &inputs)),
+    device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, nullptr)),
     sceneManager(*device->getSceneManager()),
     guienv(*device->getGUIEnvironment()),
     driver(*device->getVideoDriver()),
+    inputs(*device->getCursorControl()),
     camera(sceneManager, inputs),
     world(world)
 {
+    device->setEventReceiver(&inputs);
     device->setWindowCaption(L"Insight - Renderer");
 
     scene::ILightSceneNode *light = sceneManager.addLightSceneNode(NULL, core::vector3df(2.0f, 2.0f, 2.0f), video::SColorf(1.0f, 1.0f, 1.0f));
