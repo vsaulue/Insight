@@ -30,7 +30,7 @@ GraphicEngine::GraphicEngine(const World& world) :
     sceneManager(*device->getSceneManager()),
     guienv(*device->getGUIEnvironment()),
     driver(*device->getVideoDriver()),
-    inputs(*device->getCursorControl()),
+    inputs(*device),
     camera(sceneManager, inputs),
     world(world)
 {
@@ -51,6 +51,7 @@ GraphicEngine::GraphicEngine(const World& world) :
 void GraphicEngine::run() {
     inputs.newFrame();
     if(device->run()) {
+        inputs.doActions();
         driver.beginScene(true, true, video::SColor(255, 0, 0, 0));
 
         for (auto it = world.begin(); it != world.end(); ++it) {

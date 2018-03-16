@@ -27,4 +27,13 @@ bool InputHandler::OnEvent(const irr::SEvent& event) {
 
 void InputHandler::newFrame() {
     keyboard.newFrame();
+    mouse.newFrame();
+}
+
+void InputHandler::doActions() {
+    if (!device.isWindowFocused()) {
+        mouse.setMouseLock(false);
+    } else if (happened(Action::ToggleMouseLock)) {
+        mouse.toggleMouseLock();
+    }
 }

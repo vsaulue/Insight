@@ -29,12 +29,42 @@ public:
      *
      * @param cursor Irrlicht handle of the mouse cursor.
      */
-    Mouse(irr::gui::ICursorControl& cursor) : cursor(cursor) {
+    Mouse(irr::gui::ICursorControl& cursor) : cursor(cursor), mouseLocked(false) {
 
+    }
+
+    /***
+     * Tells this mouse handler that a new frame will be rendered.
+     */
+    void newFrame();
+
+    /** Switch the state of the mouse between locked & unlocked. */
+    void toggleMouseLock() {
+        setMouseLock(!mouseLocked);
+    }
+
+    /**
+     * Locks or unlocks the mouse in the middle of the window.
+     * @param locked True to lock the mouse, false to unlock.
+     */
+    void setMouseLock(bool locked) {
+        mouseLocked = locked;
+        cursor.setVisible(!mouseLocked);
+    }
+
+    /**
+     * Tests if the mouse is locked in the middle of the window.
+     * @return True if the mouse is locked.
+     */
+    bool isMouseLocked() const {
+        return mouseLocked;
     }
 private:
     /** Irrlicht cursor handle. */
     irr::gui::ICursorControl& cursor;
+
+    /** Flag sets when the mouse cursor is locked in the middle of the screen & invisible. */
+    bool mouseLocked;
 };
 
 #endif /* MOUSE_HPP */

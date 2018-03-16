@@ -53,14 +53,24 @@ public:
     void newFrame();
 
     /**
+     * Process actions reletad to input devices.
+     */
+    void doActions();
+
+    /**
      * Creates a new input handler.
      *
-     * @param cursor Handle of the mouse cursor.
+     * @param device Irrlicht device.
      */
-    InputHandler(irr::gui::ICursorControl& cursor) : mouse(cursor) {
+    InputHandler(irr::IrrlichtDevice& device) :
+        device(device),
+        mouse(*device.getCursorControl())
+    {
 
     }
 private:
+    /** Irrlicht device. */
+    irr::IrrlichtDevice& device;
     /** Object mapping keyboard & mouse button to GUI actions. */
     Bindings bindings;
     /** Keyboard handler. */

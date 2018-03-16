@@ -17,3 +17,9 @@
  */
 
 #include "Mouse.hpp"
+
+void Mouse::newFrame() {
+    if (mouseLocked) {
+        cursor.setPosition(0.5f, 0.5f);
+    }
+}
