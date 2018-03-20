@@ -23,6 +23,7 @@
 
 #include "Action.hpp"
 #include "Bindings.hpp"
+#include "EventReport.hpp"
 #include "Keyboard.hpp"
 #include "Mouse.hpp"
 
@@ -41,6 +42,17 @@ public:
         InputEvent& event = bindings.getEvent(action);
         return event.happened(keyboard);
     };
+
+    /**
+     * Tests if the input event associated to a given action happened.
+     *
+     * @param[in] action Action to check.
+     * @return Data about the tested action (did it happen, intensity).
+     */
+    EventReport actionReport(Action action) const {
+        InputEvent& event = bindings.getEvent(action);
+        return event.eventReport(keyboard);
+    }
 
     bool OnEvent(const irr::SEvent& event) override;
 

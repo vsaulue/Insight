@@ -21,6 +21,7 @@
 
 #include "irrlicht.h"
 
+#include "EventReport.hpp"
 #include "Keyboard.hpp"
 
 /** Generic class to describe any input from the user. */
@@ -31,10 +32,20 @@ public:
     /**
      * Tells if this event is occuring on the given devices.
      *
-     * @param[in] keyboard Dvice on which the event is tested.
+     * @param[in] keyboard Device on which the event is tested.
      * @return True if the event occured on the given devices.
      */
-    virtual bool happened(const Keyboard& keyboard) = 0;
+    bool happened(const Keyboard& keyboard) {
+        return eventReport(keyboard).happened;
+    }
+
+    /**
+     * Tests if the event is occuring on the given devices.
+     *
+     * @param[in] keyboard Device on which the event is tested.
+     * @return A report on the event.
+     */
+    virtual EventReport eventReport(const Keyboard& keyboard) = 0;
 };
 
 #endif /* INPUTEVENT_HPP */

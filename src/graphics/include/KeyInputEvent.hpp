@@ -19,6 +19,7 @@
 #ifndef KEYINPUTEVENT_HPP
 #define KEYINPUTEVENT_HPP
 
+#include "EventReport.hpp"
 #include "InputEvent.hpp"
 
 /** Class representing a keyboard input from the user. */
@@ -39,7 +40,7 @@ public:
      */
     KeyInputEvent(irr::EKEY_CODE key, KeyEvent event);
 
-    bool happened(const Keyboard& keyboard) override;
+    EventReport eventReport(const Keyboard& keyboard) override;
 
 private:
     /** Key watched by this event. */

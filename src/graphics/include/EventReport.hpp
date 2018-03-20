@@ -16,27 +16,20 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "KeyInputEvent.hpp"
+#ifndef EVENTREPORT_HPP
+#define EVENTREPORT_HPP
 
-KeyInputEvent::KeyInputEvent(irr::EKEY_CODE key, KeyEvent event) : key(key), event(event) {
+/** Report obtained after evaluating if an event happened on some input devices. */
+struct EventReport {
+    /** Flag indicating if the event happened or not. */
+    bool happened;
+    /**
+     * Intensity of the event.
+     *
+     * Analog devices (mouse) will provide something proportional to the input.
+     * Discrete inputs (ex: keyboard button) will produce 0 or 1.
+     */
+    float intensity;
+};
 
-}
-
-EventReport KeyInputEvent::eventReport(const Keyboard& keyboard) {
-    EventReport result = {false, 0.0f};
-    switch (event) {
-    case KeyEvent::ButtonMovingDown:
-        result.happened = keyboard.isKeyMovingDown(key);
-        break;
-    case KeyEvent::ButtonDown:
-        result.happened = keyboard.isKeyDown(key);
-        break;
-    case KeyEvent::ButtonMovingUp:
-        result.happened = keyboard.isKeyMovingUp(key);
-        break;
-    }
-    if (result.happened) {
-        result.intensity = 1.0f;
-    }
-    return result;
-}
+#endif /* EVENTREPORT_HPP */
