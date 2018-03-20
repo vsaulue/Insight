@@ -58,6 +58,7 @@ private:
 
     /** Scene node of the camera in Irrlicht. */
     std::unique_ptr<irr::scene::ICameraSceneNode, CameraDeleter> camera;
+    irr::scene::ISceneNode& target;
 };
 
 #endif /* CAMERA_HPP */
