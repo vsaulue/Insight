@@ -20,6 +20,17 @@
 
 void Mouse::newFrame() {
     if (mouseLocked) {
+        irr::core::dimension2d<irr::u32> screenSize = driver.getScreenSize();
+        preEventPos.X = screenSize.Width/2;
+        preEventPos.Y = screenSize.Height/2;
+        postEventPos = cursor.getPosition();
         cursor.setPosition(0.5f, 0.5f);
+    } else {
+        preEventPos = postEventPos;
+        postEventPos = cursor.getPosition();
     }
+}
+
+void Mouse::OnEvent(const irr::SEvent::SMouseInput& event) {
+
 }

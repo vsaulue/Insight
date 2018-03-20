@@ -21,6 +21,8 @@
 bool InputHandler::OnEvent(const irr::SEvent& event) {
     if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
         keyboard.OnEvent(event.KeyInput);
+    } else if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
+        mouse.OnEvent(event.MouseInput);
     }
     return false;
 }

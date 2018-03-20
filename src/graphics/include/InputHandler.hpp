@@ -76,7 +76,7 @@ public:
      */
     InputHandler(irr::IrrlichtDevice& device) :
         device(device),
-        mouse(*device.getCursorControl())
+        mouse(*device.getCursorControl(), *device.getVideoDriver())
     {
 
     }

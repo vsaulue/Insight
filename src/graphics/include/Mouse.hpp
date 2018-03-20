@@ -28,8 +28,15 @@ public:
      * Creates a new mouse input handler.
      *
      * @param cursor Irrlicht handle of the mouse cursor.
+     * @param driver Irrlicht video driver.
      */
-    Mouse(irr::gui::ICursorControl& cursor) : cursor(cursor), mouseLocked(false) {
+    Mouse(irr::gui::ICursorControl& cursor, const irr::video::IVideoDriver& driver) :
+        cursor(cursor),
+        driver(driver),
+        mouseLocked(false),
+        preEventPos(cursor.getPosition()),
+        postEventPos(preEventPos)
+    {
 
     }
 
@@ -37,6 +44,21 @@ public:
      * Tells this mouse handler that a new frame will be rendered.
      */
     void newFrame();
+
+    /**
+     * Process a specific event coming form the GUI.
+     *
+     * @param[in] event Event to process.
+     */
+    void OnEvent(const irr::SEvent::SMouseInput& event);
+
+    /**
+     * Gets the movement done by the cursor since the last frame.
+     * @return The displacement (in pixels) of the cursor sinte the last frame.
+     */
+    irr::core::position2d<irr::s32> getMove() const {
+        return postEventPos-preEventPos;
+    }
 
     /** Switch the state of the mouse between locked & unlocked. */
     void toggleMouseLock() {
@@ -50,6 +72,9 @@ public:
     void setMouseLock(bool locked) {
         mouseLocked = locked;
         cursor.setVisible(!mouseLocked);
+        if (locked) {
+            cursor.setPosition(0.5f, 0.5f);
+        }
     }
 
     /**
@@ -63,8 +88,16 @@ private:
     /** Irrlicht cursor handle. */
     irr::gui::ICursorControl& cursor;
 
+    /** Irrlicht video driver. */
+    const irr::video::IVideoDriver& driver;
+
     /** Flag sets when the mouse cursor is locked in the middle of the screen & invisible. */
     bool mouseLocked;
+
+    /** Position of the cursor before processing the events that happened since the last frame was rendered? */
+    irr::core::position2d<irr::s32> preEventPos;
+    /** Current position of the cursor. */
+    irr::core::position2d<irr::s32> postEventPos;
 };
 
 #endif /* MOUSE_HPP */
