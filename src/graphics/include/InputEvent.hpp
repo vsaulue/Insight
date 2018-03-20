@@ -23,6 +23,7 @@
 
 #include "EventReport.hpp"
 #include "Keyboard.hpp"
+#include "Mouse.hpp"
 
 /** Generic class to describe any input from the user. */
 class InputEvent {
@@ -33,19 +34,21 @@ public:
      * Tells if this event is occuring on the given devices.
      *
      * @param[in] keyboard Device on which the event is tested.
+     * @param[in] mouse Device n which the event is tested.
      * @return True if the event occured on the given devices.
      */
-    bool happened(const Keyboard& keyboard) {
-        return eventReport(keyboard).happened;
+    bool happened(const Keyboard& keyboard, const Mouse& mouse) {
+        return eventReport(keyboard, mouse).happened;
     }
 
     /**
      * Tests if the event is occuring on the given devices.
      *
      * @param[in] keyboard Device on which the event is tested.
+     * @param[in] mouse Device n which the event is tested.
      * @return A report on the event.
      */
-    virtual EventReport eventReport(const Keyboard& keyboard) = 0;
+    virtual EventReport eventReport(const Keyboard& keyboard, const Mouse& mouse) = 0;
 };
 
 #endif /* INPUTEVENT_HPP */

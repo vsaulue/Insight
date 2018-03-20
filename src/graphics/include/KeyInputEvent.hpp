@@ -40,7 +40,7 @@ public:
      */
     KeyInputEvent(irr::EKEY_CODE key, KeyEvent event);
 
-    EventReport eventReport(const Keyboard& keyboard) override;
+    EventReport eventReport(const Keyboard& keyboard, const Mouse& mouse) override;
 
 private:
     /** Key watched by this event. */

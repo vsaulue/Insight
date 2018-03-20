@@ -22,7 +22,7 @@ KeyInputEvent::KeyInputEvent(irr::EKEY_CODE key, KeyEvent event) : key(key), eve
 
 }
 
-EventReport KeyInputEvent::eventReport(const Keyboard& keyboard) {
+EventReport KeyInputEvent::eventReport(const Keyboard& keyboard, const Mouse& mouse) {
     EventReport result = {false, 0.0f};
     switch (event) {
     case KeyEvent::ButtonMovingDown:

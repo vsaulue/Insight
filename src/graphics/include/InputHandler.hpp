@@ -40,7 +40,7 @@ public:
      */
     bool happened(Action action) const {
         InputEvent& event = bindings.getEvent(action);
-        return event.happened(keyboard);
+        return event.happened(keyboard, mouse);
     };
 
     /**
@@ -51,7 +51,7 @@ public:
      */
     EventReport actionReport(Action action) const {
         InputEvent& event = bindings.getEvent(action);
-        return event.eventReport(keyboard);
+        return event.eventReport(keyboard, mouse);
     }
 
     bool OnEvent(const irr::SEvent& event) override;
