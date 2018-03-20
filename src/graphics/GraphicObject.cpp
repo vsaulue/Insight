@@ -43,6 +43,8 @@ public:
         for (auto& index : faces) {
             meshBuffer->Indices.push_back(index);
         }
+        meshBuffer->recalculateBoundingBox();
+        mesh->recalculateBoundingBox();
 
         scene.addMeshSceneNode(mesh.get(), &rootNode);
     }
