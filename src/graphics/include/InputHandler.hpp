@@ -25,12 +25,13 @@
 #include "Bindings.hpp"
 #include "EventReport.hpp"
 #include "Keyboard.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "Mouse.hpp"
 
 /**
  * Handles user inputs in the GUI.
  */
-class InputHandler : public irr::IEventReceiver {
+class InputHandler : public irr::IEventReceiver, public LuaVirtualClass {
 public:
     /**
      * Check if the key associated to a given action is pressed.
@@ -80,6 +81,8 @@ public:
     {
 
     }
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     /** Irrlicht device. */
     irr::IrrlichtDevice& device;

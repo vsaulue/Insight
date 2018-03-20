@@ -35,3 +35,7 @@ Bindings::Bindings() {
     actionToKey[Action::CameraTurnUp] = std::make_unique<MouseMoveEvent>(MD::Up);
     actionToKey[Action::CameraTurnDown] = std::make_unique<MouseMoveEvent>(MD::Down);
 }
+
+int Bindings::luaIndex(const std::string& memberName, LuaStateView& state) {
+    return 0;
+}

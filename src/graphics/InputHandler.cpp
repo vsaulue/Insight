@@ -17,6 +17,7 @@
  */
 
 #include "InputHandler.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
 
 bool InputHandler::OnEvent(const irr::SEvent& event) {
     if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
@@ -38,4 +39,12 @@ void InputHandler::doActions() {
     } else if (happened(Action::ToggleMouseLock)) {
         mouse.toggleMouseLock();
     }
+}
+
+int InputHandler::luaIndex(const std::string& memberName, LuaStateView& state) {
+    if (memberName == "bindings") {
+        state.push<Bindings*>(&bindings);
+        return 1;
+    }
+    return 0;
 }

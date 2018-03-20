@@ -26,9 +26,10 @@
 
 #include "Action.hpp"
 #include "InputEvent.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 /** Maps user actions in the GUI to mouse & keyboard buttons. */
-class Bindings {
+class Bindings : public LuaVirtualClass {
 public:
     /**
      * Gets the event binded to the given action.
@@ -41,6 +42,9 @@ public:
 
     /** Constructs a new bindings with a default mapping for QWERTY keyboards. */
     Bindings();
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
 private:
     std::unordered_map<Action, std::unique_ptr<InputEvent>> actionToKey;
 };

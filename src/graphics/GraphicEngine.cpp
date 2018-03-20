@@ -81,6 +81,9 @@ int GraphicEngine::luaIndex(const std::string& memberName, LuaStateView& state) 
     if (memberName=="camera") {
         state.push<Camera*>(&camera);
         return 1;
+    } else if (memberName == "inputs") {
+        state.push<InputHandler*>(&inputs);
+        return 1;
     }
     return 0;
 }
