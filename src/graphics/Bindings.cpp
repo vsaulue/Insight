@@ -18,9 +18,11 @@
 
 #include "Bindings.hpp"
 #include "KeyInputEvent.hpp"
+#include "MouseMoveEvent.hpp"
 
 Bindings::Bindings() {
     using KE = KeyInputEvent::KeyEvent;
+    using MD = MouseMoveEvent::MouseDirection;
     actionToKey[Action::CameraForward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_W, KE::ButtonDown);
     actionToKey[Action::CameraBackward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_S, KE::ButtonDown);
     actionToKey[Action::CameraLeft] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_A, KE::ButtonDown);
@@ -28,4 +30,8 @@ Bindings::Bindings() {
     actionToKey[Action::CameraUp] = std::make_unique<KeyInputEvent>(irr::KEY_LSHIFT, KE::ButtonDown);
     actionToKey[Action::CameraDown] = std::make_unique<KeyInputEvent>(irr::KEY_LCONTROL, KE::ButtonDown);
     actionToKey[Action::ToggleMouseLock] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_Q, KE::ButtonMovingDown);
+    actionToKey[Action::CameraTurnLeft] = std::make_unique<MouseMoveEvent>(MD::Left);
+    actionToKey[Action::CameraTurnRight] = std::make_unique<MouseMoveEvent>(MD::Right);
+    actionToKey[Action::CameraTurnUp] = std::make_unique<MouseMoveEvent>(MD::Up);
+    actionToKey[Action::CameraTurnDown] = std::make_unique<MouseMoveEvent>(MD::Down);
 }

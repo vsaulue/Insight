@@ -27,7 +27,11 @@ enum class Action {
     CameraRight, /**< Move the camera to its right. */
     CameraUp, /**< Move the camera upward. */
     CameraDown,  /**< Move the camera downward. */
-    ToggleMouseLock /**< Lock/unlock the mouse in the middle of the screen. */
+    ToggleMouseLock, /**< Lock/unlock the mouse in the middle of the screen. */
+    CameraTurnLeft, /**< Turn the camera to look on the left. */
+    CameraTurnRight, /**< Turn the camera to look on the right. */
+    CameraTurnUp, /**< Turn the camera to look upwards. */
+    CameraTurnDown /**< Turn the camera to look downwards. */
 };
 
 #endif /* ACTION_HPP */
