@@ -16,8 +16,12 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ActionInfo.hpp"
 #include "Bindings.hpp"
 #include "KeyInputEvent.hpp"
+#include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/types/LuaMethod.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "MouseMoveEvent.hpp"
 
 Bindings::Bindings() {
@@ -37,5 +41,18 @@ Bindings::Bindings() {
 }
 
 int Bindings::luaIndex(const std::string& memberName, LuaStateView& state) {
+    using Method = LuaMethod<Bindings>;
+    if (memberName == "listActions") {
+        state.push<Method>([](Bindings& obj, LuaStateView& state) -> int {
+            const auto& set = ActionInfo::list();
+            int count = set.size();
+            state.checkStack(count);
+            for (const ActionInfo& info : set) {
+                state.push<LuaNativeString>(info.name.c_str());
+            }
+            return count;
+        });
+        return 1;
+    }
     return 0;
 }
