@@ -49,6 +49,14 @@ public:
      * @return A report on the event.
      */
     virtual EventReport eventReport(const Keyboard& keyboard, const Mouse& mouse) = 0;
+
+    /**
+     * Gets the name of the input.
+     *
+     * An input can be a keyboard key, a mouse movement, a mouse button, ...
+     * @return The name of the input watched by this event.
+     */
+    virtual const std::string& getInputName() const = 0;
 };
 
 #endif /* INPUTEVENT_HPP */

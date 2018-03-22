@@ -19,6 +19,8 @@
 #ifndef KEYINPUTEVENT_HPP
 #define KEYINPUTEVENT_HPP
 
+#include <map>
+
 #include "EventReport.hpp"
 #include "InputEvent.hpp"
 
@@ -42,6 +44,14 @@ public:
 
     EventReport eventReport(const Keyboard& keyboard, const Mouse& mouse) override;
 
+    const std::string& getInputName() const override;
+
+    /**
+     * Gets a map of all key names index by their irrlicht code.
+     *
+     * @return A map giving the name of a key from its code.
+     */
+    static const std::map<irr::EKEY_CODE, std::string>& keyNameMap();
 private:
     /** Key watched by this event. */
     irr::EKEY_CODE key;

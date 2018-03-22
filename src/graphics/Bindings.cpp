@@ -44,6 +44,23 @@ Bindings::Bindings() {
     actionToKey[Action::CameraTurnDown] = std::make_unique<MouseMoveEvent>(MD::Down);
 }
 
+/**
+ * Reads a string on the Lua stack, and interprets it as an ActionInfo.
+ *
+ * @param state Lua stack.
+ * @param stackIndex Index of the string on the stack.
+ * @return A reference to the ActionInfo named by the string in the stack.
+ */
+static const ActionInfo& luaActionInfoByName(LuaStateView& state, int stackIndex) {
+    std::string actionName(state.get<LuaNativeString>(stackIndex));
+    const ActionInfo* actionInfo = ActionInfo::byName(actionName);
+    if (actionInfo == nullptr) {
+        std::string errorMsg = std::string("Invalid action name: ") + actionName;
+        throw LuaException(errorMsg.c_str());
+    }
+    return *actionInfo;
+}
+
 int Bindings::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<Bindings>;
     if (memberName == "listActions") {
@@ -70,20 +87,22 @@ int Bindings::luaIndex(const std::string& memberName, LuaStateView& state) {
         return 1;
     } else if (memberName == "set") {
         state.push<Method>([](Bindings& obj, LuaStateView& state) -> int {
-            std::string actionName(state.get<LuaNativeString>(2));
+            const ActionInfo& actionInfo = luaActionInfoByName(state, 2);
             std::string eventName(state.get<LuaNativeString>(3));
-            const ActionInfo* actionInfo = ActionInfo::byName(actionName);
-            if (actionInfo == nullptr) {
-                std::string errorMsg = std::string("Invalid action name: ") + actionName;
-                throw LuaException(errorMsg.c_str());
-            }
-            std::unique_ptr<InputEvent> event = InputEventFactory::makeByName(eventName, actionInfo->persistent);
+            std::unique_ptr<InputEvent> event = InputEventFactory::makeByName(eventName, actionInfo.persistent);
             if (event == nullptr) {
                 std::string errorMsg = std::string("Invalid event name: ") + eventName;
                 throw LuaException(errorMsg.c_str());
             }
-            obj.actionToKey[actionInfo->value] = std::move(event);
+            obj.actionToKey[actionInfo.value] = std::move(event);
             return 0;
+        });
+        return 1;
+    } else if (memberName == "get") {
+        state.push<Method>([](Bindings& obj, LuaStateView& state) -> int {
+            const ActionInfo& actionInfo = luaActionInfoByName(state, 2);
+            state.push<LuaNativeString>(obj.actionToKey[actionInfo.value]->getInputName().c_str());
+            return 1;
         });
         return 1;
     }

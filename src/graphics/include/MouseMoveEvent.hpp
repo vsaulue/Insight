@@ -19,6 +19,8 @@
 #ifndef MOUSEMOVEEVENT_HPP
 #define MOUSEMOVEEVENT_HPP
 
+#include <map>
+
 #include "EventReport.hpp"
 #include "InputEvent.hpp"
 
@@ -47,6 +49,15 @@ public:
     }
 
     EventReport eventReport(const Keyboard& keyboard, const Mouse& mouse) override;
+
+    const std::string& getInputName() const override;
+
+    /**
+     * Gets a map of all mouse directions names.
+     *
+     * @return A map giving a direction name from its enum code.
+     */
+    static const std::map<MouseDirection, std::string>& directionNameMap();
 private:
     /** Direction of the mouse that should trigger this event. */
     MouseDirection direction;

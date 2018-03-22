@@ -16,6 +16,9 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+#include <cassert>
+
 #include "MouseMoveEvent.hpp"
 
 static const float MOUSE_MOVE_MULTIPLIER = 0.1f;
@@ -44,5 +47,23 @@ EventReport MouseMoveEvent::eventReport(const Keyboard& keyboard, const Mouse& m
             result.intensity = intensity * MOUSE_MOVE_MULTIPLIER;
         }
     }
+    return result;
+}
+
+const std::string& MouseMoveEvent::getInputName() const {
+    const auto& map = directionNameMap();
+    auto it = std::find_if(map.begin(), map.end(), [this](auto& pair) -> bool { return pair.first == this->direction; });
+    assert(it != map.end());
+    return it->second;
+}
+
+const std::map<MouseMoveEvent::MouseDirection, std::string>& MouseMoveEvent::directionNameMap() {
+    using MD = MouseDirection;
+    static const std::map<MouseDirection, std::string> result {
+        {MD::Left, "MOUSE_MoveLeft"},
+        {MD::Right, "MOUSE_MoveRight"},
+        {MD::Up, "MOUSE_MoveUp"},
+        {MD::Down, "MOUSE_MoveDown"}
+    };
     return result;
 }
