@@ -31,8 +31,9 @@ private:
      *
      * @param[in] action Enum value described by this object.
      * @param[in] name Name of the action (associated string value).
+     * @param[in] persistent Nature of the action (instant vs persistent).
      */
-    ActionInfo(Action action, const char *name);
+    ActionInfo(Action action, const char *name, bool persistent);
 public:
     /**
      * Gets a set containing all ActionInfo objects.
@@ -59,6 +60,8 @@ public:
     const std::string name;
     /** Enum value described by this ActionInfo object.*/
     const Action value;
+    /** True if this is an action occuring over a period of time, false if it is instant. */
+    const bool persistent;
 };
 
 namespace std {

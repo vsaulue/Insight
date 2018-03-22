@@ -22,25 +22,26 @@
 
 const std::unordered_set<ActionInfo>& ActionInfo::list() {
     static const std::unordered_set<ActionInfo> values = {
-        ActionInfo(Action::CameraForward, "CameraForward"),
-        ActionInfo(Action::CameraBackward, "CameraBackward"),
-        ActionInfo(Action::CameraLeft, "CameraLeft"),
-        ActionInfo(Action::CameraRight, "CameraRight"),
-        ActionInfo(Action::CameraUp, "CameraUp"),
-        ActionInfo(Action::CameraDown, "CameraDown"),
-        ActionInfo(Action::ToggleMouseLock, "ToggleMouseLock"),
-        ActionInfo(Action::CameraTurnLeft, "CameraTurnLeft"),
-        ActionInfo(Action::CameraTurnRight, "CameraTurnRight"),
-        ActionInfo(Action::CameraTurnUp, "CameraTurnUp"),
-        ActionInfo(Action::CameraTurnDown, "CameraTurnDown")
+        ActionInfo(Action::CameraForward, "CameraForward", true),
+        ActionInfo(Action::CameraBackward, "CameraBackward", true),
+        ActionInfo(Action::CameraLeft, "CameraLeft", true),
+        ActionInfo(Action::CameraRight, "CameraRight", true),
+        ActionInfo(Action::CameraUp, "CameraUp", true),
+        ActionInfo(Action::CameraDown, "CameraDown", true),
+        ActionInfo(Action::ToggleMouseLock, "ToggleMouseLock", false),
+        ActionInfo(Action::CameraTurnLeft, "CameraTurnLeft", true),
+        ActionInfo(Action::CameraTurnRight, "CameraTurnRight", true),
+        ActionInfo(Action::CameraTurnUp, "CameraTurnUp", true),
+        ActionInfo(Action::CameraTurnDown, "CameraTurnDown", true),
     };
     return values;
 }
 
 
-ActionInfo::ActionInfo(Action action, const char* name) :
+ActionInfo::ActionInfo(Action action, const char* name, bool persistent) :
     name(name),
-    value(action)
+    value(action),
+    persistent(persistent)
 {
 
 }
