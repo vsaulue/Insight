@@ -16,11 +16,14 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <utility>
+
 #include "ActionInfo.hpp"
 #include "Bindings.hpp"
 #include "InputEventFactory.hpp"
 #include "KeyInputEvent.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/LuaException.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "MouseMoveEvent.hpp"
@@ -63,6 +66,24 @@ int Bindings::luaIndex(const std::string& memberName, LuaStateView& state) {
                 state.push<LuaNativeString>(pair.first.c_str());
             }
             return count;
+        });
+        return 1;
+    } else if (memberName == "set") {
+        state.push<Method>([](Bindings& obj, LuaStateView& state) -> int {
+            std::string actionName(state.get<LuaNativeString>(2));
+            std::string eventName(state.get<LuaNativeString>(3));
+            const ActionInfo* actionInfo = ActionInfo::byName(actionName);
+            if (actionInfo == nullptr) {
+                std::string errorMsg = std::string("Invalid action name: ") + actionName;
+                throw LuaException(errorMsg.c_str());
+            }
+            std::unique_ptr<InputEvent> event = InputEventFactory::makeByName(eventName, actionInfo->persistent);
+            if (event == nullptr) {
+                std::string errorMsg = std::string("Invalid event name: ") + eventName;
+                throw LuaException(errorMsg.c_str());
+            }
+            obj.actionToKey[actionInfo->value] = std::move(event);
+            return 0;
         });
         return 1;
     }
