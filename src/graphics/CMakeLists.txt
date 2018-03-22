@@ -20,6 +20,7 @@ add_library(GraphicEngine STATIC
     Camera.cpp
     GraphicEngine.cpp
     GraphicObject.cpp
+    InputEventFactory.cpp
     InputHandler.cpp
     Keyboard.cpp
     KeyInputEvent.cpp
