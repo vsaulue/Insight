@@ -185,6 +185,13 @@ public:
      */
     void doString(const std::string& code);
 
+    /**
+     * Ensures there is at least extra free slots on the Lua stack.
+     *
+     * @param extra Number of extra slots required.
+     */
+    void checkStack(int extra);
+
     virtual ~LuaStateView();
 
     /**

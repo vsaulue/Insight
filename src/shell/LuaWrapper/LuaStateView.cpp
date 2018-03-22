@@ -159,3 +159,10 @@ double LuaStateView::getDouble(int stackIndex) {
 const char* LuaStateView::getTypename(int stackIndex) {
     return luaL_typename(state, stackIndex);
 }
+
+void LuaStateView::checkStack(int extra) {
+    int success = lua_checkstack(state, extra);
+    if (success == 0) {
+        throw LuaException("Unable to allocate extra space on the Lua stack.");
+    }
+}
