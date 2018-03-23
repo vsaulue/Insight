@@ -67,3 +67,13 @@ const std::map<MouseMoveEvent::MouseDirection, std::string>& MouseMoveEvent::dir
     };
     return result;
 }
+
+std::unique_ptr<MouseMoveEvent> MouseMoveEvent::makeByName(const std::string& name, bool persistent) {
+    std::unique_ptr<MouseMoveEvent> result(nullptr);
+    const auto& map = directionNameMap();
+    auto it = std::find_if(map.begin(), map.end(), [&name](auto& pair) -> bool { return pair.second == name; });
+    if (it != map.end()) {
+        result = std::make_unique<MouseMoveEvent>(it->first);
+    }
+    return result;
+}

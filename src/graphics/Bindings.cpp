@@ -76,11 +76,11 @@ int Bindings::luaIndex(const std::string& memberName, LuaStateView& state) {
         return 1;
     } else if (memberName == "listEvents") {
         state.push<Method>([](Bindings& obj, LuaStateView& state) -> int {
-            const auto& map = InputEventFactory::list();
-            int count = map.size();
+            const auto& set = InputEventFactory::list();
+            int count = set.size();
             state.checkStack(count);
-            for (const auto& pair : map) {
-                state.push<LuaNativeString>(pair.first.c_str());
+            for (const std::string& name : set) {
+                state.push<LuaNativeString>(name.c_str());
             }
             return count;
         });

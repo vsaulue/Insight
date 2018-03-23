@@ -19,8 +19,7 @@
 #ifndef INPUTEVENTFACTORY_HPP
 #define INPUTEVENTFACTORY_HPP
 
-#include <functional>
-#include <map>
+#include <set>
 #include <memory>
 
 #include "InputEvent.hpp"
@@ -29,21 +28,12 @@
 class InputEventFactory {
 public:
     /**
-     * Function used to creates new events from any input device.
+     * Gets a set of all events names.
      *
-     * <li>
-     * <ul>param persistent (bool): see makeByName().
-     * <ul>returns An event</ul>
-     * </li>
+     * A event name is a unique string designing an elementary input: a keyboard key,
+     * a mouse button, a mouse movement in a direction, ...
      */
-    using EventMaker = std::function<std::unique_ptr<InputEvent>(bool)>;
-
-    /**
-     * Gets the map of all event names, mapped to function creating these events.
-     *
-     * @return A map of EventMaker, indexed by the event names.
-     */
-    static const std::map<std::string, EventMaker>& list();
+    static const std::set<std::string>& list();
 
     /**
      * Creates an InputEvent from an event name.

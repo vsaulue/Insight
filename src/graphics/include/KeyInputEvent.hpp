@@ -20,6 +20,7 @@
 #define KEYINPUTEVENT_HPP
 
 #include <map>
+#include <memory>
 
 #include "EventReport.hpp"
 #include "InputEvent.hpp"
@@ -52,6 +53,17 @@ public:
      * @return A map giving the name of a key from its code.
      */
     static const std::map<irr::EKEY_CODE, std::string>& keyNameMap();
+
+    /**
+     * Make a KeyInputEvent from an input name.
+     *
+     * See InputEventFactory::makeByName().
+     *
+     * @param[in] name Name of the input.
+     * @param[in] persistent True for a persistent event, false for an instant event.
+     * @return A pointer to the new event, or nullptr if the name is invalid.
+     */
+    static std::unique_ptr<KeyInputEvent> makeByName(const std::string& name, bool persistent);
 private:
     /** Key watched by this event. */
     irr::EKEY_CODE key;

@@ -20,6 +20,7 @@
 #define MOUSEMOVEEVENT_HPP
 
 #include <map>
+#include <memory>
 
 #include "EventReport.hpp"
 #include "InputEvent.hpp"
@@ -58,6 +59,17 @@ public:
      * @return A map giving a direction name from its enum code.
      */
     static const std::map<MouseDirection, std::string>& directionNameMap();
+
+    /**
+     * Make a MouseMoveEvent from an input name.
+     *
+     * See InputEventFactory::makeByName().
+     *
+     * @param[in] name Name of the input.
+     * @param[in] persistent True for a persistent event, false for an instant event.
+     * @return A pointer to the new event, or nullptr if the name is invalid.
+     */
+    static std::unique_ptr<MouseMoveEvent> makeByName(const std::string& name, bool persistent);
 private:
     /** Direction of the mouse that should trigger this event. */
     MouseDirection direction;

@@ -116,3 +116,19 @@ const std::map<irr::EKEY_CODE, std::string>& KeyInputEvent::keyNameMap() {
     };
     return result;
 }
+
+std::unique_ptr<KeyInputEvent> KeyInputEvent::makeByName(const std::string& name, bool persistent) {
+    std::unique_ptr<KeyInputEvent> result(nullptr);
+    const auto& map = keyNameMap();
+    auto it = std::find_if(map.begin(), map.end(), [&name](auto& pair) -> bool { return pair.second == name; });
+    if (it != map.end()) {
+        KeyEvent event;
+        if (persistent) {
+            event = KeyEvent::ButtonDown;
+        } else {
+            event = KeyEvent::ButtonMovingDown;
+        }
+        result = std::make_unique<KeyInputEvent>(it->first, event);
+    }
+    return result;
+}
