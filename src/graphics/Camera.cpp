@@ -21,6 +21,7 @@
 
 #include "Action.hpp"
 #include "Camera.hpp"
+#include "InputSettings.hpp"
 #include "irrlicht_ptr.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
@@ -67,8 +68,7 @@ private:
      * @return True if the camera was moved.
      */
     bool move(irr::scene::ICameraSceneNode& camera, float deltaTime) {
-        /** Translation speed on each axis (in meters/second). */
-        static const float translationSpeed = 5.0f;
+        float translationSpeed = inputs.getSettings().get(InputSettings::SettingsType::CameraTranslationSpeed);
 
         irr::core::vector3df translation = {0,0,0};
         float translationOffset = translationSpeed * deltaTime;
@@ -110,8 +110,7 @@ private:
         bool result = false;
         float yawSpeed = 0;
         float pitchSpeed = 0;
-        /** Rotation speed of the camera (in degree/sec/inputIntensity). */
-        static const float rotationSpeed = 30.0f;
+        float rotationSpeed = inputs.getSettings().get(InputSettings::SettingsType::CameraRotationSpeed);
 
         EventReport event;
         event = inputs.actionReport(Action::CameraTurnRight);

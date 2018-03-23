@@ -45,6 +45,9 @@ int InputHandler::luaIndex(const std::string& memberName, LuaStateView& state) {
     if (memberName == "bindings") {
         state.push<Bindings*>(&bindings);
         return 1;
+    } else if (memberName == "settings") {
+        state.push<InputSettings*>(&settings);
+        return 1;
     }
     return 0;
 }

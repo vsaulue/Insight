@@ -22,6 +22,7 @@ add_library(GraphicEngine STATIC
     GraphicObject.cpp
     InputEventFactory.cpp
     InputHandler.cpp
+    InputSettings.cpp
     Keyboard.cpp
     KeyInputEvent.cpp
     Mouse.cpp

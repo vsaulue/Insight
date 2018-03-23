@@ -24,6 +24,7 @@
 #include "Action.hpp"
 #include "Bindings.hpp"
 #include "EventReport.hpp"
+#include "InputSettings.hpp"
 #include "Keyboard.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "Mouse.hpp"
@@ -82,6 +83,15 @@ public:
 
     }
 
+    /**
+     * Gets the input settings.
+     *
+     * @return An object holding all user inputs settings.
+     */
+    const InputSettings& getSettings() const {
+        return settings;
+    }
+
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     /** Irrlicht device. */
@@ -92,6 +102,8 @@ private:
     Keyboard keyboard;
     /** Mouse handler. */
     Mouse mouse;
+    /** Input settings. */
+    InputSettings settings;
 };
 
 #endif /* INPUTHANDLER_HPP */
