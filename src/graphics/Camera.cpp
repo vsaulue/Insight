@@ -141,13 +141,13 @@ private:
 };
 
 Camera::Camera(irr::scene::ISceneManager& scene, const InputHandler& inputHandler) :
-    camera(scene.addCameraSceneNode(nullptr, irr::core::vector3df(0, 0, 0), irr::core::vector3df(0, 0, -1))),
+    camera(scene.addCameraSceneNode(nullptr)),
     target(*scene.addEmptySceneNode(camera.get()))
 {
     irrlicht_ptr<CameraAnimator> animator(new CameraAnimator(inputHandler));
     camera->addAnimator(animator.get());
     target.setPosition(irr::core::vector3df(0,0,1));
-    camera->setTarget(target.getAbsolutePosition());
+    setPosition(irr::core::vector3df(0,0,0));
 }
 
 void Camera::setPosition(const irr::core::vector3df& pos) {
