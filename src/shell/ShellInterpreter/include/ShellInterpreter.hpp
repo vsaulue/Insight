@@ -19,6 +19,9 @@
 #ifndef SHELLINTERPRETER_HPP
 #define	SHELLINTERPRETER_HPP
 
+#include <string>
+#include <vector>
+
 #include "lua/types/LuaVirtualClass.hpp"
 
 /**
@@ -41,8 +44,10 @@ public:
      * Run the shell.
      *
      * It contains the main loop reading from standard input.
+     *
+     * @param[in] luaInitScripts List of script to execute before reading from stdin.
      */
-    void run();
+    void run(const std::vector<std::string>& luaInitScripts);
 
     /**
      * Set a flag making the shell to stop after evaluating the current statement.

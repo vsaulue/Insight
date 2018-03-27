@@ -27,7 +27,7 @@ ShellInterpreter::ShellInterpreter(LuaVirtualClass& rootObject, const std::strin
     running = false;
 }
 
-void ShellInterpreter::run() {
+void ShellInterpreter::run(const std::vector<std::string>& luaInitScripts) {
     LuaState luaState;
     running = true;
     std::string line;
@@ -37,6 +37,10 @@ void ShellInterpreter::run() {
     luaState.push<LuaVirtualClass*>(&rootObject); // stack index 1
 
     luaState.setGlobal(rootName);
+
+    for (const std::string& script : luaInitScripts) {
+        luaState.doFile(script);
+    }
 
     while (running && std::getline(std::cin, line)) {
         try {

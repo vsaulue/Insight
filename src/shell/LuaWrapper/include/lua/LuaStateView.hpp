@@ -178,6 +178,13 @@ public:
     LuaStateView(lua_State* state);
 
     /**
+     * Executes the content of a file as Lua code.
+     *
+     * @param filename Path to the script to execute.
+     */
+    void doFile(const std::string& filename);
+
+    /**
      * Loads and executes the given string as Lua code.
      *
      * @param[in] code Lua code to execute.

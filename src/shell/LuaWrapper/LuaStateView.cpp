@@ -28,6 +28,13 @@ double LuaStateView::checkNumber(int stackIndex) {
     return luaL_checknumber(state, stackIndex);
 }
 
+void LuaStateView::doFile(const std::string& filename) {
+    int err = luaL_dofile(state, filename.c_str());
+    if (err != 0) {
+        throw LuaException(state);
+    }
+}
+
 void LuaStateView::doString(const std::string& code) {
     int err = luaL_dostring(state, code.c_str());
     if (err != 0) {

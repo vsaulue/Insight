@@ -326,12 +326,14 @@ public:
      *
      * This function will return when quit() has been called and all components
      * are stopped.
+     *
+     * @param[in] luaInitScripts List of Lua scripts to execute when starting the shell.
      */
-    void run() {
+    void run(const std::vector<std::string>& luaInitScripts) {
         insightState.boot();
         simulationState.pause();
 
-        std::thread shellThread([this]() { this->interpreter.run(); });
+        std::thread shellThread([this,&luaInitScripts]() { this->interpreter.run(luaInitScripts); });
         workerMainLoop();
 
         shellThread.join();
@@ -411,6 +413,8 @@ public:
     struct Switch  {
         /** Prints help message. */
         static constexpr char help[] = "help";
+        /** Execute Lua initialisation script(s). */
+        static constexpr char luaInit[] = "luaInit";
     };
 
     /**
@@ -430,19 +434,24 @@ public:
     InsightOptions(int argc, char** argv) {
         variable_map variables = parse(argc, argv);
         help = (variables.count(Switch::help) > 0);
+        luaInit = variables[Switch::luaInit].as<std::vector<std::string>>();
     }
 
     /** Help message requested. */
     bool help;
+    /** List of scripts to execute when starting the program. */
+    std::vector<std::string> luaInit;
 private:
     /** Object holding the options descriptions. */
     static const options_description description;
 
     /** Initializer of InsightOptions::description. */
     static options_description initDescription() {
+        namespace po = boost::program_options;
         options_description result("Command line arguments");
         result.add_options()
             (Switch::help, "prints this help message, and exits.")
+            (Switch::luaInit, po::value<std::vector<std::string>>()->default_value(std::vector<std::string>(),""), "executes a Lua script when starting the program.")
         ;
         return result;
     }
@@ -475,7 +484,7 @@ int main(int argc, char** argv) {
             InsightOptions::printHelp(std::cout);
         } else {
             Insight insight;
-            insight.run();
+            insight.run(options.luaInit);
         }
     } catch (const std::exception& e) {
         std::cerr << "Fatal error: " << e.what() << std::endl;
