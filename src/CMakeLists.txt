@@ -23,6 +23,7 @@ add_executable(Insight
 )
 
 target_link_libraries(Insight PRIVATE
+    Boost::program_options
     GraphicEngine
     LuaWrapper
     PhysicEngine

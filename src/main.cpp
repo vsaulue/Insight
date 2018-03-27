@@ -18,10 +18,10 @@
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
-#include <cstdint>
-#include <cstdlib>
 #include <iostream>
 #include <thread>
+
+#include <boost/program_options.hpp>
 
 #include "GraphicEngine.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
@@ -401,14 +401,86 @@ public:
 
 };
 
+/** Object holding options parsed from the command line. */
+struct InsightOptions {
+public:
+    using variable_map = boost::program_options::variables_map;
+    using options_description = boost::program_options::options_description;
+
+    /** Structure holding command line switch literals. */
+    struct Switch  {
+        /** Prints help message. */
+        static constexpr char help[] = "help";
+    };
+
+    /**
+     * Prints an help message describing command line options.
+     * @param[out] stream Output stream.
+     */
+    static void printHelp(std::ostream& stream) {
+        stream << description << std::endl;
+    }
+
+    /**
+     * Creates a new object by parsing command line arguments.
+     *
+     * @param argc Number of arguments.
+     * @param argv Argument values.
+     */
+    InsightOptions(int argc, char** argv) {
+        variable_map variables = parse(argc, argv);
+        help = (variables.count(Switch::help) > 0);
+    }
+
+    /** Help message requested. */
+    bool help;
+private:
+    /** Object holding the options descriptions. */
+    static const options_description description;
+
+    /** Initializer of InsightOptions::description. */
+    static options_description initDescription() {
+        options_description result("Command line arguments");
+        result.add_options()
+            (Switch::help, "prints this help message, and exits.")
+        ;
+        return result;
+    }
+
+    /**
+     * Parses the command line arguments into Boost variable_map format.
+     * @param argc Number of arguments.
+     * @param argv Argument values.
+     * @return A map containing the parsed command line options.
+     */
+    static variable_map parse(int argc, char **argv) {
+        namespace po = boost::program_options;
+        po::variables_map result;
+        po::store(po::parse_command_line(argc, argv, description), result);
+        po::notify(result);
+        return result;
+    }
+};
+
+const boost::program_options::options_description InsightOptions::description(InsightOptions::initDescription());
+
 /*
  *
  */
 int main(int argc, char** argv) {
-    Insight insight;
-
-    insight.run();
-
-    return EXIT_SUCCESS;
+    int errCode = EXIT_SUCCESS;
+    try {
+        const InsightOptions options(argc, argv);
+        if (options.help) {
+            InsightOptions::printHelp(std::cout);
+        } else {
+            Insight insight;
+            insight.run();
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Fatal error: " << e.what() << std::endl;
+        errCode = EXIT_FAILURE;
+    }
+    return errCode;
 }
 

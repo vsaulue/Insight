@@ -56,7 +56,7 @@ set_target_properties(Irrlicht PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${Irrlicht_INCLUDE_DIRS}
 )
 
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 find_package(Bullet REQUIRED)
