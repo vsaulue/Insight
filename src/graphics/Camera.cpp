@@ -145,6 +145,7 @@ Camera::Camera(irr::scene::ISceneManager& scene, const InputHandler& inputHandle
     target(*scene.addEmptySceneNode(camera.get()))
 {
     irrlicht_ptr<CameraAnimator> animator(new CameraAnimator(inputHandler));
+    camera->bindTargetAndRotation(true);
     camera->addAnimator(animator.get());
     target.setPosition(irr::core::vector3df(0,0,1));
     setPosition(irr::core::vector3df(0,0,0));
