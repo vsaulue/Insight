@@ -35,7 +35,7 @@ Bindings::Bindings() {
     actionToKey[Action::CameraBackward] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_S, KE::ButtonDown);
     actionToKey[Action::CameraLeft] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_A, KE::ButtonDown);
     actionToKey[Action::CameraRight] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_D, KE::ButtonDown);
-    actionToKey[Action::CameraUp] = std::make_unique<KeyInputEvent>(irr::KEY_LSHIFT, KE::ButtonDown);
+    actionToKey[Action::CameraUp] = std::make_unique<KeyInputEvent>(irr::KEY_SPACE, KE::ButtonDown);
     actionToKey[Action::CameraDown] = std::make_unique<KeyInputEvent>(irr::KEY_LCONTROL, KE::ButtonDown);
     actionToKey[Action::ToggleMouseLock] = std::make_unique<KeyInputEvent>(irr::KEY_KEY_Q, KE::ButtonMovingDown);
     actionToKey[Action::CameraTurnLeft] = std::make_unique<MouseMoveEvent>(MD::Left);
