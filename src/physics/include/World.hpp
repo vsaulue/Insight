@@ -25,6 +25,7 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "Body.hpp"
+#include "BodyCreationListener.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 
 class World : public LuaVirtualClass {
@@ -49,6 +50,19 @@ public:
         world->stepSimulation(timeStep);
     }
 
+    /**
+     * Adds a new listener for "new Body" events.
+     *
+     * @param listener The new listener.
+     */
+    void addCreationListener(BodyCreationListener& listener) const;
+
+    /**
+     * Removes a listener for 'new Body" events.
+     * @param listener The listener to remove.
+     */
+    void removeCreationListener(BodyCreationListener& listener) const;
+
     virtual ~World();
 private:
     std::unique_ptr<btBroadphaseInterface> broadPhase;
@@ -58,6 +72,8 @@ private:
     std::unique_ptr<btDiscreteDynamicsWorld> world;
 
     std::unordered_set<std::unique_ptr<Body>> objects;
+    /** List of objects to inform of new Bodies. */
+    mutable std::unordered_set<BodyCreationListener*> createListener;
 };
 
 #endif /* WORLD_HPP */

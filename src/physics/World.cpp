@@ -35,8 +35,12 @@ World::World() :
 }
 
 void World::addObject(std::unique_ptr<Body>&& object) {
+    Body& body = *object.get();
     world->addRigidBody(object->getBulletBody());
     objects.insert(std::move(object));
+    for (auto listener : createListener) {
+        listener->onBodyCreation(body);
+    }
 }
 
 int World::luaIndex(const std::string& memberName, LuaStateView& state) {
@@ -61,6 +65,15 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     }
     return result;
 }
+
+void World::addCreationListener(BodyCreationListener& listener) const {
+    createListener.insert(&listener);
+}
+
+void World::removeCreationListener(BodyCreationListener& listener) const {
+    createListener.erase(&listener);
+}
+
 
 World::~World() {
     for (auto& object : objects) {

@@ -21,6 +21,7 @@
 #include <irrlicht.h>
 #include <unordered_map>
 
+#include "BodyCreationListener.hpp"
 #include "Camera.hpp"
 #include "GraphicObject.hpp"
 #include "InputHandler.hpp"
@@ -28,7 +29,7 @@
 #include "World.hpp"
 #include "irrlicht_ptr.hpp"
 
-class GraphicEngine : public LuaVirtualClass {
+class GraphicEngine : public LuaVirtualClass, public BodyCreationListener {
 private:
     /** Irrlicht device. */
     irrlicht_ptr<irr::IrrlichtDevice> device;
@@ -50,6 +51,12 @@ private:
     /** Map givind the 3d object of a given Body. */
     std::unordered_map<const Body*, std::unique_ptr<GraphicObject>> mapping;
 
+    /**
+     * Adds a new GraphicObject representing an object in the physics engine.
+     *
+     * @param[in] body Object in the physics engine to represent.
+     */
+    void addBody(const Body& body);
 public:
     /**
      * Creates a new graphic engine.
@@ -67,6 +74,10 @@ public:
      * @return True if the window was not closed.
      */
     void run();
+
+    virtual ~GraphicEngine();
+
+    void onBodyCreation(const Body& newBody) override;
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 };
