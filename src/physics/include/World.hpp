@@ -28,24 +28,43 @@
 #include "BodyCreationListener.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 
+/**
+ * Physics engine
+ *
+ * Holds all objects (Body) with their properties, and integrate mechanics laws.
+ */
 class World : public LuaVirtualClass {
 public:
+    /** Constant iterator over all the bodies of this engine. */
     using const_iterator = std::unordered_set<std::unique_ptr<Body>>::const_iterator;
 
+    /** Creates a new empty world with default settings.*/
     World();
 
+    /** Iterates over all the objects in this World. */
     const_iterator begin() const {
         return objects.begin();
     }
 
+    /** Iterates over all the objects in this World. */
     const_iterator end() const {
         return objects.end();
     }
 
+    /**
+     * Adds a new object into the world.
+     *
+     * @param object The new object.
+     */
     void addObject(std::unique_ptr<Body>&& object);
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
+    /**
+     * Runs a new step of the simulation.
+     *
+     * @param[in] timeStep Duration of the step.
+     */
     void stepSimulation(double timeStep) {
         world->stepSimulation(timeStep);
     }
@@ -65,12 +84,18 @@ public:
 
     virtual ~World();
 private:
+    /** Broad phase algorithm for collision detection. */
     std::unique_ptr<btBroadphaseInterface> broadPhase;
+    /** Narrow phase collision detction configuration. */
     std::unique_ptr<btDefaultCollisionConfiguration> collisionConfig;
+    /** Configuration of narrow phase collision detection. */
     std::unique_ptr<btDispatcher> dispatcher;
+    /** Integrator (use forces, constraints to compute speed & positions). */
     std::unique_ptr<btConstraintSolver> solver;
+    /** Bullet world. */
     std::unique_ptr<btDiscreteDynamicsWorld> world;
 
+    /** List of objects in the world. */
     std::unordered_set<std::unique_ptr<Body>> objects;
     /** List of objects to inform of new Bodies. */
     mutable std::unordered_set<BodyCreationListener*> createListener;

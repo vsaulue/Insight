@@ -26,12 +26,30 @@
 #include "lua/types/LuaVirtualClass.hpp"
 #include "ShapeDrawer.hpp"
 
+/** Object of the world (physics engine). */
 class Body : public LuaVirtualClass {
 public:
+    /**
+     * Constructs a new Body.
+     *
+     * @param mass Mass of the new body.
+     * @param shape Shape of the body (used for collisions).
+     * @param inertia Moment of inertia.
+     */
     Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia);
 
+    /**
+     * Gets the position of this Body.
+     *
+     * @return The position of the center of mass of the object.
+     */
     const btVector3& getPosition() const;
 
+    /**
+     * Gets a pointer to the Bullet representation of this Body.
+     *
+     * @return A pointer to the internal Bullet Body.
+     */
     btRigidBody* getBulletBody();
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
@@ -46,7 +64,9 @@ public:
      */
     virtual void drawShape(ShapeDrawer& drawer) const = 0;
 private:
+    /** Object used by Bullet to communicate position & direction changes. */
     std::unique_ptr<btMotionState> motionState;
+    /** Bullet body. */
     std::unique_ptr<btRigidBody> btBody;
 };
 
