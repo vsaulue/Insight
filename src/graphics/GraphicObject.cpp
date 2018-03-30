@@ -106,6 +106,8 @@ GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager& scene)
 {
     IrrlichtDrawer drawer(*node);
     body.drawShape(drawer);
+    const btVector3& pos = body.getPosition();
+    node->setPosition(irr::core::vector3df(pos.x(), pos.y(), pos.z()));
     body.addMoveListener(*this);
 }
 

@@ -38,10 +38,6 @@ public:
      */
     GraphicObject(const Body& body, irr::scene::ISceneManager& scene);
 
-    void setPosition(const btVector3& pos) {
-        node->setPosition({pos.x(),pos.y(),pos.z()});
-    }
-
     void onBodyMove(const btTransform& transform) override;
 
     virtual ~GraphicObject();

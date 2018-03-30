@@ -27,7 +27,6 @@ using namespace irr;
 
 void GraphicEngine::addBody(const Body& body) {
     std::unique_ptr<GraphicObject> ptr = std::make_unique<GraphicObject>(body, sceneManager);
-    ptr->setPosition(body.getPosition());
     mapping[&body] = std::move(ptr);
 }
 
