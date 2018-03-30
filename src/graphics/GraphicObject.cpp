@@ -106,4 +106,14 @@ GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager& scene)
 {
     IrrlichtDrawer drawer(*node);
     body.drawShape(drawer);
+    body.addMoveListener(*this);
+}
+
+void GraphicObject::onBodyMove(const btTransform& transform) {
+    const btVector3& pos = transform.getOrigin();
+    node->setPosition(irr::core::vector3df(pos.x(), pos.y(), pos.z()));
+}
+
+GraphicObject::~GraphicObject() {
+    body.removeMoveListener(*this);
 }

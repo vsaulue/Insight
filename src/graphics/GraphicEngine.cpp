@@ -65,19 +65,8 @@ void GraphicEngine::run() {
     if(device->run()) {
         inputs.doActions();
         driver.beginScene(true, true, video::SColor(255, 0, 0, 0));
-
-        for (auto it = world.begin(); it != world.end(); ++it) {
-            const Body& body = *it->get();
-
-            auto map_it = mapping.find(&body);
-            GraphicObject* object = (*map_it).second.get();
-
-            const btVector3& pos = body.getPosition();
-            object->setPosition(pos);
-        }
         sceneManager.drawAll();
         guienv.drawAll();
-
         driver.endScene();
     }
 }

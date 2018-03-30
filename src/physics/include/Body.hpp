@@ -23,6 +23,7 @@
 
 #include "btBulletDynamicsCommon.h"
 
+#include "BodyMoveListener.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "ShapeDrawer.hpp"
 
@@ -45,6 +46,8 @@ public:
      */
     const btVector3& getPosition() const;
 
+    void setPosition(const btVector3& newPos);
+
     /**
      * Gets a pointer to the Bullet representation of this Body.
      *
@@ -63,9 +66,27 @@ public:
      * @param drawer Object in which the shape should be drawn.
      */
     virtual void drawShape(ShapeDrawer& drawer) const = 0;
+
+    /**
+     * Adds a new listener for "move" events.
+     *
+     * @param listener The new listener.
+     */
+    void addMoveListener(BodyMoveListener& listener) const;
+
+    /**
+     * Removes listener for "move" events.
+     *
+     * @param listener The listener to remove.
+     */
+    void removeMoveListener(BodyMoveListener& listener) const;
+
+    virtual ~Body();
 private:
+    class MotionState;
+
     /** Object used by Bullet to communicate position & direction changes. */
-    std::unique_ptr<btMotionState> motionState;
+    mutable std::unique_ptr<MotionState> motionState;
     /** Bullet body. */
     std::unique_ptr<btRigidBody> btBody;
 };

@@ -28,7 +28,7 @@
 /**
  * Representation of an object from the physics engine.
  */
-class GraphicObject {
+class GraphicObject : public BodyMoveListener {
 public:
     /**
      * Creates a 3d node representing an object from the physics engine.
@@ -41,6 +41,10 @@ public:
     void setPosition(const btVector3& pos) {
         node->setPosition({pos.x(),pos.y(),pos.z()});
     }
+
+    void onBodyMove(const btTransform& transform) override;
+
+    virtual ~GraphicObject();
 private:
     /** Object in the physics engine represented by this GraphicObject. */
     const Body& body;
