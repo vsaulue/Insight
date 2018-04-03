@@ -44,10 +44,8 @@ public:
      * Run the shell.
      *
      * It contains the main loop reading from standard input.
-     *
-     * @param[in] luaInitScripts List of script to execute before reading from stdin.
      */
-    void run(const std::vector<std::string>& luaInitScripts);
+    void run();
 
     /**
      * Set a flag making the shell to stop after evaluating the current statement.

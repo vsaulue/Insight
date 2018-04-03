@@ -271,14 +271,22 @@ private:
         /**
          * Make a new Insight shell config.
          * @param insight Object owning this shell config.
+         * @param initScripts List of script to execute when starting the shell.
          */
-        ShellConfig(Insight& insight) : insight(insight), mustResume(false) {
+        ShellConfig(Insight& insight, const std::vector<std::string>& initScripts) :
+            insight(insight),
+            mustResume(false),
+            initScripts(initScripts)
+        {
 
         }
 
         void init(LuaStateView& state) override {
             state.push<Insight*>(&insight);
             state.setGlobal("insight");
+            for (const auto& script : initScripts) {
+                state.doFile(script);
+            }
         }
 
 
@@ -296,6 +304,8 @@ private:
         Insight& insight;
         /** Resume the worker thread in afterCommand, if it was paused by beforeCommand.*/
         bool mustResume;
+        /** List of scripts to execute when the shell is starting. */
+        const std::vector<std::string>& initScripts;
     };
 
     World world;
@@ -341,10 +351,12 @@ public:
      * Constructs a new Insight object.
      *
      * The run() method must be called to launch the different components (simulation, Lua shell).
+     *
+     * @param[in] luaInitScripts List of Lua scripts to execute when starting the shell.
      */
-    Insight() :
+    Insight(const std::vector<std::string>& luaInitScripts) :
         graphicEngine(world),
-        shellConfig(*this),
+        shellConfig(*this, luaInitScripts),
         interpreter(shellConfig),
         renderPeriod(std::chrono::nanoseconds(1000000000/60))
     {
@@ -380,14 +392,12 @@ public:
      *
      * This function will return when quit() has been called and all components
      * are stopped.
-     *
-     * @param[in] luaInitScripts List of Lua scripts to execute when starting the shell.
      */
-    void run(const std::vector<std::string>& luaInitScripts) {
+    void run() {
         insightState.boot();
         simulationState.pause();
 
-        std::thread shellThread([this,&luaInitScripts]() { this->interpreter.run(luaInitScripts); });
+        std::thread shellThread([this]() { this->interpreter.run(); });
         workerMainLoop();
 
         shellThread.join();
@@ -527,8 +537,8 @@ int main(int argc, char** argv) {
         if (options.help) {
             InsightOptions::printHelp(std::cout);
         } else {
-            Insight insight;
-            insight.run(options.luaInit);
+            Insight insight(options.luaInit);
+            insight.run();
         }
     } catch (const std::exception& e) {
         std::cerr << "Fatal error: " << e.what() << std::endl;

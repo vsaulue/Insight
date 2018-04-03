@@ -27,16 +27,12 @@ ShellInterpreter::ShellInterpreter(ShellInterpreterConfig& config) : config(conf
     running = false;
 }
 
-void ShellInterpreter::run(const std::vector<std::string>& luaInitScripts) {
+void ShellInterpreter::run() {
     LuaState luaState;
     running = true;
 
     luaState.open_base();
     config.init(luaState);
-
-    for (const std::string& script : luaInitScripts) {
-        luaState.doFile(script);
-    }
 
     std::string line;
     while (running && std::getline(std::cin, line)) {
