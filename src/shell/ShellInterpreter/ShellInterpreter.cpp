@@ -23,41 +23,35 @@
 
 #include <iostream>
 
-ShellInterpreter::ShellInterpreter(LuaVirtualClass& rootObject, const std::string& rootName) : rootObject(rootObject), rootName(rootName) {
+ShellInterpreter::ShellInterpreter(ShellInterpreterConfig& config) : config(config) {
     running = false;
 }
 
 void ShellInterpreter::run(const std::vector<std::string>& luaInitScripts) {
     LuaState luaState;
     running = true;
-    std::string line;
 
     luaState.open_base();
-
-    luaState.push<LuaVirtualClass*>(&rootObject); // stack index 1
-
-    luaState.setGlobal(rootName);
+    config.init(luaState);
 
     for (const std::string& script : luaInitScripts) {
         luaState.doFile(script);
     }
 
+    std::string line;
     while (running && std::getline(std::cin, line)) {
+        config.beforeCommand(luaState);
         try {
             luaState.doString(line);
         } catch (const LuaException &e) {
             std::cerr << e.what() << std::endl;
         }
+        config.afterCommand(luaState);
     }
 }
 
 void ShellInterpreter::quit() {
     running = false;
-}
-
-
-LuaVirtualClass& ShellInterpreter::getRootObject() {
-    return rootObject;
 }
 
 int ShellInterpreter::luaIndex(const std::string& memberName, LuaStateView& state) {

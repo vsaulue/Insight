@@ -28,6 +28,7 @@
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "ShellInterpreter.hpp"
+#include "ShellInterpreterConfig.hpp"
 #include "World.hpp"
 
 /**
@@ -131,14 +132,18 @@ public:
      * Sends a command to the worker thread to pause the simulation.
      *
      * Possible only from State::running or State:: pausing.
+     *
+     * @return True if this call did pause the threads (they were running before this call).
      */
-    void pause() {
+    bool pause() {
         std::unique_lock<std::mutex> lock(mutex);
+        bool result = false;
         switch (state) {
         case State::paused:
             break;
         case State::running:
             state = State::pausing;
+            result = true;
             // no break
         case State::pausing:
             controlCondition.wait(lock, [this]() -> bool { return this->state != State::pausing; });
@@ -146,6 +151,15 @@ public:
         default:
             throw std::logic_error("Cannot pause: object is not in 'paused', 'pausing' or 'running' state.");
         }
+        return result;
+    }
+
+    /**
+     * Tests if this object is in paused state.
+     * @return True if paused, false otherwise.
+     */
+    bool isPaused() {
+        return (state==State::paused);
     }
 
     /**
@@ -251,8 +265,43 @@ class Insight : public LuaVirtualClass {
 private:
     using timer = std::chrono::steady_clock;
 
+    /** Shell interpreter callbacks for Insight. */
+    class ShellConfig : public ShellInterpreterConfig {
+    public:
+        /**
+         * Make a new Insight shell config.
+         * @param insight Object owning this shell config.
+         */
+        ShellConfig(Insight& insight) : insight(insight), mustResume(false) {
+
+        }
+
+        void init(LuaStateView& state) override {
+            state.push<Insight*>(&insight);
+            state.setGlobal("insight");
+        }
+
+
+        void beforeCommand(LuaStateView& state) override {
+            mustResume = insight.pauseWorker();
+        }
+
+        void afterCommand(LuaStateView& state) override {
+            if (mustResume && insight.insightState.isPaused()) {
+                insight.resumeWorker();
+            }
+        }
+    private:
+        /** Insight instance owning this config.*/
+        Insight& insight;
+        /** Resume the worker thread in afterCommand, if it was paused by beforeCommand.*/
+        bool mustResume;
+    };
+
     World world;
     GraphicEngine graphicEngine;
+    /** Shell configuration. */
+    ShellConfig shellConfig;
     ShellInterpreter interpreter;
 
     std::chrono::duration<std::int64_t, std::nano> renderPeriod;
@@ -293,7 +342,12 @@ public:
      *
      * The run() method must be called to launch the different components (simulation, Lua shell).
      */
-    Insight() : graphicEngine(world), interpreter(*this, "insight"), renderPeriod(std::chrono::nanoseconds(1000000000/60)) {
+    Insight() :
+        graphicEngine(world),
+        shellConfig(*this),
+        interpreter(shellConfig),
+        renderPeriod(std::chrono::nanoseconds(1000000000/60))
+    {
 
     }
 
@@ -345,9 +399,11 @@ public:
      *
      * This function sends a pause request to the worker thread, and waits
      * until the worker acknowledges the request.
+     *
+     * @return True if this call actually paused the thread (it was not paused before).
      */
-    void pauseWorker() {
-        insightState.pause();
+    bool pauseWorker() {
+        return insightState.pause();
     }
 
     /**
@@ -370,18 +426,6 @@ public:
         } else if (memberName == "quit") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.quit();
-                return 0;
-            });
-            return 1;
-        } else if (memberName == "pauseWorker") {
-            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                object.pauseWorker();
-                return 0;
-            });
-            return 1;
-        } else if (memberName == "resumeWorker") {
-            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                object.resumeWorker();
                 return 0;
             });
             return 1;

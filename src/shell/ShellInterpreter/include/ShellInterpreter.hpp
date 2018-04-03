@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "lua/types/LuaVirtualClass.hpp"
+#include "ShellInterpreterConfig.hpp"
 
 /**
  * Shell implementation.
@@ -35,10 +36,9 @@ public:
     /**
      * Creates a new shell.
      *
-     * @param[in,out] rootObject Main object of the shell.
-     * @param[in] rootName Name of the variable in the shell that will contain rootObject.
+     * @param[in] config Interpreter configuration.
      */
-    ShellInterpreter(LuaVirtualClass& rootObject, const std::string& rootName);
+    ShellInterpreter(ShellInterpreterConfig& config);
 
     /**
      * Run the shell.
@@ -54,22 +54,11 @@ public:
      */
     void quit();
 
-    /**
-     * Get the root object of this shell.
-     *
-     * @return The root object of this shell.
-     */
-    LuaVirtualClass& getRootObject();
-
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
 private:
-    /** Root object of this shell.*/
-    LuaVirtualClass& rootObject;
-
-    /** Name of the global variable containing rootObject. */
-    std::string rootName;
-
+    /** Shell configuration. */
+    ShellInterpreterConfig& config;
     /** Flag telling if the main loop should keep running. */
     bool running;
 };
