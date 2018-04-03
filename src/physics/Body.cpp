@@ -69,6 +69,11 @@ const btVector3& Body::getPosition() const {
     return btBody->getWorldTransform().getOrigin();
 }
 
+const btMatrix3x3& Body::getRotation() const {
+    return btBody->getWorldTransform().getBasis();
+}
+
+
 void Body::setPosition(const btVector3& newPos) {
     btTransform newTransform = btBody->getWorldTransform();
     newTransform.setOrigin(newPos);

@@ -106,16 +106,21 @@ GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager& scene)
 {
     IrrlichtDrawer drawer(*node);
     body.drawShape(drawer);
-    const btVector3& pos = body.getPosition();
-    node->setPosition(irr::core::vector3df(pos.x(), pos.y(), pos.z()));
+    updateTransform(body.getPosition(), body.getRotation());
     body.addMoveListener(*this);
 }
 
 void GraphicObject::onBodyMove(const btTransform& transform) {
-    const btVector3& pos = transform.getOrigin();
-    node->setPosition(irr::core::vector3df(pos.x(), pos.y(), pos.z()));
+    updateTransform(transform.getOrigin(), transform.getBasis());
 }
 
 GraphicObject::~GraphicObject() {
     body.removeMoveListener(*this);
+}
+
+void GraphicObject::updateTransform(const btVector3& position, const btMatrix3x3& rotation) {
+    node->setPosition(irr::core::vector3df(position.x(), position.y(), position.z()));
+    float pitch, yaw, roll;
+    rotation.getEulerZYX(yaw, pitch, roll);
+    node->setRotation(irr::core::vector3df(roll, pitch, yaw)*180/irr::core::PI);
 }

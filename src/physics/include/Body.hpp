@@ -49,6 +49,13 @@ public:
     void setPosition(const btVector3& newPos);
 
     /**
+     * Gets the rotation of this Body.
+     *
+     * @return A rotation matrix.
+     */
+    const btMatrix3x3& getRotation() const;
+
+    /**
      * Gets a pointer to the Bullet representation of this Body.
      *
      * @return A pointer to the internal Bullet Body.

@@ -57,6 +57,14 @@ private:
 
     /** Irrlicht node containing the 3d objects of this GraphicObject.*/
     std::unique_ptr<irr::scene::ISceneNode, NodeDeleter> node;
+
+    /**
+     * Updates the position & location of this object.
+     *
+     * @param[in] position Current position of the center of mass.
+     * @param[in] rotation Orientation of the object.
+     */
+    void updateTransform(const btVector3& position, const btMatrix3x3& rotation);
 };
 
 #endif /* GRAPHICOBJECT_HPP */
