@@ -19,7 +19,9 @@
 #include <chrono>
 #include <condition_variable>
 #include <iostream>
+#include <memory>
 #include <thread>
+#include <unordered_set>
 
 #include <boost/program_options.hpp>
 
@@ -27,6 +29,7 @@
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
+#include "RobotBody.hpp"
 #include "ShellInterpreter.hpp"
 #include "ShellInterpreterConfig.hpp"
 #include "World.hpp"
@@ -309,6 +312,8 @@ private:
     };
 
     World world;
+    /** List of robots. */
+    std::unordered_set<std::unique_ptr<RobotBody>> robots;
     GraphicEngine graphicEngine;
     /** Shell configuration. */
     ShellConfig shellConfig;
@@ -429,6 +434,13 @@ public:
         using Method = LuaMethod<Insight>;
         if (memberName == "world") {
             state.push<World*>(&world);
+            return 1;
+        } else if (memberName == "newRobot") {
+            state.push<Method>([](Insight& object, LuaStateView& state) -> int {
+                std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world);
+                object.robots.insert(std::move(newRobot));
+                return 0;
+            });
             return 1;
         } else if (memberName == "graphicEngine") {
             state.push<GraphicEngine*>(&graphicEngine);
