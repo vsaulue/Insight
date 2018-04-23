@@ -132,6 +132,7 @@ private:
         if (yawSpeed != 0 || pitchSpeed != 0) {
             result = true;
             irr::core::vector3df rotation(camera.getRotation());
+            rotation.X= std::remainder(rotation.X, 360.0f);
             rotation.X= std::clamp<float>(rotation.X + pitchSpeed*deltaTime, -89.0f, 89.0f);
             rotation.Y= std::remainder(rotation.Y + yawSpeed*deltaTime, 360.0f);
             camera.setRotation(rotation);
