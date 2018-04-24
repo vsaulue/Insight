@@ -21,6 +21,15 @@
 #include "ShapeDrawer.hpp"
 
 /**
+ * Converts a Bullet vector into an Irrlicht vector.
+ * @param[in] vector Buller vector.
+ * @return Irrlicht vector.
+ */
+static irr::core::vector3df btToIrrVector(const btVector3& vector) {
+    return irr::core::vector3df(vector.x(), vector.y(), vector.z());
+}
+
+/**
  * Class converting the collision shape of a body into a 3d scene node.
  */
 class IrrlichtDrawer : public ShapeDrawer {
@@ -51,7 +60,20 @@ public:
 
     void drawSphere(const btVector3& center, btScalar radius) override {
         irr::scene::ISceneManager& scene = *rootNode.getSceneManager();
-        scene.addSphereSceneNode(radius, 16, &rootNode);
+        irr::core::vector3df pos = btToIrrVector(center);
+        scene.addSphereSceneNode(radius, 16, &rootNode, -1, pos);
+    }
+
+    void drawCylinder(const btTransform& transform, const btVector3& halfExtents) override {
+        using vector3df = irr::core::vector3df;
+        irr::scene::ISceneManager& scene = *rootNode.getSceneManager();
+        static irrlicht_ptr<irr::scene::IMesh> cylinder(makeCylinderMesh());
+
+        vector3df pos = btToIrrVector(transform.getOrigin());
+        vector3df scale = btToIrrVector(halfExtents);
+        vector3df rotation;
+        transform.getBasis().getEulerZYX(rotation.X, rotation.Y, rotation.Z);
+        scene.addMeshSceneNode(cylinder.get(), &rootNode, -1, pos, rotation, scale);
     }
 
     IrrlichtDrawer(irr::scene::ISceneNode& rootNode) : rootNode(rootNode) {
@@ -60,6 +82,76 @@ public:
 private:
     /** Node that will hold the 3d representation of a collision shape. */
     irr::scene::ISceneNode& rootNode;
+
+    /**
+     * Generates a new cylinder mesh.
+     *
+     * Y-axis, centered on {0,0,0}, radius 1, length 2.
+     *
+     * @param[in] tesselation Number of quads used for the sides of the cylinder.
+     * @return A mesh representing a cylinder.
+     */
+    static irrlicht_ptr<irr::scene::IMesh> makeCylinderMesh(irr::u32 tesselation = 16) {
+        using namespace irr::scene;
+        irrlicht_ptr<SMeshBuffer> meshBuffer(new SMeshBuffer());
+        irrlicht_ptr<SMesh> result(new SMesh());
+        result->addMeshBuffer(meshBuffer.get());
+        irr::core::array<irr::video::S3DVertex>& vertices = meshBuffer->Vertices;
+        irr::core::array<irr::u16>& indices = meshBuffer->Indices;
+
+        // top & bottom circles.
+        for (int y = -1; y<=1; y+=2) {
+            irr::video::S3DVertex vertex(0,y,0, 0,y,0, irr::video::SColor(255,255,255,255), 0, 0);
+            vertices.push_back(vertex);
+            for (unsigned index = 0; index < tesselation; index++) {
+                float angle = static_cast<float>(index)/tesselation*2*irr::core::PI;
+                vertex.Pos.X = btCos(angle);
+                vertex.Pos.Z = btSin(angle);
+                vertices.push_back(vertex);
+            }
+        }
+        for (unsigned index = 0; index < tesselation; index++) {
+            indices.push_back(0);
+            indices.push_back(1+index);
+            indices.push_back(1+(index+1)%tesselation);
+        }
+        int indexOffset = tesselation+1;
+        for (unsigned index = 0; index < tesselation; index++) {
+            indices.push_back(indexOffset);
+            indices.push_back(indexOffset+1+(index+1)%tesselation);
+            indices.push_back(indexOffset+1+index);
+        }
+
+        // side quads.
+        indexOffset = 2*tesselation+2;
+        irr::video::S3DVertex vertex(0,0,0, 0,0,0, irr::video::SColor(255,255,255,255), 0, 0);
+        for (unsigned index = 0; index < tesselation; index++) {
+            float angle = static_cast<float>(index)/tesselation*2*irr::core::PI;
+            vertex.Pos.X = btCos(angle);
+            vertex.Normal.X = vertex.Pos.X;
+            vertex.Pos.Z = btSin(angle);
+            vertex.Normal.Z = vertex.Pos.Z;
+
+            vertex.Pos.Y = 1;
+            vertices.push_back(vertex);
+            vertex.Pos.Y = -1;
+            vertices.push_back(vertex);
+
+            int a = indexOffset+2*index;
+            int b = a+1;
+            int c = indexOffset+(2*index+2)%(2*tesselation);
+            int d = c+1;
+            indices.push_back(a);
+            indices.push_back(c);
+            indices.push_back(b);
+
+            indices.push_back(b);
+            indices.push_back(c);
+            indices.push_back(d);
+        }
+
+        return result;
+    }
 
     /**
      * Generates the vertices of a square representing the given plane.
@@ -119,7 +211,7 @@ GraphicObject::~GraphicObject() {
 }
 
 void GraphicObject::updateTransform(const btVector3& position, const btMatrix3x3& rotation) {
-    node->setPosition(irr::core::vector3df(position.x(), position.y(), position.z()));
+    node->setPosition(btToIrrVector(position));
     float pitch, yaw, roll;
     rotation.getEulerZYX(yaw, pitch, roll);
     node->setRotation(irr::core::vector3df(roll, pitch, yaw)*180/irr::core::PI);

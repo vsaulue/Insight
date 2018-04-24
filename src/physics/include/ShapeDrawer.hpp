@@ -42,6 +42,19 @@ public:
      */
     virtual void drawPlane(const btVector3& normal, btScalar offset) = 0;
 
+    /**
+     * Draw a cylinder.
+     *
+     * With a default transform, the cylinder has a central axis aligned with the Y axis.
+     * It is centered on {0,0,0}.
+     *
+     * With default halfExtents {1,1,1}, it has a radius of 1 and a length of 2.
+     *
+     * @param[in] transform Position & orientation of the cylinder.
+     * @param[in] halfExtents Half extents (scale coefficients on each axis).
+     */
+    virtual void drawCylinder(const btTransform& transform, const btVector3& halfExtents) = 0;
+
     virtual ~ShapeDrawer() = default;
 };
 
