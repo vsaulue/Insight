@@ -16,6 +16,7 @@
 
 add_library(PhysicEngine STATIC
     Body.cpp
+    CompoundBody.cpp
     Sphere.cpp
     Terrain.cpp
     World.cpp
