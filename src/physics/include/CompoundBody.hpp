@@ -40,10 +40,11 @@ public:
 
     /** Adds a new sphere in this collision shape.
      *
+     * @param[in] mass Mass of the sphere.
      * @param[in] radius Radius of the sphere.
      * @param[in] center Center of the sphere.
      */
-    void addSphere(btScalar radius, const btVector3& center);
+    void addSphere(btScalar mass, btScalar radius, const btVector3& center);
 
     /**
      * Adds a new cylinder in this collision shape.
@@ -53,10 +54,11 @@ public:
      *
      * With default halfExtents {1,1,1}, it has a radius of 1 and a length of 2.
      *
-     * @param[in] transform Translation & rotation of the new cylinder.
+     * @param[in] mass Mass of the cylinder.
+     * @param[in] transform Translation & rotation of the cylinder.
      * @param[in] halfExtents Scale coefficient on each axis of the cylinder.
      */
-    void addCylinder(const btTransform& transform, const btVector3& halfExtents);
+    void addCylinder(btScalar mass, const btTransform& transform, const btVector3& halfExtents);
 
     void drawShape(ShapeDrawer& drawer) const override;
 
@@ -66,11 +68,23 @@ private:
     /** Internal constructor, using an existing Bullet shape. */
     CompoundBody(std::unique_ptr<btCompoundShape> shape);
 
+    /**
+     * Adds a new child shape to this object.
+     *
+     * @param child New shape to add.
+     * @param transform Position & orientation of the new child.
+     * @param mass Mass of the new object.
+     */
+    void addChild(std::unique_ptr<Child> child, const btTransform& transform, btScalar mass);
+
     /** Bullet representation of the concave shape.*/
     std::unique_ptr<btCompoundShape> shape;
 
     /** List of convex objects of this Body.*/
     std::unordered_set<std::unique_ptr<Child>> children;
+
+    /** Total mass of this object. */
+    btScalar totalMass;
 };
 
 #endif /* COMPOUNDBODY_HPP */

@@ -111,8 +111,9 @@ CompoundBody::CompoundBody() : CompoundBody(std::make_unique<btCompoundShape>())
 }
 
 CompoundBody::CompoundBody(std::unique_ptr<btCompoundShape> shape) :
-    Body(1234, *shape.get(), btVector3(1,1,1)),
-    shape(std::move(shape))
+    Body(0, *shape.get()),
+    shape(std::move(shape)),
+    totalMass(0)
 {
 
 }
@@ -120,20 +121,16 @@ CompoundBody::CompoundBody(std::unique_ptr<btCompoundShape> shape) :
 
 CompoundBody::~CompoundBody() = default;
 
-void CompoundBody::addSphere(btScalar radius, const btVector3& center) {
+void CompoundBody::addSphere(btScalar mass, btScalar radius, const btVector3& center) {
     using Sphere = CompoundBodyChildren::Sphere;
-    std::unique_ptr<Sphere> newObject = std::make_unique<Sphere>(shape->getNumChildShapes(), radius);
-    Sphere& ref = *newObject;
-    children.insert(std::move(newObject));
-    shape->addChildShape(btTransform(btQuaternion::getIdentity(), center), &ref.getShape());
+    std::unique_ptr<Child> newObject = std::make_unique<Sphere>(shape->getNumChildShapes(), radius);
+    addChild(std::move(newObject), btTransform(btQuaternion::getIdentity(), center), mass);
 }
 
-void CompoundBody::addCylinder(const btTransform& transform, const btVector3& halfExtents) {
+void CompoundBody::addCylinder(btScalar mass, const btTransform& transform, const btVector3& halfExtents) {
     using Cylinder = CompoundBodyChildren::Cylinder;
-    std::unique_ptr<Cylinder> newObject = std::make_unique<Cylinder>(shape->getNumChildShapes(), halfExtents);
-    Cylinder& ref = *newObject;
-    children.insert(std::move(newObject));
-    shape->addChildShape(transform, &ref.getShape());
+    std::unique_ptr<Child> newObject = std::make_unique<Cylinder>(shape->getNumChildShapes(), halfExtents);
+    addChild(std::move(newObject), transform, mass);
 }
 
 void CompoundBody::drawShape(ShapeDrawer& drawer) const {
@@ -141,4 +138,12 @@ void CompoundBody::drawShape(ShapeDrawer& drawer) const {
         const btTransform& transform = shape->getChildTransform(child->getIndex());
         child->draw(drawer, transform);
     }
+}
+
+void CompoundBody::addChild(std::unique_ptr<Child> child, const btTransform& transform, btScalar mass) {
+    Child& ref = *child;
+    children.insert(std::move(child));
+    shape->addChildShape(transform, &ref.getShape());
+    totalMass+= mass;
+    recalculateInertia(totalMass);
 }

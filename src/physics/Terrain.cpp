@@ -24,7 +24,7 @@ Terrain::Terrain() : Terrain(std::make_unique<btStaticPlaneShape>(normal, 0)) {
 
 }
 
-Terrain::Terrain(std::unique_ptr<btStaticPlaneShape>&& shape) : Body(0, *shape, btVector3(0,0,0)), shape(std::move(shape)) {
+Terrain::Terrain(std::unique_ptr<btStaticPlaneShape>&& shape) : Body(0, *shape), shape(std::move(shape)) {
 
 }
 

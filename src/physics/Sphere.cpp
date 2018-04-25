@@ -18,18 +18,12 @@
 
 #include "Sphere.hpp"
 
-static btVector3 calculateInertia(btCollisionShape* shape, btScalar mass) {
-    btVector3 result;
-    shape->calculateLocalInertia(mass, result);
-    return result;
-}
-
 Sphere::Sphere(btScalar mass, btScalar radius) : Sphere(mass, std::make_unique<btSphereShape>(radius)) {
 
 }
 
 Sphere::Sphere(btScalar mass, std::unique_ptr<btSphereShape>&& shape) :
-    Body(mass, *shape, calculateInertia(shape.get(), mass)),
+    Body(mass, *shape),
     shape(std::move(shape))
 {
 

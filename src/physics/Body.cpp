@@ -58,9 +58,23 @@ public:
     }
 };
 
-Body::Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia) :
+/**
+ * Recalculate the moments of inertia of a given shape.
+ * @param shape Collision shape of the object.
+ * @param mass Mass of the object.
+ * @return A vector containing the moment of inertia around each axis.
+ */
+static btVector3 calculateInertia(const btCollisionShape& shape, btScalar mass) {
+    btVector3 result(0,0,0);
+    if (mass != 0) {
+        shape.calculateLocalInertia(mass, result);
+    }
+    return result;
+}
+
+Body::Body(btScalar mass, btCollisionShape& shape) :
     motionState(std::make_unique<MotionState>()),
-    btBody(std::make_unique<btRigidBody>(mass, motionState.get(), &shape, inertia))
+    btBody(std::make_unique<btRigidBody>(mass, motionState.get(), &shape, calculateInertia(shape, mass)))
 {
 
 }
@@ -142,3 +156,7 @@ void Body::removeMoveListener(BodyMoveListener& listener) const {
 }
 
 Body::~Body() = default;
+
+void Body::recalculateInertia(btScalar newMass) {
+    btBody->setMassProps(newMass, calculateInertia(*btBody->getCollisionShape(), newMass));
+}

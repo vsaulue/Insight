@@ -35,9 +35,8 @@ public:
      *
      * @param mass Mass of the new body.
      * @param shape Shape of the body (used for collisions).
-     * @param inertia Moment of inertia.
      */
-    Body(btScalar mass, btCollisionShape& shape, const btVector3& inertia);
+    Body(btScalar mass, btCollisionShape& shape);
 
     /**
      * Gets the position of this Body.
@@ -89,6 +88,12 @@ public:
     void removeMoveListener(BodyMoveListener& listener) const;
 
     virtual ~Body();
+protected:
+    /**
+     * Update the mass and moments of inertia of this object.
+     * @param[in] newMass New mass of this object.
+     */
+    void recalculateInertia(btScalar newMass);
 private:
     class MotionState;
 
