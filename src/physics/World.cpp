@@ -43,6 +43,11 @@ void World::addObject(std::unique_ptr<Body>&& object) {
     }
 }
 
+void World::addConstraint(std::shared_ptr<btTypedConstraint> constraint) {
+    world->addConstraint(constraint.get());
+    constraints.insert(std::move(constraint));
+}
+
 int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<World>;
     int result = 0;

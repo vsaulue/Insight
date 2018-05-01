@@ -58,6 +58,12 @@ public:
      */
     void addObject(std::unique_ptr<Body>&& object);
 
+    /**
+     * Adds a new constraint into the world.
+     * @param constraint The new constraint.
+     */
+    void addConstraint(std::shared_ptr<btTypedConstraint> constraint);
+
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
     /**
@@ -97,6 +103,8 @@ private:
 
     /** List of objects in the world. */
     std::unordered_set<std::unique_ptr<Body>> objects;
+    /** List of constraints between objects of this world. */
+    std::unordered_set<std::shared_ptr<btTypedConstraint>> constraints;
     /** List of objects to inform of new Bodies. */
     mutable std::unordered_set<BodyCreationListener*> createListener;
 };
