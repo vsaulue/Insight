@@ -19,7 +19,12 @@
 #ifndef ROBOTBODY_HPP
 #define ROBOTBODY_HPP
 
+#include <string>
+#include <unordered_map>
+
+#include "CompoundBody.hpp"
 #include "Sphere.hpp"
+#include "SphericalJoint.hpp"
 #include "World.hpp"
 
 /**
@@ -37,8 +42,11 @@ public:
      */
     RobotBody(World& world);
 private:
-    /** Head of the robot. */
-    Sphere& head;
+    std::unordered_map<std::string, CompoundBody*> parts;
+
+    std::unordered_map<std::string, std::unique_ptr<SphericalJoint>> joints;
+
+    CompoundBody& insert(World& world, const std::string& name, std::unique_ptr<CompoundBody> part);
 };
 
 #endif /* ROBOTBODY_HPP */
