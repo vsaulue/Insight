@@ -48,11 +48,23 @@ public:
     void setPosition(const btVector3& newPos);
 
     /**
+     * Sets the position & orientation of this object.
+     * @param[in] transform The new position & orientation of this object.
+     */
+    void setTransform(const btTransform& transform);
+
+    /**
      * Gets the rotation of this Body.
      *
      * @return A rotation matrix.
      */
     const btMatrix3x3& getRotation() const;
+
+    /**
+     * Gets the position & orientation of this object.
+     * @return The current position & orientation of this object.
+     */
+    const btTransform& getTransform() const;
 
     /**
      * Gets a pointer to the Bullet representation of this Body.

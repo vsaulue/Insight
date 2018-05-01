@@ -87,6 +87,10 @@ const btMatrix3x3& Body::getRotation() const {
     return btBody->getWorldTransform().getBasis();
 }
 
+const btTransform& Body::getTransform() const {
+    return btBody->getWorldTransform();
+}
+
 
 void Body::setPosition(const btVector3& newPos) {
     btTransform newTransform = btBody->getWorldTransform();
@@ -95,6 +99,13 @@ void Body::setPosition(const btVector3& newPos) {
     btBody->setInterpolationWorldTransform(newTransform);
     motionState->setWorldTransform(newTransform);
 }
+
+void Body::setTransform(const btTransform& transform) {
+    btBody->setWorldTransform(transform);
+    btBody->setInterpolationWorldTransform(transform);
+    motionState->setWorldTransform(transform);
+}
+
 
 btRigidBody* Body::getBulletBody() {
     return btBody.get();

@@ -16,6 +16,7 @@
 
 add_library(AI STATIC
     RobotBody.cpp
+    SphericalJoint.cpp
 )
 
 target_include_directories(AI PUBLIC include)
