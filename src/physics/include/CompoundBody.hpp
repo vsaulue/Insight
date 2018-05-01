@@ -46,6 +46,16 @@ public:
      */
     void addSphere(btScalar mass, btScalar radius, const btVector3& center);
 
+    /** Adds a new sphere in this collision shape.
+     *
+     * Same as addSphere(), but uses a density instead of a mass.
+     *
+     * @param[in] density Density of the sphere.
+     * @param[in] radius Radius of the sphere.
+     * @param[in] center Center of the sphere.
+     */
+    void addSphereD(btScalar density, btScalar radius, const btVector3& center);
+
     /**
      * Adds a new cylinder in this collision shape.
      *
@@ -59,6 +69,17 @@ public:
      * @param[in] halfExtents Scale coefficient on each axis of the cylinder.
      */
     void addCylinder(btScalar mass, const btTransform& transform, const btVector3& halfExtents);
+
+    /**
+     * Adds a new cylinder in this collision shape.
+     *
+     * Same as addCylinder(), but uses a density instead of a mass.
+     *
+     * @param[in] mass Mass of the cylinder.
+     * @param[in] transform Translation & rotation of the cylinder.
+     * @param[in] halfExtents Scale coefficient on each axis of the cylinder.
+     */
+    void addCylinderD(btScalar density, const btTransform& transform, const btVector3& halfExtents);
 
     void drawShape(ShapeDrawer& drawer) const override;
 

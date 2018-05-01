@@ -127,10 +127,20 @@ void CompoundBody::addSphere(btScalar mass, btScalar radius, const btVector3& ce
     addChild(std::move(newObject), btTransform(btQuaternion::getIdentity(), center), mass);
 }
 
+void CompoundBody::addSphereD(btScalar density, btScalar radius, const btVector3& center) {
+    btScalar mass = density*SIMD_PI*4/3*radius*radius*radius;
+    addSphere(mass, radius, center);
+}
+
 void CompoundBody::addCylinder(btScalar mass, const btTransform& transform, const btVector3& halfExtents) {
     using Cylinder = CompoundBodyChildren::Cylinder;
     std::unique_ptr<Child> newObject = std::make_unique<Cylinder>(shape->getNumChildShapes(), halfExtents);
     addChild(std::move(newObject), transform, mass);
+}
+
+void CompoundBody::addCylinderD(btScalar density, const btTransform& transform, const btVector3& halfExtents) {
+    btScalar mass = density*SIMD_PI*halfExtents.x()*halfExtents.y()*2*halfExtents.z();
+    addCylinder(mass, transform, halfExtents);
 }
 
 void CompoundBody::drawShape(ShapeDrawer& drawer) const {
