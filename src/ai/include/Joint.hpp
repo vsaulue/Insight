@@ -16,37 +16,23 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ROBOTBODY_HPP
-#define ROBOTBODY_HPP
+#ifndef JOINT_HPP
+#define JOINT_HPP
 
-#include <string>
-#include <unordered_map>
+#include "btBulletDynamicsCommon.h"
 
-#include "CompoundBody.hpp"
-#include "Sphere.hpp"
-#include "SphericalJoint.hpp"
-#include "World.hpp"
+#include <memory>
 
-/**
- * Object creating all robot parts and their constraints.
- *
- * Body parts are owned by the physics engine. Only references are kept inside
- * this object.
- */
-class RobotBody {
+/** Common interface for all joint types. */
+class Joint {
 public:
+    virtual ~Joint() = default;
+
     /**
-     * Creates a new robot body.
-     *
-     * @param world World in which the body will be created.
+     * Gets the Bullet constraint implementing this joint.
+     * @return The constraint implementing this joint.
      */
-    RobotBody(World& world);
-private:
-    std::unordered_map<std::string, CompoundBody*> parts;
-
-    std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
-
-    CompoundBody& insert(World& world, const std::string& name, std::unique_ptr<CompoundBody> part);
+    virtual std::shared_ptr<btTypedConstraint> getConstraint() = 0;
 };
 
-#endif /* ROBOTBODY_HPP */
+#endif /* JOINT_HPP */

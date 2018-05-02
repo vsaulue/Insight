@@ -24,6 +24,7 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "CompoundBody.hpp"
+#include "Joint.hpp"
 #include "SphericalJointInfo.hpp"
 
 /**
@@ -35,7 +36,7 @@
  * <li>the socket part: containing the concave part of the joint.</li>
  * </ul>
  */
-class SphericalJoint {
+class SphericalJoint : public Joint {
 public:
     /**
      * Creates a spherical joint linking two CompoundBody objects.
@@ -45,13 +46,9 @@ public:
      */
     SphericalJoint(CompoundBody& ball, CompoundBody& socket, const SphericalJointInfo& info);
 
-    ~SphericalJoint();
+    virtual ~SphericalJoint();
 
-    /**
-     * Gets the Bullet constraint implementing this joint.
-     * @return The constraint implementing this joint.
-     */
-    std::shared_ptr<btConeTwistConstraint>& getConstraint() {
+    std::shared_ptr<btTypedConstraint> getConstraint() override {
         return constraint;
     }
 private:
