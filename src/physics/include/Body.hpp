@@ -38,13 +38,6 @@ public:
      */
     Body(btScalar mass, btCollisionShape& shape);
 
-    /**
-     * Gets the position of this Body.
-     *
-     * @return The position of the center of mass of the object.
-     */
-    const btVector3& getPosition() const;
-
     void setPosition(const btVector3& newPos);
 
     /**
@@ -52,13 +45,6 @@ public:
      * @param[in] transform The new position & orientation of this object.
      */
     void setTransform(const btTransform& transform);
-
-    /**
-     * Gets the rotation of this Body.
-     *
-     * @return A rotation matrix.
-     */
-    const btMatrix3x3& getRotation() const;
 
     /**
      * Gets the position & orientation of this object.

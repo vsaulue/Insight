@@ -61,10 +61,9 @@ private:
     /**
      * Updates the position & location of this object.
      *
-     * @param[in] position Current position of the center of mass.
-     * @param[in] rotation Orientation of the object.
+     * @param[in] transform New position & orientation of the object.
      */
-    void updateTransform(const btVector3& position, const btMatrix3x3& rotation);
+    void updateTransform(const btTransform& transform);
 };
 
 #endif /* GRAPHICOBJECT_HPP */

@@ -79,14 +79,6 @@ Body::Body(btScalar mass, btCollisionShape& shape) :
 
 }
 
-const btVector3& Body::getPosition() const {
-    return btBody->getWorldTransform().getOrigin();
-}
-
-const btMatrix3x3& Body::getRotation() const {
-    return btBody->getWorldTransform().getBasis();
-}
-
 const btTransform& Body::getTransform() const {
     return btBody->getWorldTransform();
 }

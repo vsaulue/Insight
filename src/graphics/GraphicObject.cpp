@@ -30,6 +30,18 @@ static irr::core::vector3df btToIrrVector(const btVector3& vector) {
 }
 
 /**
+ * Converts a Bullet quaternion to a vector of Euler angles (Irrlicht format).
+ * @param[in] btQuat Bullet quaternion.
+ * @return Vector of Irrlicht Euler angles.
+ */
+static irr::core::vector3df btQuaternionToEulerAngles(const btQuaternion& btQuat) {
+    irr::core::quaternion irrQuat(btQuat.x(), btQuat.y(), btQuat.z(), btQuat.w());
+    irr::core::vector3df result;
+    irrQuat.toEuler(result);
+    return irr::core::RADTODEG*result;
+}
+
+/**
  * Class converting the collision shape of a body into a 3d scene node.
  */
 class IrrlichtDrawer : public ShapeDrawer {
@@ -71,8 +83,7 @@ public:
 
         vector3df pos = btToIrrVector(transform.getOrigin());
         vector3df scale = btToIrrVector(halfExtents);
-        vector3df rotation;
-        transform.getBasis().getEulerZYX(rotation.X, rotation.Y, rotation.Z);
+        vector3df rotation = btQuaternionToEulerAngles(transform.getRotation());
         scene.addMeshSceneNode(cylinder.get(), &rootNode, -1, pos, rotation, scale);
     }
 
@@ -198,21 +209,20 @@ GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager& scene)
 {
     IrrlichtDrawer drawer(*node);
     body.drawShape(drawer);
-    updateTransform(body.getPosition(), body.getRotation());
+    updateTransform(body.getTransform());
     body.addMoveListener(*this);
 }
 
 void GraphicObject::onBodyMove(const btTransform& transform) {
-    updateTransform(transform.getOrigin(), transform.getBasis());
+    updateTransform(transform);
 }
 
 GraphicObject::~GraphicObject() {
     body.removeMoveListener(*this);
 }
 
-void GraphicObject::updateTransform(const btVector3& position, const btMatrix3x3& rotation) {
-    node->setPosition(btToIrrVector(position));
-    float pitch, yaw, roll;
-    rotation.getEulerZYX(yaw, pitch, roll);
-    node->setRotation(irr::core::vector3df(roll, pitch, yaw)*180/irr::core::PI);
+void GraphicObject::updateTransform(const btTransform& transform) {
+    node->setPosition(btToIrrVector(transform.getOrigin()));
+    irr::core::vector3df eulerAngles = btQuaternionToEulerAngles(transform.getRotation());
+    node->setRotation(eulerAngles);
 }
