@@ -105,6 +105,7 @@ private:
     static irrlicht_ptr<irr::scene::IMesh> makeCylinderMesh(irr::u32 tesselation = 16) {
         using namespace irr::scene;
         irrlicht_ptr<SMeshBuffer> meshBuffer(new SMeshBuffer());
+        meshBuffer->getMaterial().NormalizeNormals = true;
         irrlicht_ptr<SMesh> result(new SMesh());
         result->addMeshBuffer(meshBuffer.get());
         irr::core::array<irr::video::S3DVertex>& vertices = meshBuffer->Vertices;
