@@ -55,6 +55,14 @@ public:
      */
     virtual void drawCylinder(const btTransform& transform, const btVector3& halfExtents) = 0;
 
+    /**
+     * Draw a cuboid.
+     *
+     * @param[in] transform Position & orientation of the cuboid.
+     * @param[in] halfExtents Half extents (scale coefficients on each axis).
+     */
+    virtual void drawCuboid(const btTransform& transform, const btVector3& halfExtents) = 0;
+
     virtual ~ShapeDrawer() = default;
 };
 

@@ -87,6 +87,16 @@ public:
         scene.addMeshSceneNode(cylinder.get(), &rootNode, -1, pos, rotation, scale);
     }
 
+    void drawCuboid(const btTransform& transform, const btVector3& halfExtents) override {
+        irr::scene::ISceneManager& scene = *rootNode.getSceneManager();
+        static irrlicht_ptr<irr::scene::IMesh> cuboid(makeCuboidMesh());
+        irr::core::vector3df pos = btToIrrVector(transform.getOrigin());
+        irr::core::vector3df scale = btToIrrVector(halfExtents);
+        irr::core::vector3df rotation = btQuaternionToEulerAngles(transform.getRotation());
+        scene.addMeshSceneNode(cuboid.get(), &rootNode, -1, pos, rotation, scale);
+    }
+
+
     IrrlichtDrawer(irr::scene::ISceneNode& rootNode) : rootNode(rootNode) {
 
     }
@@ -160,6 +170,53 @@ private:
             indices.push_back(b);
             indices.push_back(c);
             indices.push_back(d);
+        }
+
+        return result;
+    }
+
+    /**
+     * Generates the mesh of a cube of side 2.
+     *
+     * NO texture coordinates.
+     *
+     * @return The mesh of a cube.
+     */
+    static irrlicht_ptr<irr::scene::IMesh> makeCuboidMesh() {
+        using namespace irr::scene;
+        irrlicht_ptr<SMeshBuffer> meshBuffer(new SMeshBuffer());
+        meshBuffer->getMaterial().NormalizeNormals = true;
+        irrlicht_ptr<SMesh> result(new SMesh());
+        result->addMeshBuffer(meshBuffer.get());
+        static const std::array<irr::core::vector3df,8> VERTICES = {{
+            {-1,-1,-1},
+            {-1,-1, 1},
+            { 1,-1, 1},
+            { 1,-1,-1},
+            {-1, 1,-1},
+            {-1, 1, 1},
+            { 1, 1, 1},
+            { 1, 1,-1}
+        }};
+        static const std::array<std::pair<std::array<int,4>, irr::core::vector3df>,6> FACES = {{
+            {{0,3,2,1}, {0,-1,0}},
+            {{0,1,5,4}, {-1,0,0}},
+            {{1,2,6,5}, {0,0,1}},
+            {{2,3,7,6}, {1,0,0}},
+            {{3,0,4,7}, {0,0,-1}},
+            {{4,5,6,7}, {0,1,0}}
+        }};
+        static const std::array<int, 6> TRIANGLES = {0,1,2,0,2,3};
+        for (unsigned faceId = 0; faceId < FACES.size(); faceId++) {
+            auto& face = FACES[faceId];
+            irr::video::S3DVertex vertex({0,0,0}, face.second, irr::video::SColor(255,255,255,255), {0,0});
+            for (unsigned vertexId : face.first) {
+                vertex.Pos = VERTICES[vertexId];
+                meshBuffer->Vertices.push_back(vertex);
+            }
+            for (int index : TRIANGLES) {
+                meshBuffer->Indices.push_back(4*faceId+index);
+            }
         }
 
         return result;
