@@ -37,6 +37,8 @@ static const btScalar HIP_JOINT_BALL_RADIUS = 0.4f;
 static const btScalar HEAD_JOINT_BALL_RADIUS = 1.0f;
 /** Radius of the cylindric part of the knee (m). */
 static const btScalar KNEE_JOINT_CYLINDER_RADIUS = 0.20f;
+/** Ankle ball radius (m). */
+static const btScalar ANKLE_JOINT_BALL_RADIUS = 0.2f;
 /** Dimensions of the cylindric part of the arm. */
 static const btVector3 ARM_HALF_EXTENTS = {0.1f, 0.5f, 0.1f};
 /** Dimensions of the longest cylindric part of the forearm. */
@@ -45,6 +47,10 @@ static const btVector3 FOREARM_HALF_EXTENTS = {0.1, 0.55f, 0.1f};
 static const btVector3 THIGH_HALF_EXTENTS = {0.15f, 0.6f, 0.15f};
 /** Dimensions of the cylindric part of the leg. */
 static const btVector3 LEG_HALF_EXTENTS = {0.15f, 0.85f, 0.15f};
+/** Dimensions of the cuboid of the foot. */
+static const btVector3 FOOT_HALF_EXTENTS = {0.225f, 0.1f, 0.55f};
+/** Dimension of the cuboid of the toes. */
+static const btVector3 TOES_HALF_EXTENTS = {0.225f, 0.1f, 0.15f};
 
 static const SphericalJointInfo NECK = {
     HEAD_JOINT_BALL_RADIUS, // ball radius
@@ -129,6 +135,27 @@ static const CylindricJointInfo KNEE = {
     btTransform(btQuaternion::getIdentity(), btVector3(0, LEG_HALF_EXTENTS.y()+KNEE_JOINT_CYLINDER_RADIUS, 0)), // socket transform
 };
 
+static const SphericalJointInfo ANKLE = {
+    ANKLE_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
+    DENSITY, // joint density
+    true, // place ball
+    btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, 0.125f, -0.2f)), // ball transform
+    true, // generate ball shape
+    btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ANKLE_JOINT_BALL_RADIUS-LEG_HALF_EXTENTS.y(), 0)), // socket transform
+};
+
+static const CylindricJointInfo TOES_JOINT = {
+    FOOT_HALF_EXTENTS.y(), // cylinder radius
+    FOOT_HALF_EXTENTS.x()*2-0.01f, // cylinder length
+    0, // start rotation
+    DENSITY, // joint density
+    false, // place cylinder
+    btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, FOOT_HALF_EXTENTS.z())), // cylinder transform
+    true, // generate cylinder shape
+    btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, -TOES_HALF_EXTENTS.z()-FOOT_HALF_EXTENTS.y())), // socket transform
+};
+
 static const btVector3 TORSO_HALF_EXTENTS = {1,1,1};
 
 static std::unique_ptr<CompoundBody> createHead() {
@@ -167,6 +194,18 @@ static std::unique_ptr<CompoundBody> createLeg() {
     return leg;
 }
 
+static std::unique_ptr<CompoundBody> createFoot() {
+    std::unique_ptr<CompoundBody> foot = std::make_unique<CompoundBody>();
+    foot->addCuboidD(DENSITY, btTransform::getIdentity(), FOOT_HALF_EXTENTS);
+    return foot;
+}
+
+static std::unique_ptr<CompoundBody> createToes() {
+    std::unique_ptr<CompoundBody> toes = std::make_unique<CompoundBody>();
+    toes->addCuboidD(DENSITY, btTransform::getIdentity(), TOES_HALF_EXTENTS);
+    return toes;
+}
+
 RobotBody::RobotBody(World& world) {
     std::vector<std::unique_ptr<CompoundBody>> bodyParts;
     auto newPart = [this, &bodyParts](const std::string& name, std::unique_ptr<CompoundBody> part) -> CompoundBody& {
@@ -184,6 +223,10 @@ RobotBody::RobotBody(World& world) {
     CompoundBody& rightThigh = newPart("RightThigh", createThigh());
     CompoundBody& leftLeg = newPart("LeftLeg", createLeg());
     CompoundBody& rightLeg = newPart("RightLeg", createLeg());
+    CompoundBody& leftFoot = newPart("LeftFoot", createFoot());
+    CompoundBody& rightFoot = newPart("RightFoot", createFoot());
+    CompoundBody& leftToes = newPart("LeftToes", createToes());
+    CompoundBody& rightToes = newPart("RightToes", createToes());
     joints["Neck"] = std::make_unique<SphericalJoint>(chest, head, NECK);
     joints["LeftShoulder"] = std::make_unique<SphericalJoint>(chest, leftArm, LEFT_SHOULDER);
     joints["RightShoulder"] = std::make_unique<SphericalJoint>(chest, rightArm, RIGHT_SHOULDER);
@@ -193,6 +236,10 @@ RobotBody::RobotBody(World& world) {
     joints["RightHip"] = std::make_unique<SphericalJoint>(chest, rightThigh, RIGHT_HIP);
     joints["LeftLeg"] = std::make_unique<CylindricJoint>(leftThigh, leftLeg, KNEE);
     joints["RightLeg"] = std::make_unique<CylindricJoint>(rightThigh, rightLeg, KNEE);
+    joints["LeftFoot"] = std::make_unique<SphericalJoint>(leftFoot, leftLeg, ANKLE);
+    joints["RightFoot"] = std::make_unique<SphericalJoint>(rightFoot, rightLeg, ANKLE);
+    joints["LeftToes"] = std::make_unique<CylindricJoint>(leftFoot, leftToes, TOES_JOINT);
+    joints["RightToes"] = std::make_unique<CylindricJoint>(rightFoot, rightToes, TOES_JOINT);
 
     for (auto& part : bodyParts) {
         world.addObject(std::move(part));
