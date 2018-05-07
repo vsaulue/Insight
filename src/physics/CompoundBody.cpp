@@ -104,6 +104,33 @@ namespace CompoundBodyChildren {
         /** Bullet shape. */
         btCylinderShape shape;
     };
+
+    /** Cuboid in a CompoundBody. */
+    class Cuboid : public CompoundBody::Child {
+    public:
+        /**
+         * Creates a new cylinder in a CompoundBody object.
+         * @param[in] childIndex Index of this object in the btCompoundShape.
+         * @param[in] halfExtents Half extents of the new cuboid.
+         */
+        Cuboid(int childIndex, const btVector3& halfExtents) :
+            Child(childIndex),
+            shape(halfExtents)
+        {
+
+        }
+
+        btCollisionShape& getShape() override {
+            return shape;
+        }
+
+        void draw(ShapeDrawer& drawer, const btTransform& transform) override {
+            drawer.drawCuboid(transform, shape.getHalfExtentsWithoutMargin());
+        }
+    private:
+        /** Bullet shape. */
+        btBoxShape shape;
+    };
 }
 
 CompoundBody::CompoundBody() : CompoundBody(std::make_unique<btCompoundShape>()) {
@@ -141,6 +168,17 @@ void CompoundBody::addCylinder(btScalar mass, const btTransform& transform, cons
 void CompoundBody::addCylinderD(btScalar density, const btTransform& transform, const btVector3& halfExtents) {
     btScalar mass = density*SIMD_PI*halfExtents.x()*halfExtents.y()*2*halfExtents.z();
     addCylinder(mass, transform, halfExtents);
+}
+
+void CompoundBody::addCuboid(btScalar mass, const btTransform& transform, const btVector3& halfExtents) {
+    using Cuboid = CompoundBodyChildren::Cuboid;
+    std::unique_ptr<Child> newObject = std::make_unique<Cuboid>(shape->getNumChildShapes(), halfExtents);
+    addChild(std::move(newObject), transform, mass);
+}
+
+void CompoundBody::addCuboidD(btScalar density, const btTransform& transform, const btVector3& halfExtents) {
+    btScalar mass = density*8*halfExtents.x()*halfExtents.y()*halfExtents.z();
+    addCuboid(mass, transform, halfExtents);
 }
 
 void CompoundBody::drawShape(ShapeDrawer& drawer) const {

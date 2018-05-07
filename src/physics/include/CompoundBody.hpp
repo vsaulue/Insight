@@ -81,6 +81,28 @@ public:
      */
     void addCylinderD(btScalar density, const btTransform& transform, const btVector3& halfExtents);
 
+    /**
+     * Adds a new cuboid in this collision shape.
+     *
+     * With default galfExtents {1,1,1}, the shape is a cube of side 2.
+     *
+     * @param[in] mass Mass of the cuboid.
+     * @param[in] transform Translation & rotation of the cuboid.
+     * @param[in] halfExtents Scale coefficient on each axis of the cuboid.
+     */
+    void addCuboid(btScalar mass, const btTransform& transform, const btVector3& halfExtents);
+
+    /**
+     * Adds a new cuboid in this collision shape.
+     *
+     * Same as addCuboid(), but uses a density instead of a mass.
+     *
+     * @param[in] mass Density of the cuboid.
+     * @param[in] transform Translation & rotation of the cuboid.
+     * @param[in] halfExtents Scale coefficient on each axis of the cuboid.
+     */
+    void addCuboidD(btScalar density, const btTransform& transform, const btVector3& halfExtents);
+
     void drawShape(ShapeDrawer& drawer) const override;
 
     /** Convex shape belonging to a CompoundBody. */
