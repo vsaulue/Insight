@@ -23,6 +23,7 @@
 #include <unordered_map>
 
 #include "CompoundBody.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "Sphere.hpp"
 #include "SphericalJoint.hpp"
 #include "World.hpp"
@@ -33,7 +34,7 @@
  * Body parts are owned by the physics engine. Only references are kept inside
  * this object.
  */
-class RobotBody {
+class RobotBody : public LuaVirtualClass {
 public:
     /**
      * Creates a new robot body.
@@ -41,12 +42,15 @@ public:
      * @param world World in which the body will be created.
      */
     RobotBody(World& world);
+
+    virtual ~RobotBody();
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
+    /** Set of body parts, indexed by their names. */
     std::unordered_map<std::string, CompoundBody*> parts;
-
+    /** Set of joints between body parts, indexed by their names. */
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
-
-    CompoundBody& insert(World& world, const std::string& name, std::unique_ptr<CompoundBody> part);
 };
 
 #endif /* ROBOTBODY_HPP */

@@ -447,8 +447,9 @@ public:
         } else if (memberName == "newRobot") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world);
+                state.push<RobotBody*>(newRobot.get());
                 object.robots.insert(std::move(newRobot));
-                return 0;
+                return 1;
             });
             return 1;
         } else if (memberName == "graphicEngine") {
