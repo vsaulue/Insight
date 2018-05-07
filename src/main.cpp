@@ -136,9 +136,10 @@ public:
      *
      * Possible only from State::running or State:: pausing.
      *
+     * @param[in] sleepUntilPaused True to wait until the worker thread stopped. False to just send a pause signal.
      * @return True if this call did pause the threads (they were running before this call).
      */
-    bool pause() {
+    bool pause(bool sleepUntilPaused) {
         std::unique_lock<std::mutex> lock(mutex);
         bool result = false;
         switch (state) {
@@ -149,7 +150,9 @@ public:
             result = true;
             // no break
         case State::pausing:
-            controlCondition.wait(lock, [this]() -> bool { return this->state != State::pausing; });
+            if (sleepUntilPaused) {
+                controlCondition.wait(lock, [this]() -> bool { return this->state != State::pausing; });
+            }
             break;
         default:
             throw std::logic_error("Cannot pause: object is not in 'paused', 'pausing' or 'running' state.");
@@ -216,17 +219,21 @@ public:
     /**
      * Transition from State::running to State::paused.
      *
-     * Sends a pause command to the worker thread (using State::pausing), and wait
-     * for an acknowledgment.
+     * Sends a pause command to the worker thread (using State::pausing).
+     * Optionally wait for an acknowledgment from the worker thread.
+     *
+     * @param[in] sleepUntilPaused Wait until the worker thread has actually stopped.
      */
-    void pause() {
+    void pause(bool sleepUntilPaused) {
         std::unique_lock<std::mutex> lock(mutex);
         switch(state) {
         case State::paused:
             break;
         case State::running:
             state = State::pausing;
-            condition.wait(lock, [this]() -> bool { return this->state != State::pausing; });
+            if (sleepUntilPaused) {
+                condition.wait(lock, [this]() -> bool { return this->state != State::pausing; });
+            }
             break;
         default:
             throw std::logic_error("Cannot resume: object is not in 'running' state.");
@@ -294,7 +301,7 @@ private:
 
 
         void beforeCommand(LuaStateView& state) override {
-            mustResume = insight.pauseWorker();
+            mustResume = insight.pauseWorker(true);
         }
 
         void afterCommand(LuaStateView& state) override {
@@ -380,9 +387,10 @@ public:
 
     /**
      * Pauses the simulation.
+     * @param[in] sleepUntilPaused True to wait until the worker thread stopped. False to just send a pause signal.
      */
-    void pause() {
-        simulationState.pause();
+    void pause(bool sleepUntilPaused) {
+        simulationState.pause(sleepUntilPaused);
     }
 
     /**
@@ -400,7 +408,7 @@ public:
      */
     void run() {
         insightState.boot();
-        simulationState.pause();
+        simulationState.pause(false);
 
         std::thread shellThread([this]() { this->interpreter.run(); });
         workerMainLoop();
@@ -415,10 +423,11 @@ public:
      * This function sends a pause request to the worker thread, and waits
      * until the worker acknowledges the request.
      *
+     * @param[in] sleepUntilPaused True to wait until the worker thread stopped. False to just send a pause signal.
      * @return True if this call actually paused the thread (it was not paused before).
      */
-    bool pauseWorker() {
-        return insightState.pause();
+    bool pauseWorker(bool sleepUntilPaused) {
+        return insightState.pause(sleepUntilPaused);
     }
 
     /**
@@ -453,7 +462,7 @@ public:
             return 1;
         } else if (memberName == "pause") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                object.pause();
+                object.pause(false);
                 return 0;
             });
             return 1;
