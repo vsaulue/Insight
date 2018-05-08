@@ -214,7 +214,6 @@ public:
      */
     template<typename UserDataType, typename... ArgsType>
     void push(ArgsType&&... constructorArgs) {
-        static_assert(std::is_constructible<UserDataType, ArgsType...>::value, "Cannot construct an object of type Userdata with the given arguments.");
         LuaBinding<UserDataType>::push(*this, std::forward<ArgsType>(constructorArgs)...);
     }
 
@@ -231,7 +230,6 @@ public:
      */
     template<typename UserDataType>
     UserDataType get(int stackIndex) {
-        static_assert(std::is_copy_constructible<UserDataType>::value, "This type cannot be returned by value.");
         return LuaBinding<UserDataType>::get(*this, stackIndex);
     }
 
@@ -316,6 +314,14 @@ public:
     void newTable();
 
     /**
+     * Checks if the item at the specified index is a Lua table.
+     *
+     * @param[in] stackIndex Index of the item to check.
+     * @return True if it is an Lua table, false for any other type.
+     */
+    bool isTable(int stackIndex);
+
+    /**
      * Sets a value in a Lua table.
      *
      * Does the equivalent of t[fieldName]=v in Lua, where:
@@ -326,6 +332,34 @@ public:
      * @param[in] fieldName Key of the modified value in the table.
      */
     void setField(int stackIndex, const std::string &fieldName);
+
+    /**
+     * Sets a value in a Lua table.
+     *
+     * Does the equivalent of t[k]=v in Lua, where:
+     * <ul>
+     * <li> t is the value in the Lua stack at stackIndex.</li>
+     * <li> v is the value popped from the top of the stack.</li>
+     * <li> k is the 2nd value popped from the top of the stack (after v).</li>
+     * </ul>
+     *
+     * @param[in] stackIndex Index of the table being modified.
+     */
+    void setField(int stackIndex);
+
+    /**
+     * Gets a specific field in a Lua table.
+     *
+     * Does the equivalent of v=t[k] in Lua, where:
+     * <ul>
+     * <li> t is the object in the Lua stack at stackIndex.</li>
+     * <li> k is the value popped from the top of the stack.</li>
+     * <li> v is a new object pushed on the top of the stack (replacing k).</li>
+     * </ul>
+     *
+     * @param[in] stackIndex Index of the Lua table in the stack.
+     */
+    void getField(int stackIndex);
 
     /**
      * Checks whether the object in the Lua stack at stackIndex is a number.
@@ -359,6 +393,13 @@ public:
      * @return The index of the element on the top of the stack.
      */
     int getTop();
+
+    /**
+     * Computes an absolute index from a given index.
+     * @param[in] index Relative or absolute index.
+     * @return Absolute index corresponding to the argument.
+     */
+    int absIndex(int index);
 
     /**
      * Removes the element on the stack at the given index.

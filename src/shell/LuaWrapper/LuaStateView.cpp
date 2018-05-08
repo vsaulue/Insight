@@ -51,6 +51,10 @@ void LuaStateView::newTable() {
     lua_newtable(state);
 }
 
+bool LuaStateView::isTable(int stackIndex) {
+    return lua_istable(state, stackIndex) != 0;
+}
+
 void* LuaStateView::newUserData(std::size_t size) {
     return lua_newuserdata(state, size);
 }
@@ -65,6 +69,14 @@ void LuaStateView::pushValue(int stackIndex) {
 
 void LuaStateView::setField(int stackIndex, const std::string& fieldName) {
     lua_setfield(state, stackIndex, fieldName.c_str());
+}
+
+void LuaStateView::setField(int stackIndex) {
+    lua_settable(state, stackIndex);
+}
+
+void LuaStateView::getField(int stackIndex) {
+    lua_gettable(state, stackIndex);
 }
 
 void LuaStateView::setGlobal(const std::string& name) {
@@ -92,6 +104,11 @@ void LuaStateView::open_base() {
 int LuaStateView::getTop() {
     return lua_gettop(state);
 }
+
+int LuaStateView::absIndex(int index) {
+    return lua_absindex(state, index);
+}
+
 
 void LuaStateView::pushBool(bool value) {
     lua_pushboolean(state, value);

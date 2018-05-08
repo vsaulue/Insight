@@ -60,6 +60,19 @@
  *   </li>
  * </ul>
  *
+ * Specializations can define the following static constexpr members:
+ * <ul>
+ *   <li>
+ *     <code>
+ *       bool isStackAlias; // optional: default = false
+ *     </code>
+ *     <p>
+ *       Indicates that the BoundType instance returned by get() is just an alias of a stack item.
+ *       This value is used in LuaTable to handle the lifespan of objects read from an Lua table.
+ *     </p>
+ *   </li>
+ * </ul>
+ *
  * @tparam BoundType type that will be bound in Lua.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
  */

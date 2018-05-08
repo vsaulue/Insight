@@ -20,6 +20,7 @@ add_executable(testLuaWrapper
     LuaTestDefaultPointers.cpp
     LuaTestFundamentalTypes.cpp
     LuaTestFunctions.cpp
+    LuaTestTable.cpp
     LuaTestVirtualClass.cpp
 )
 

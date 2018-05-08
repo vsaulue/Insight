@@ -18,6 +18,7 @@ add_library(LuaWrapper STATIC
     LuaException
     LuaState
     LuaStateView
+    LuaTable
     LuaVirtualClass
 )
 
