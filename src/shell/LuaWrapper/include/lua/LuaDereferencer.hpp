@@ -31,20 +31,20 @@
  * is BoundType.
  *
  * Any specialization should contain the following public members:
- * <li>
- *   <ul>
+ * <ul>
+ *   <li>
  *     <code>typedef basetype = ...;</code><br>
  *     Type returned by this dereferencer.
- *   </ul>
- *   <ul>
+ *   </li>
+ *   <li>
  *     <code>static basetype& dereferenceGetter(LuaStateView& state, int stackIndex);</code><br>
  *     Function reading a value of type BoundType in the Lua stack, and returning it dereferenced into a basetype.
- *   </ul>
- *   <ul>
+ *   </li>
+ *   <li>
  *     <code>static basetype& dereference(BoundType& ref); // or BoundType argument.</code><br>
  *     Function dereferencing a BoundType into a basetype&.
- *   </ul>
- * </li>
+ *   </li>
+ * </ul>
  *
  * @tparam BoundType Type to dereference.
  * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).

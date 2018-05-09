@@ -45,26 +45,26 @@
  * LuaBinding<BoundType> can be derived from this object.
  *
  * Optional static methods:
- * <li>
- *   <ul>
+ * <ul>
+ *   <li>
  *     <code>
  *       static int luaIndexImpl(BoundType& object, const std::string& memberName, LuaStateView& state);
- *       // Gets the field/method of object named memberName (see lua metamethod __index).
  *     </code>
- *   </ul>
- *   <ul>
+ *     <p> Gets the field/method of object named memberName (see lua metamethod __index).</p>
+ *   </li>
+ *   <li>
  *     <code>
- *       static const std::string& luaClassName();
- *       // Overrides the auto-generated Lua class name of this type. Must be unique.
+ *       static const std::string& luaClassName();<br>
  *     </code>
- *   </ul>
- *   <ul>
+ *     <p>Overrides the auto-generated Lua class name of this type. Must be unique.</p>
+ *   </li>
+ *   <li>
  *     <code>
  *       static BoundType getFromTable(LuaTable& table);
- *       // Implements a constructor from a Lua native table.
  *     </code>
- *   </ul>
- * </li>
+ *     <p>Implements a constructor from a Lua native table.</p>
+ *   </li>
+ * </ul>
  */
 template<typename BoundType>
 class LuaBasicBinding : public LuaDefaultClassName<BoundType> {
