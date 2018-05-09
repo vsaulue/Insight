@@ -372,6 +372,13 @@ public:
     double checkNumber(int stackIndex);
 
     /**
+     * Tests if the value at the specified index is nil.
+     * @param stackIndex Index of the item to check in the stack.
+     * @return True if the value at the given index is nil.
+     */
+    bool isNil(int stackIndex);
+
+    /**
      * Pop the given number of elements from the stack.
      *
      * @param[in] n The number of elements to pop from the stack.

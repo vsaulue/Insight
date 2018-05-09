@@ -61,6 +61,21 @@ public:
     ~LuaTable();
 
     /**
+     * Tests if a non Nil value is present in the table at the given index.
+     * @param key Entry in the table to check.
+     * @return True if a non Nil value is associated with key in the table.
+     * @tparam KeyType Type of the key used for the lookup.
+     */
+    template<typename KeyType>
+    bool has(const KeyType& key) {
+        state.push<KeyType>(key);
+        state.getField(stackIndex);
+        bool result = !state.isNil(-1);
+        state.pop(1);
+        return result;
+    }
+
+    /**
      * Reads a value from the Lua table.
      *
      * @param[in] key Key of the desired value in the table.

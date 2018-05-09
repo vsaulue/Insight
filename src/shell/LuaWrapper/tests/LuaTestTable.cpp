@@ -99,6 +99,11 @@ TEST_CASE("Lua table bindings.") {
                     REQUIRE(std::strcmp(str,"bar")==0);
                 }
             }
+
+            SECTION("LuaTable.has()") {
+                REQUIRE(table.has<LuaNativeString>("num"));
+                REQUIRE_FALSE(table.has<float>(123));
+            }
         }
     }
 
