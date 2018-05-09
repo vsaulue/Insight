@@ -19,6 +19,7 @@
 #include <unordered_set>
 
 #include "Body.hpp"
+#include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
@@ -103,45 +104,25 @@ btRigidBody* Body::getBulletBody() {
     return btBody.get();
 }
 
-static int luaReturnVector(const btVector3& vector, LuaStateView& state) {
-    state.push<double>(vector.getX());
-    state.push<double>(vector.getY());
-    state.push<double>(vector.getZ());
-    return 3;
-}
-
-static btVector3 luaGetVector(LuaStateView& state, int firstStackIndex) {
-    double x = state.get<double>(firstStackIndex);
-    double y = state.get<double>(firstStackIndex+1);
-    double z = state.get<double>(firstStackIndex+2);
-    return btVector3(x,y,z);
-}
-
 int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<Body>;
     int result = 0;
     if (memberName=="position") {
-        state.push<Method>([](Body& object, LuaStateView& state) -> int {
-            const btVector3& pos = object.btBody->getWorldTransform().getOrigin();
-            return luaReturnVector(pos, state);
-        });
+        state.push<btVector3>(getTransform().getOrigin());
         result = 1;
     } else if (memberName=="setPosition") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
-            btVector3 newPos = luaGetVector(state, 2);
+            btVector3 newPos = state.get<btVector3>(2);
             object.setPosition(newPos);
             return 0;
         });
         result = 1;
     } else if (memberName=="velocity") {
-        state.push<Method>([](Body& object, LuaStateView& state) -> int {
-            const btVector3& vel = object.btBody->getLinearVelocity();
-            return luaReturnVector(vel, state);
-        });
+        state.push<btVector3>(btBody->getLinearVelocity());
         result = 1;
     } else if (memberName=="setVelocity") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
-            btVector3 vel = luaGetVector(state, 2);
+            btVector3 vel = state.get<btVector3>(2);
             object.btBody->setLinearVelocity(vel);
             return 0;
         });

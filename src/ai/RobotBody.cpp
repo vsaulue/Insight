@@ -20,6 +20,7 @@
 
 #include "CylindricJoint.hpp"
 #include "CylindricJointInfo.hpp"
+#include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
 #include "lua/types/LuaMethod.hpp"
@@ -281,31 +282,21 @@ RobotBody::~RobotBody() = default;
 
 int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<RobotBody>;
+    int result = 1;
     if (memberName=="position") {
-        state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
-            CompoundBody& chest = *object.parts["Chest"];
-            const btVector3& position = chest.getTransform().getOrigin();
-            state.push<float>(position.x());
-            state.push<float>(position.y());
-            state.push<float>(position.z());
-            return 3;
-        });
-        return 1;
+        state.push<btVector3>(parts["Chest"]->getTransform().getOrigin());
     } else if (memberName=="setPosition") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
             CompoundBody& chest = *object.parts["Chest"];
-            btVector3 newPos = {
-                state.get<float>(2),
-                state.get<float>(3),
-                state.get<float>(4)
-            };
+            btVector3 newPos = state.get<btVector3>(2);
             btVector3 translation = newPos - chest.getTransform().getOrigin();
             for (auto& part : object.parts) {
                 part.second->setPosition(part.second->getTransform().getOrigin() + translation);
             }
             return 0;
         });
-        return 1;
+    } else {
+        result = 0;
     }
-    return 0;
+    return result;
 }
