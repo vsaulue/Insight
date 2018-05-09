@@ -25,7 +25,10 @@
 #include "lua/LuaState.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/LuaDefaultBinding.hpp"
+#include "lua/types/LuaFunction.hpp"
+#include "lua/types/LuaTable.hpp"
 #include "lua/types/LuaMethod.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "lua/bindings/pointers.hpp"
 
 class TestClass {
@@ -147,5 +150,42 @@ TEST_CASE("TestClass** default binding") {
             state.doString("readBool(object.flag)");
             REQUIRE(readValue == flag);
         }
+    }
+}
+
+struct FloatWrapper {
+    FloatWrapper(float v) : value(v) {}
+    float value;
+};
+
+template<>
+class LuaBinding<FloatWrapper> : public LuaDefaultBinding<FloatWrapper> {
+public:
+    static FloatWrapper getFromTable(LuaTable& table) {
+        return {table.get<LuaNativeString,float>("value")};
+    }
+};
+
+TEST_CASE("FloatWrapper (constructible from Lua table)") {
+    LuaState state;
+
+    SECTION("Build from Lua table") {
+        std::string funcName("makeFromTable");
+        float readValue;
+        state.push<LuaFunction>([&readValue](LuaStateView& state) -> int {
+            FloatWrapper wrapper = state.get<FloatWrapper>(1);
+            readValue = wrapper.value;
+            return 0;
+        });
+        state.setGlobal(funcName);
+
+        state.doString(funcName+"({value=321})");
+        REQUIRE(readValue == 321);
+    }
+
+    SECTION("Build from Userdatum") {
+        state.push<FloatWrapper>(123);
+        FloatWrapper wrapper = state.get<FloatWrapper>(1);
+        REQUIRE(wrapper.value == 123);
     }
 }

@@ -30,6 +30,7 @@
 #include "lua/bindings/helpers/LuaDefaultCall.hpp"
 #include "lua/bindings/helpers/LuaDefaultClassName.hpp"
 #include "lua/bindings/helpers/LuaDefaultDelete.hpp"
+#include "lua/bindings/helpers/LuaDefaultGet.hpp"
 #include "lua/bindings/helpers/LuaDefaultIndex.hpp"
 #include "lua/bindings/helpers/LuaWrapFunction.hpp"
 
@@ -39,7 +40,7 @@
  * This will define the following functions for Luabinding:
  * - push
  * - getRef
- * - get (if BoundType is copy constructible).
+ * - get (if BoundType is copy constructible, or constructible from an Lua table).
  *
  * LuaBinding<BoundType> can be derived from this object.
  *
@@ -57,20 +58,17 @@
  *       // Overrides the auto-generated Lua class name of this type. Must be unique.
  *     </code>
  *   </ul>
+ *   <ul>
+ *     <code>
+ *       static BoundType getFromTable(LuaTable& table);
+ *       // Implements a constructor from a Lua native table.
+ *     </code>
+ *   </ul>
  * </li>
  */
 template<typename BoundType>
 class LuaBasicBinding : public LuaDefaultClassName<BoundType> {
 protected:
-    /**
-     * Enables a template if a type is copy constructible.
-     *
-     * @tparam T Type checked for a copy constructor.
-     * @tparam ReturnType Type set at enable_if_copy_constructible<T>::type if the condition is true.
-     */
-    template<typename T, typename ReturnType=T>
-    using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<T>::value,ReturnType>;
-
     static void setMetafields(LuaStateView& state) {
         using DefaultDelete = LuaDefaultDelete<BoundType>;
         if (DefaultDelete::hasDeletor) {
@@ -133,16 +131,16 @@ public:
     }
 
     /**
-     * Gets a copy of the object of type T at the given index from the stack.
+     * Constructs a new C++ object of type T from an object in the stack.
      *
      * @param state State where the lookup is done.
      * @param stackIndex Index in the Lua stack to search.
      *
-     * @return A copy of the object at the given index, if it is of type T.
+     * @return A copy of the object at the given index, if compatible.
      */
     template<typename T=BoundType>
-    static typename enable_if_copy_constructible<T>::type get(LuaStateView& state, int stackIndex) {
-        return getRef(state, stackIndex);
+    static T get(LuaStateView& state, int stackIndex) {
+        return LuaDefaultGet<T>::get(state, stackIndex);
     }
 };
 
