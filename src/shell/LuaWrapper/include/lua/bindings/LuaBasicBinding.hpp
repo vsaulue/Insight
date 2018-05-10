@@ -32,6 +32,7 @@
 #include "lua/bindings/helpers/LuaDefaultDelete.hpp"
 #include "lua/bindings/helpers/LuaDefaultGet.hpp"
 #include "lua/bindings/helpers/LuaDefaultIndex.hpp"
+#include "lua/bindings/helpers/LuaDefaultToString.hpp"
 #include "lua/bindings/helpers/LuaWrapFunction.hpp"
 
 /**
@@ -51,6 +52,12 @@
  *       static int luaIndexImpl(BoundType& object, const std::string& memberName, LuaStateView& state);
  *     </code>
  *     <p> Gets the field/method of object named memberName (see lua metamethod __index).</p>
+ *   </li>
+ *   <li>
+ *     <code>
+ *       static std::string luaToStringImpl(BoundType& object);
+ *     </code>
+ *     <p>Implementation of Lua metamethod __tostring.</p>
  *   </li>
  *   <li>
  *     <code>
@@ -86,6 +93,12 @@ protected:
         if (DefaultIndex::hasIndex) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultIndex::luaIndex>);
             state.setField(-2, "__index");
+        }
+
+        using DefaultToString = LuaDefaultToString<BoundType>;
+        if constexpr (DefaultToString::hasToStringFunction) {
+            state.push<LuaCFunction>(luaWrapFunction<DefaultToString::luaToString>);
+            state.setField(-2, "__tostring");
         }
     }
 private:
