@@ -21,6 +21,8 @@
  * Contains implementations of Lua bindings of Bullet classes.
  */
 
+#include <sstream>
+
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/types/LuaNativeString.hpp"
@@ -56,4 +58,10 @@ int LuaBinding<btVector3>::luaIndexImpl(btVector3& object, const std::string& me
         result = 0;
     }
     return result;
+}
+
+std::string LuaBinding<btVector3>::luaToStringImpl(btVector3& object) {
+    std::ostringstream result;
+    result << luaClassName() << ": {x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << "}";
+    return result.str();
 }

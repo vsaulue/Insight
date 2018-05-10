@@ -33,6 +33,8 @@ public:
     static btVector3 getFromTable(LuaTable& table);
 
     static int luaIndexImpl(btVector3& object, const std::string& memberName, LuaStateView& state);
+
+    static std::string luaToStringImpl(btVector3& object);
 };
 
 #endif /* LUA_BINDINGS_BULLET_HPP */
