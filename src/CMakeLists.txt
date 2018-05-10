@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(ai)
 add_subdirectory(graphics)
 add_subdirectory(physics)
+add_subdirectory(robotics)
 add_subdirectory(shell)
 
 add_executable(Insight
@@ -24,10 +24,10 @@ add_executable(Insight
 )
 
 target_link_libraries(Insight PRIVATE
-    AI
     Boost::program_options
     GraphicEngine
     LuaWrapper
     PhysicEngine
+    Robotics
     ShellInterpreter
 )

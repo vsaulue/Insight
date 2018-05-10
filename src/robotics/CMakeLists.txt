@@ -14,14 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_library(AI STATIC
+add_library(Robotics STATIC
     CylindricJoint.cpp
     RobotBody.cpp
     SphericalJoint.cpp
 )
 
-target_include_directories(AI PUBLIC include)
-target_link_libraries(AI
+target_include_directories(Robotics PUBLIC include)
+target_link_libraries(Robotics
     PhysicEngine
     LuaWrapper
 )
