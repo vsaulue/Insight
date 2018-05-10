@@ -284,14 +284,26 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<RobotBody>;
     int result = 1;
     if (memberName=="position") {
-        state.push<btVector3>(parts["Chest"]->getTransform().getOrigin());
+        state.push<btVector3>(getBaseBody().getTransform().getOrigin());
     } else if (memberName=="setPosition") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
-            CompoundBody& chest = *object.parts["Chest"];
+            CompoundBody& base = object.getBaseBody();
             btVector3 newPos = state.get<btVector3>(2);
-            btVector3 translation = newPos - chest.getTransform().getOrigin();
+            btVector3 translation = newPos - base.getTransform().getOrigin();
             for (auto& part : object.parts) {
                 part.second->setPosition(part.second->getTransform().getOrigin() + translation);
+            }
+            return 0;
+        });
+    } else if (memberName=="rotation") {
+        state.push<btQuaternion>(getBaseBody().getTransform().getRotation());
+    } else if (memberName=="setRotation") {
+        state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
+            CompoundBody& base = object.getBaseBody();
+            const btQuaternion curRotation = base.getTransform().getRotation();
+            btTransform relTransform(state.get<btQuaternion>(2)*curRotation.inverse());
+            for (auto& part : object.parts) {
+                part.second->setTransform(relTransform*part.second->getTransform());
             }
             return 0;
         });
@@ -299,4 +311,8 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
         result = 0;
     }
     return result;
+}
+
+CompoundBody& RobotBody::getBaseBody() {
+    return *parts["Chest"];
 }

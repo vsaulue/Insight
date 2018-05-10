@@ -41,6 +41,12 @@ public:
     void setPosition(const btVector3& newPos);
 
     /**
+     * Sets the orientation of this object.
+     * @param[in] newRotation The new rotation of this object.
+     */
+    void setRotation(const btQuaternion& newRotation);
+
+    /**
      * Sets the position & orientation of this object.
      * @param[in] transform The new position & orientation of this object.
      */

@@ -51,6 +51,15 @@ private:
     std::unordered_map<std::string, CompoundBody*> parts;
     /** Set of joints between body parts, indexed by their names. */
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
+
+    /**
+     * Gets the reference body.
+     *
+     * The reference body is used to to compute new positions, velocities, ...
+     *
+     * @return The reference body.
+     */
+    CompoundBody& getBaseBody();
 };
 
 #endif /* ROBOTBODY_HPP */

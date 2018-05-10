@@ -86,11 +86,15 @@ const btTransform& Body::getTransform() const {
 
 
 void Body::setPosition(const btVector3& newPos) {
-    btTransform newTransform = btBody->getWorldTransform();
+    btTransform newTransform = getTransform();
     newTransform.setOrigin(newPos);
-    btBody->setWorldTransform(newTransform);
-    btBody->setInterpolationWorldTransform(newTransform);
-    motionState->setWorldTransform(newTransform);
+    setTransform(newTransform);
+}
+
+void Body::setRotation(const btQuaternion& newRotation) {
+    btTransform newTransform = getTransform();
+    newTransform.setRotation(newRotation);
+    setTransform(newTransform);
 }
 
 void Body::setTransform(const btTransform& transform) {
@@ -106,27 +110,33 @@ btRigidBody* Body::getBulletBody() {
 
 int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<Body>;
-    int result = 0;
+    int result = 1;
     if (memberName=="position") {
         state.push<btVector3>(getTransform().getOrigin());
-        result = 1;
     } else if (memberName=="setPosition") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
             btVector3 newPos = state.get<btVector3>(2);
             object.setPosition(newPos);
             return 0;
         });
-        result = 1;
     } else if (memberName=="velocity") {
         state.push<btVector3>(btBody->getLinearVelocity());
-        result = 1;
     } else if (memberName=="setVelocity") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
             btVector3 vel = state.get<btVector3>(2);
             object.btBody->setLinearVelocity(vel);
             return 0;
         });
-        result = 1;
+    } else if (memberName=="rotation") {
+        state.push<btQuaternion>(getTransform().getRotation());
+    } else if (memberName=="setRotation") {
+        state.push<Method>([](Body& object, LuaStateView& state) -> int {
+            btQuaternion newRot = state.get<btQuaternion>(2);
+            object.setRotation(newRot);
+            return 0;
+        });
+    } else {
+        result = 0;
     }
     return result;
 }
