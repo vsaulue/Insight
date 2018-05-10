@@ -37,4 +37,14 @@ public:
     static std::string luaToStringImpl(btVector3& object);
 };
 
+template<>
+class LuaBinding<btQuaternion> : public LuaDefaultBinding<btQuaternion> {
+public:
+    static btQuaternion getFromTable(LuaTable& table);
+
+    static int luaIndexImpl(btQuaternion& object, const std::string& memberName, LuaStateView& state);
+
+    static std::string luaToStringImpl(btQuaternion& object);
+};
+
 #endif /* LUA_BINDINGS_BULLET_HPP */

@@ -65,3 +65,44 @@ std::string LuaBinding<btVector3>::luaToStringImpl(btVector3& object) {
     result << luaClassName() << ": {x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << "}";
     return result.str();
 }
+
+btQuaternion LuaBinding<btQuaternion>::getFromTable(LuaTable& table) {
+    using Str = LuaNativeString;
+    if (table.has<Str>("x")) {
+        btScalar x = table.get<Str,btScalar>("x");
+        btScalar y = table.get<Str,btScalar>("y");
+        btScalar z = table.get<Str,btScalar>("z");
+        btScalar w = table.get<Str,btScalar>("w");
+        return btQuaternion(x,y,z,w);
+    } else if (table.has<float>(1)) {
+        btScalar x = table.get<float,btScalar>(1);
+        btScalar y = table.get<float,btScalar>(2);
+        btScalar z = table.get<float,btScalar>(3);
+        btScalar w = table.get<float,btScalar>(4);
+        return btQuaternion(x,y,z,w);
+    } else {
+        throw LuaException("Cannot build btQuaternion from the given Lua table. Requires \"x\",\"y\",\"z\",\"w\" or 1,2,3,4 fields.");
+    }
+}
+
+int LuaBinding<btQuaternion>::luaIndexImpl(btQuaternion& object, const std::string& memberName, LuaStateView& state) {
+    int result = 1;
+    if (memberName=="x") {
+        state.push<btScalar>(object.x());
+    } else if (memberName=="y") {
+        state.push<btScalar>(object.y());
+    } else if (memberName=="z") {
+        state.push<btScalar>(object.z());
+    } else if (memberName=="w") {
+        state.push<btScalar>(object.w());
+    } else {
+        result = 0;
+    }
+    return result;
+}
+
+std::string LuaBinding<btQuaternion>::luaToStringImpl(btQuaternion& object) {
+    std::ostringstream result;
+    result << luaClassName() << ": {x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << ", w=" << object.w() << "}";
+    return result.str();
+}
