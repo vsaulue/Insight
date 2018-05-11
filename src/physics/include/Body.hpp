@@ -25,6 +25,7 @@
 
 #include "BodyMoveListener.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
+#include "Shape.hpp"
 #include "ShapeDrawer.hpp"
 
 /** Object of the world (physics engine). */
@@ -33,10 +34,9 @@ public:
     /**
      * Constructs a new Body.
      *
-     * @param mass Mass of the new body.
      * @param shape Shape of the body (used for collisions).
      */
-    Body(btScalar mass, btCollisionShape& shape);
+    Body(std::shared_ptr<Shape> shape);
 
     void setPosition(const btVector3& newPos);
 
@@ -59,11 +59,11 @@ public:
     const btTransform& getTransform() const;
 
     /**
-     * Gets a pointer to the Bullet representation of this Body.
+     * Gets a reference to the Bullet representation of this Body.
      *
-     * @return A pointer to the internal Bullet Body.
+     * @return A reference to the internal Bullet Body.
      */
-    btRigidBody* getBulletBody();
+    btRigidBody& getBulletBody();
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
@@ -75,7 +75,13 @@ public:
      *
      * @param drawer Object in which the shape should be drawn.
      */
-    virtual void drawShape(ShapeDrawer& drawer) const = 0;
+    void drawShape(ShapeDrawer& drawer) const {
+        shape->draw(drawer);
+    }
+
+    const Shape& getShape() const {
+        return *shape;
+    }
 
     /**
      * Adds a new listener for "move" events.
@@ -92,19 +98,15 @@ public:
     void removeMoveListener(BodyMoveListener& listener) const;
 
     virtual ~Body();
-protected:
-    /**
-     * Update the mass and moments of inertia of this object.
-     * @param[in] newMass New mass of this object.
-     */
-    void recalculateInertia(btScalar newMass);
 private:
     class MotionState;
 
+    /** Shape of this body. */
+    std::shared_ptr<Shape> shape;
     /** Object used by Bullet to communicate position & direction changes. */
     mutable std::unique_ptr<MotionState> motionState;
     /** Bullet body. */
-    std::unique_ptr<btRigidBody> btBody;
+    btRigidBody body;
 };
 
 #endif /* BODY_HPP */

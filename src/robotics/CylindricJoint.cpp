@@ -27,7 +27,7 @@
  * @param[in] movingJoint Relative transform of the joint in movingBody.
  * @param[in] initialAngle Initial angle of the bodies at the joint.
  */
-static void initPosition(const CompoundBody& fixedBody, const btTransform& fixedJoint, CompoundBody& movingBody, const btTransform& movingJoint, btScalar initialAngle) {
+static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, Body& movingBody, const btTransform& movingJoint, btScalar initialAngle) {
     btTransform joint;
     joint.setIdentity();
     joint.getBasis().setEulerZYX(0, 0, initialAngle);
@@ -43,9 +43,9 @@ static void initPosition(const CompoundBody& fixedBody, const btTransform& fixed
  * @param info Configuration of this joint.
  * @return A Bullet constraint representing the joint.
  */
-static std::shared_ptr<btHingeConstraint> makeConstraint(CompoundBody& cylinder, CompoundBody& socket, const CylindricJointInfo& info) {
-    btRigidBody& bodyA = *cylinder.getBulletBody();
-    btRigidBody& bodyB = *socket.getBulletBody();
+static std::shared_ptr<btHingeConstraint> makeConstraint(Body& cylinder, Body& socket, const CylindricJointInfo& info) {
+    btRigidBody& bodyA = cylinder.getBulletBody();
+    btRigidBody& bodyB = socket.getBulletBody();
     const btVector3& pivotA = info.cylinderTransform.getOrigin();
     const btVector3& pivotB = info.socketTransform.getOrigin();
     const btVector3 axisA = info.cylinderTransform.getBasis() * btVector3(1,0,0);
@@ -53,17 +53,12 @@ static std::shared_ptr<btHingeConstraint> makeConstraint(CompoundBody& cylinder,
     return std::make_shared<btHingeConstraint>(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
 }
 
-CylindricJoint::CylindricJoint(CompoundBody& cylinder, CompoundBody& socket, const CylindricJointInfo& info) :
+CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info) :
     cylinder(cylinder),
     socket(socket),
     jointInfo(info),
     constraint(makeConstraint(cylinder, socket, info))
 {
-    if (info.generateCylinder) {
-        btVector3 halfExtents(info.cylinderRadius, info.cylinderLength/2, info.cylinderRadius);
-        btTransform transform = info.cylinderTransform * btTransform(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
-        cylinder.addCylinderD(info.jointDensity, transform, halfExtents);
-    }
     if (info.placeCylinder) {
         initPosition(socket, info.socketTransform, cylinder, info.cylinderTransform, info.startRotation);
     } else {

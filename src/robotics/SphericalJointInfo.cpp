@@ -16,24 +16,12 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SPHERE_HPP
-#define SPHERE_HPP
+#include "SphereShape.hpp"
+#include "SphericalJointInfo.hpp"
 
-#include <memory>
-
-#include "btBulletDynamicsCommon.h"
-
-#include "Body.hpp"
-
-class Sphere : public Body {
-public:
-    Sphere(btScalar mass, btScalar radius);
-
-    void drawShape(ShapeDrawer& drawer) const override;
-private:
-    std::unique_ptr<btSphereShape> shape;
-
-    Sphere(btScalar mass, std::unique_ptr<btSphereShape>&& shape);
-};
-
-#endif /* SPHERE_HPP */
+void SphericalJointInfo::addSphereShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const {
+    using Density = Shape::Density;
+    if (generateBallShape) {
+        shapeInfo.push_back({std::make_shared<SphereShape>(Density(jointDensity), ballRadius), ballTransform});
+    }
+}

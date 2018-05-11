@@ -18,21 +18,22 @@
 
 #include "SphericalJoint.hpp"
 
-static void initPosition(const CompoundBody& fixedBody, const btTransform& fixedJoint, CompoundBody& movingBody, const btTransform& movingJoint, const btQuaternion& rotation) {
+static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, Body& movingBody, const btTransform& movingJoint, const btQuaternion& rotation) {
     btTransform joint(rotation, btVector3(0,0,0));
     btTransform newTransform = fixedBody.getTransform() * fixedJoint * joint * movingJoint.inverse();
     movingBody.setTransform(newTransform);
 }
 
-SphericalJoint::SphericalJoint(CompoundBody& ball, CompoundBody& socket, const SphericalJointInfo& info) :
+static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& socket, const SphericalJointInfo& info) {
+    return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), info.ballTransform, info.socketTransform);
+}
+
+SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info) :
     ball(ball),
     socket(socket),
     jointInfo(info),
-    constraint(std::make_shared<btConeTwistConstraint>(*ball.getBulletBody(), *socket.getBulletBody(), info.ballTransform, info.socketTransform))
+    constraint(makeConstraint(ball, socket, info))
 {
-    if (info.generateBallShape) {
-        ball.addSphereD(info.jointDensity, info.ballRadius, info.ballTransform.getOrigin());
-    }
     if (info.placeBall) {
         initPosition(socket, info.socketTransform, ball, info.ballTransform, info.startRotation);
     } else {

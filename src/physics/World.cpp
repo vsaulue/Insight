@@ -18,11 +18,13 @@
 
 #include "World.hpp"
 
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/LuaStateView.hpp"
-#include "Sphere.hpp"
-#include "Terrain.hpp"
+#include "SphereShape.hpp"
+#include "StaticPlaneShape.hpp"
 
 World::World() :
     broadPhase(std::make_unique<btDbvtBroadphase>()),
@@ -36,7 +38,7 @@ World::World() :
 
 void World::addObject(std::unique_ptr<Body>&& object) {
     Body& body = *object.get();
-    world->addRigidBody(object->getBulletBody());
+    world->addRigidBody(&object->getBulletBody());
     objects.insert(std::move(object));
     for (auto listener : createListener) {
         listener->onBodyCreation(body);
@@ -53,15 +55,19 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     int result = 0;
     if (memberName=="newSphere") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
-            std::unique_ptr<Sphere> newObject = std::make_unique<Sphere>(1,1);
+            btScalar mass = state.get<btScalar>(2);
+            btScalar radius = state.get<btScalar>(3);
+            std::unique_ptr<Body> newObject = std::make_unique<Body>(std::make_shared<SphereShape>(mass, radius));
             state.push<Body*>(newObject.get());
             object.addObject(std::move(newObject));
             return 1;
         });
         result = 1;
-    } else if (memberName=="newTerrain") {
+    } else if (memberName=="newStaticPlane") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
-            std::unique_ptr<Terrain> newObject = std::make_unique<Terrain>();
+            btVector3 normal = state.get<btVector3>(2);
+            btScalar offset = state.get<btScalar>(3);
+            std::unique_ptr<Body> newObject = std::make_unique<Body>(std::make_shared<StaticPlaneShape>(normal, offset));
             state.push<Body*>(newObject.get());
             object.addObject(std::move(newObject));
             return 1;
@@ -82,6 +88,6 @@ void World::removeCreationListener(BodyCreationListener& listener) const {
 
 World::~World() {
     for (auto& object : objects) {
-        world->removeRigidBody(object->getBulletBody());
+        world->removeRigidBody(&object->getBulletBody());
     }
 }

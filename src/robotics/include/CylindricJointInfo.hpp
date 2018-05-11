@@ -19,6 +19,12 @@
 #ifndef CYLINDRICJOINTINFO_HPP
 #define CYLINDRICJOINTINFO_HPP
 
+#include <vector>
+
+#include "btBulletDynamicsCommon.h"
+
+#include "CompoundShape.hpp"
+
 /**
  * Parameters to describe & construct a cylindric joint.
  */
@@ -47,6 +53,12 @@ struct CylindricJointInfo {
      * The socket position/origin is the center of the associated cylinder.
      */
     btTransform socketTransform;
+
+    /**
+     * Adds the cylinder part of the joint to a body part shape.
+     * @param shapeInfo Shape in which the cylinder should be inserted.
+     */
+    void addCylinderShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const;
 };
 
 #endif /* CYLINDRICJOINTINFO_HPP */

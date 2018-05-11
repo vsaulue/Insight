@@ -16,23 +16,14 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TERRAIN_HPP
-#define TERRAIN_HPP
+#include "CylinderShape.hpp"
+#include "CylindricJointInfo.hpp"
 
-#include "btBulletDynamicsCommon.h"
-
-#include "Body.hpp"
-
-class Terrain : public Body {
-public:
-    Terrain();
-
-    void drawShape(ShapeDrawer& drawer) const override;
-
-private:
-    Terrain(std::unique_ptr<btStaticPlaneShape>&& shape);
-
-    std::unique_ptr<btStaticPlaneShape> shape;
-};
-
-#endif /* TERRAIN_HPP */
+void CylindricJointInfo::addCylinderShape(std::vector<CompoundShape::ChildInfo>& info) const {
+    using Density = Shape::Density;
+    if (generateCylinder) {
+        btVector3 halfExtents(cylinderRadius, cylinderLength/2, cylinderRadius);
+        btTransform transform = cylinderTransform * btTransform(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
+        info.push_back({std::make_shared<CylinderShape>(Density(jointDensity), halfExtents), transform});
+    }
+}

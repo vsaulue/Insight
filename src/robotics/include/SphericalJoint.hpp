@@ -23,7 +23,8 @@
 
 #include "btBulletDynamicsCommon.h"
 
-#include "CompoundBody.hpp"
+#include "Body.hpp"
+#include "CompoundShape.hpp"
 #include "Joint.hpp"
 #include "SphericalJointInfo.hpp"
 
@@ -44,7 +45,7 @@ public:
      * @param socket Body part containing the concave part of the joint.
      * @param info Configuration of this joint.
      */
-    SphericalJoint(CompoundBody& ball, CompoundBody& socket, const SphericalJointInfo& info);
+    SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info);
 
     virtual ~SphericalJoint();
 
@@ -53,9 +54,9 @@ public:
     }
 private:
     /** Body containing the convex part of the joint. */
-    CompoundBody& ball;
+    Body& ball;
     /** Body containing the concave part of the joint. */
-    CompoundBody& socket;
+    Body& socket;
     /** Joint configuration. */
     const SphericalJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/

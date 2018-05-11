@@ -59,29 +59,16 @@ public:
     }
 };
 
-/**
- * Recalculate the moments of inertia of a given shape.
- * @param shape Collision shape of the object.
- * @param mass Mass of the object.
- * @return A vector containing the moment of inertia around each axis.
- */
-static btVector3 calculateInertia(const btCollisionShape& shape, btScalar mass) {
-    btVector3 result(0,0,0);
-    if (mass != 0) {
-        shape.calculateLocalInertia(mass, result);
-    }
-    return result;
-}
-
-Body::Body(btScalar mass, btCollisionShape& shape) :
+Body::Body(std::shared_ptr<Shape> shape) :
+    shape(std::move(shape)),
     motionState(std::make_unique<MotionState>()),
-    btBody(std::make_unique<btRigidBody>(mass, motionState.get(), &shape, calculateInertia(shape, mass)))
+    body(this->shape->getMass(), motionState.get(), &this->shape->getBulletShape(), this->shape->getInertia())
 {
 
 }
 
 const btTransform& Body::getTransform() const {
-    return btBody->getWorldTransform();
+    return body.getWorldTransform();
 }
 
 
@@ -98,14 +85,14 @@ void Body::setRotation(const btQuaternion& newRotation) {
 }
 
 void Body::setTransform(const btTransform& transform) {
-    btBody->setWorldTransform(transform);
-    btBody->setInterpolationWorldTransform(transform);
+    body.setWorldTransform(transform);
+    body.setInterpolationWorldTransform(transform);
     motionState->setWorldTransform(transform);
 }
 
 
-btRigidBody* Body::getBulletBody() {
-    return btBody.get();
+btRigidBody& Body::getBulletBody() {
+    return body;
 }
 
 int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
@@ -120,11 +107,11 @@ int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
             return 0;
         });
     } else if (memberName=="velocity") {
-        state.push<btVector3>(btBody->getLinearVelocity());
+        state.push<btVector3>(body.getLinearVelocity());
     } else if (memberName=="setVelocity") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
             btVector3 vel = state.get<btVector3>(2);
-            object.btBody->setLinearVelocity(vel);
+            object.body.setLinearVelocity(vel);
             return 0;
         });
     } else if (memberName=="rotation") {
@@ -150,7 +137,3 @@ void Body::removeMoveListener(BodyMoveListener& listener) const {
 }
 
 Body::~Body() = default;
-
-void Body::recalculateInertia(btScalar newMass) {
-    btBody->setMassProps(newMass, calculateInertia(*btBody->getCollisionShape(), newMass));
-}

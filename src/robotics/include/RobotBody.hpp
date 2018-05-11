@@ -22,10 +22,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "CompoundBody.hpp"
+#include "Body.hpp"
+#include "Joint.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
-#include "Sphere.hpp"
-#include "SphericalJoint.hpp"
 #include "World.hpp"
 
 /**
@@ -48,7 +47,7 @@ public:
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     /** Set of body parts, indexed by their names. */
-    std::unordered_map<std::string, CompoundBody*> parts;
+    std::unordered_map<std::string, Body*> parts;
     /** Set of joints between body parts, indexed by their names. */
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
 
@@ -59,7 +58,7 @@ private:
      *
      * @return The reference body.
      */
-    CompoundBody& getBaseBody();
+    Body& getBaseBody();
 };
 
 #endif /* ROBOTBODY_HPP */

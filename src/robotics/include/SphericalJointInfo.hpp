@@ -19,7 +19,11 @@
 #ifndef SPHERICALJOINTINFO_HPP
 #define SPHERICALJOINTINFO_HPP
 
+#include <vector>
+
 #include "btBulletDynamicsCommon.h"
+
+#include "CompoundShape.hpp"
 
 /**
  * Parameters to describe & construct a spherical joint.
@@ -48,6 +52,8 @@ public:
      * The socket position/origin is the center of the associated ball.
      */
     btTransform socketTransform;
+
+    void addSphereShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const;
 };
 
 #endif /* SPHERICALJOINTINFO_HPP */

@@ -16,8 +16,10 @@
 
 add_library(Robotics STATIC
     CylindricJoint.cpp
+    CylindricJointInfo.cpp
     RobotBody.cpp
     SphericalJoint.cpp
+    SphericalJointInfo.cpp
 )
 
 target_include_directories(Robotics PUBLIC include)

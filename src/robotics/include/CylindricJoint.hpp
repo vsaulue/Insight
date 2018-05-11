@@ -21,7 +21,7 @@
 
 #include <memory>
 
-#include "CompoundBody.hpp"
+#include "Body.hpp"
 #include "CylindricJointInfo.hpp"
 #include "Joint.hpp"
 
@@ -43,7 +43,7 @@ public:
      * @param socket Body part containing the concave part of the joint.
      * @param info Configuration of this joint.
      */
-    CylindricJoint(CompoundBody& cylinder, CompoundBody& socket, const CylindricJointInfo& info);
+    CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info);
 
     std::shared_ptr<btTypedConstraint> getConstraint() override {
         return constraint;
@@ -52,9 +52,9 @@ public:
     virtual ~CylindricJoint();
 private:
     /** Body containing the convex part of the joint. */
-    CompoundBody& cylinder;
+    Body& cylinder;
     /** Body containing the concave part of the joint. */
-    CompoundBody& socket;
+    Body& socket;
     /** Joint configuration. */
     const CylindricJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/

@@ -16,8 +16,11 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <tuple>
 #include <vector>
 
+#include "CuboidShape.hpp"
+#include "CylinderShape.hpp"
 #include "CylindricJoint.hpp"
 #include "CylindricJointInfo.hpp"
 #include "lua/bindings/bullet.hpp"
@@ -25,10 +28,14 @@
 #include "lua/bindings/luaVirtualClass/base.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "RobotBody.hpp"
+#include "SphereShape.hpp"
+#include "SphericalJoint.hpp"
 #include "SphericalJointInfo.hpp"
 
 /** Average density of body parts (kg/m^3).*/
 static const btScalar DENSITY = 1500.0f;
+/** Average density of body parts (kg/m^3). */
+static const Shape::Density SHAPE_DENSITY = DENSITY;
 /** Head radius (m). */
 static const btScalar HEAD_RADIUS = 0.5f;
 /** Arm joint ball radius (m). */
@@ -176,84 +183,78 @@ static const CylindricJointInfo TOES_JOINT = {
 
 static const btVector3 TORSO_HALF_EXTENTS = {1,1,1};
 
-static std::unique_ptr<CompoundBody> createHead() {
-    std::unique_ptr<CompoundBody> head = std::make_unique<CompoundBody>();
-    head->addSphereD(DENSITY, HEAD_RADIUS, btVector3(0,0,0));
-    return head;
+static const std::unordered_map<std::string, std::tuple<const SphericalJointInfo&,std::string>> SPHERICAL_JOINTS = {
+    {"Ankle", {ANKLE, "Foot"}},
+    {"Wrist", {WRIST, "Hand"}},
+    {"RightHip", {RIGHT_HIP, "Chest"}},
+    {"LeftHip", {LEFT_HIP, "Chest"}},
+    {"RightShoulder", {RIGHT_SHOULDER, "Chest"}},
+    {"LeftShoulder", {LEFT_SHOULDER, "Chest"}},
+    {"Neck", {NECK, "Chest"}},
+};
+
+static const std::unordered_map<std::string, std::tuple<const CylindricJointInfo&,std::string>> CYLINDRIC_JOINTS = {
+    {"Toes", {TOES_JOINT, "Foot"}},
+    {"Knee", {KNEE, "Thigh"}},
+    {"Elbow", {RIGHT_ELBOW, "Arm"}},
+};
+
+static std::unordered_map<std::string, std::shared_ptr<CompoundShape>> initShapes() {
+    std::unordered_map<std::string, std::vector<CompoundShape::ChildInfo>> shapesInfo = {
+        {"Head", {{std::make_shared<SphereShape>(SHAPE_DENSITY, HEAD_RADIUS), btTransform::getIdentity() }}},
+        {"Chest", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, TORSO_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Arm", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, ARM_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Forearm", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, FOREARM_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Thigh", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, THIGH_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Leg", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, LEG_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Foot", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, FOOT_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Toes", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, TOES_HALF_EXTENTS), btTransform::getIdentity() }}},
+        {"Hand", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, HAND_HALF_EXTENTS), btTransform::getIdentity() }}},
+    };
+    for (const auto& joint : SPHERICAL_JOINTS) {
+        std::vector<CompoundShape::ChildInfo>& sphereShapeInfo = shapesInfo[std::get<1>(joint.second)];
+        const SphericalJointInfo& jointInfo = std::get<0>(joint.second);
+        jointInfo.addSphereShape(sphereShapeInfo);
+    }
+    for (const auto& joint : CYLINDRIC_JOINTS) {
+        std::vector<CompoundShape::ChildInfo>& cylinderShapeInfo = shapesInfo[std::get<1>(joint.second)];
+        const CylindricJointInfo& jointInfo = std::get<0>(joint.second);
+        jointInfo.addCylinderShape(cylinderShapeInfo);
+    }
+    std::unordered_map<std::string, std::shared_ptr<CompoundShape>> result;
+    for (auto& shape : shapesInfo) {
+        result[shape.first] = std::make_shared<CompoundShape>(shape.second);
+    }
+    return result;
 }
 
-static std::unique_ptr<CompoundBody> createChest() {
-    std::unique_ptr<CompoundBody> chest = std::make_unique<CompoundBody>();
-    chest->addCylinderD(DENSITY, btTransform::getIdentity(), TORSO_HALF_EXTENTS);
-    return chest;
-}
-
-static std::unique_ptr<CompoundBody> createArm() {
-    std::unique_ptr<CompoundBody> arm = std::make_unique<CompoundBody>();
-    arm->addCylinderD(DENSITY, btTransform::getIdentity(), ARM_HALF_EXTENTS);
-    return arm;
-}
-
-static std::unique_ptr<CompoundBody> createForearm() {
-    std::unique_ptr<CompoundBody> forearm = std::make_unique<CompoundBody>();
-    forearm->addCylinderD(DENSITY, btTransform::getIdentity(), FOREARM_HALF_EXTENTS);
-    return forearm;
-}
-
-static std::unique_ptr<CompoundBody> createThigh() {
-    std::unique_ptr<CompoundBody> thigh = std::make_unique<CompoundBody>();
-    thigh->addCylinderD(DENSITY, btTransform::getIdentity(), THIGH_HALF_EXTENTS);
-    return thigh;
-}
-
-static std::unique_ptr<CompoundBody> createLeg() {
-    std::unique_ptr<CompoundBody> leg = std::make_unique<CompoundBody>();
-    leg->addCylinderD(DENSITY, btTransform::getIdentity(), LEG_HALF_EXTENTS);
-    return leg;
-}
-
-static std::unique_ptr<CompoundBody> createFoot() {
-    std::unique_ptr<CompoundBody> foot = std::make_unique<CompoundBody>();
-    foot->addCuboidD(DENSITY, btTransform::getIdentity(), FOOT_HALF_EXTENTS);
-    return foot;
-}
-
-static std::unique_ptr<CompoundBody> createToes() {
-    std::unique_ptr<CompoundBody> toes = std::make_unique<CompoundBody>();
-    toes->addCuboidD(DENSITY, btTransform::getIdentity(), TOES_HALF_EXTENTS);
-    return toes;
-}
-
-static std::unique_ptr<CompoundBody> createHand() {
-    std::unique_ptr<CompoundBody> hand = std::make_unique<CompoundBody>();
-    hand->addCuboidD(DENSITY, btTransform::getIdentity(), HAND_HALF_EXTENTS);
-    return hand;
-}
+static const std::unordered_map<std::string, std::shared_ptr<CompoundShape>> SHAPES = initShapes();
 
 RobotBody::RobotBody(World& world) {
-    std::vector<std::unique_ptr<CompoundBody>> bodyParts;
-    auto newPart = [this, &bodyParts](const std::string& name, std::unique_ptr<CompoundBody> part) -> CompoundBody& {
-        CompoundBody& result = *part;
-        this->parts[name] = part.get();
+    std::vector<std::unique_ptr<Body>> bodyParts;
+    auto newPart = [this, &bodyParts](const std::string& partName, std::string shapeName) -> Body& {
+        std::unique_ptr<Body> part = std::make_unique<Body>(SHAPES.at(shapeName));
+        Body& result = *part;
+        this->parts[partName] = part.get();
         bodyParts.push_back(std::move(part));
         return result;
     };
-    CompoundBody& chest = newPart("Chest", createChest());
-    CompoundBody& head = newPart("Head", createHead());
-    CompoundBody& leftArm = newPart("LeftArm", createArm());
-    CompoundBody& rightArm = newPart("RightArm", createArm());
-    CompoundBody& leftForearm = newPart("LeftForearm", createForearm());
-    CompoundBody& rightForearm = newPart("RightForearm", createForearm());
-    CompoundBody& leftHand = newPart("LeftHand", createHand());
-    CompoundBody& rightHand = newPart("RightHand", createHand());
-    CompoundBody& leftThigh = newPart("LeftThigh", createThigh());
-    CompoundBody& rightThigh = newPart("RightThigh", createThigh());
-    CompoundBody& leftLeg = newPart("LeftLeg", createLeg());
-    CompoundBody& rightLeg = newPart("RightLeg", createLeg());
-    CompoundBody& leftFoot = newPart("LeftFoot", createFoot());
-    CompoundBody& rightFoot = newPart("RightFoot", createFoot());
-    CompoundBody& leftToes = newPart("LeftToes", createToes());
-    CompoundBody& rightToes = newPart("RightToes", createToes());
+    Body& chest = newPart("Chest", "Chest");
+    Body& head = newPart("Head", "Head");
+    Body& leftArm = newPart("LeftArm", "Arm");
+    Body& rightArm = newPart("RightArm", "Arm");
+    Body& leftForearm = newPart("LeftForearm", "Forearm");
+    Body& rightForearm = newPart("RightForearm", "Forearm");
+    Body& leftHand = newPart("LeftHand", "Hand");
+    Body& rightHand = newPart("RightHand", "Hand");
+    Body& leftThigh = newPart("LeftThigh", "Thigh");
+    Body& rightThigh = newPart("RightThigh", "Thigh");
+    Body& leftLeg = newPart("LeftLeg", "Leg");
+    Body& rightLeg = newPart("RightLeg", "Leg");
+    Body& leftFoot = newPart("LeftFoot", "Foot");
+    Body& rightFoot = newPart("RightFoot", "Foot");
+    Body& leftToes = newPart("LeftToes", "Toes");
+    Body& rightToes = newPart("RightToes", "Toes");
     joints["Neck"] = std::make_unique<SphericalJoint>(chest, head, NECK);
     joints["LeftShoulder"] = std::make_unique<SphericalJoint>(chest, leftArm, LEFT_SHOULDER);
     joints["RightShoulder"] = std::make_unique<SphericalJoint>(chest, rightArm, RIGHT_SHOULDER);
@@ -287,7 +288,7 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
         state.push<btVector3>(getBaseBody().getTransform().getOrigin());
     } else if (memberName=="setPosition") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
-            CompoundBody& base = object.getBaseBody();
+            Body& base = object.getBaseBody();
             btVector3 newPos = state.get<btVector3>(2);
             btVector3 translation = newPos - base.getTransform().getOrigin();
             for (auto& part : object.parts) {
@@ -299,7 +300,7 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
         state.push<btQuaternion>(getBaseBody().getTransform().getRotation());
     } else if (memberName=="setRotation") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
-            CompoundBody& base = object.getBaseBody();
+            Body& base = object.getBaseBody();
             const btQuaternion curRotation = base.getTransform().getRotation();
             btTransform relTransform(state.get<btQuaternion>(2)*curRotation.inverse());
             for (auto& part : object.parts) {
@@ -313,6 +314,6 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
     return result;
 }
 
-CompoundBody& RobotBody::getBaseBody() {
+Body& RobotBody::getBaseBody() {
     return *parts["Chest"];
 }
