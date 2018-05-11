@@ -18,7 +18,13 @@ add_library(PhysicEngine STATIC
     Body.cpp
     bullet.cpp
     CompoundBody.cpp
+    CompoundShape.cpp
+    CuboidShape.cpp
+    CylinderShape.cpp
+    Shape.cpp
     Sphere.cpp
+    SphereShape.cpp
+    StaticPlaneShape.cpp
     Terrain.cpp
     World.cpp
 )
