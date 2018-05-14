@@ -37,13 +37,13 @@
  * state.push<Base*>(&derived);
  *
  * // all following LuaStateView.get() calls works:
- * Base toBase = state.get<Base*>(-1);
- * Derived toDerived = state.get<Derived*>(-1); // implicit downcast performed.
+ * Base *toBase = state.get<Base*>(-1);
+ * Derived *toDerived = state.get<Derived*>(-1); // implicit downcast performed.
  * LuaVirtualClass *toVirtual = state.get<LuaVirtualClass*>(-1); // implicit upcast performed.
  * </code>
  */
 template<typename PointedType>
-class LuaPointerBinding<PointedType, typename std::enable_if<std::is_base_of<LuaVirtualClass, PointedType>::value>::type> : public LuaDefaultClassName<PointedType*> {
+class LuaPointerBinding<PointedType, void_t_if_LuaVirtualClass<PointedType>> : public LuaDefaultClassName<PointedType*> {
 private:
 
     /**
@@ -53,7 +53,7 @@ private:
      * code to turn the userdatum in the Lua stack (of unknown type void*) into a
      * known virtual type, from which it is possible to downcast.
      *
-     * @param userData Pointer to a userdatum of type PointedType.
+     * @param userData Pointer to a userdatum of type PointedType*.
      *
      * @return A pointer to the userdatum upcasted to LuaVirtualClass*.
      */
@@ -65,8 +65,6 @@ private:
     /**
      * Implementation of Lua __index metamethod.
      *
-     * @param object Object on which the index function is called.
-     * @param memberName Name of the field requested in object by Lua.
      * @param state Lua state requesting the field.
      * @return The number of values returned to Lua.
      */
@@ -82,7 +80,7 @@ private:
      *
      * @param state State in which to push the metatable.
      */
-    static void pushMetatable(LuaStateView& state, LuaVirtualClass* object) {
+    static void pushMetatable(LuaStateView& state) {
         bool newTable = state.newMetatable(LuaBinding<PointedType*>::luaClassName());
         if (newTable) {
             state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
@@ -100,7 +98,7 @@ public:
      * This LuaBinding<BoundType> defines a luaIndexImpl so that other bindings can call it (ex: pointer bindings).
      *
      * @param object Object on which the index function is called.
-     * @param memberName Name of the field requested in object by Lua.
+     * @param memberName Name of the field requested by Lua.
      * @param state Lua state requesting the field.
      * @return The number of values returned to Lua.
      */
@@ -119,7 +117,7 @@ public:
      */
     static void push(LuaStateView& state, PointedType* value) {
         state.newObject<PointedType*>(value);
-        pushMetatable(state, value);
+        pushMetatable(state);
         state.setMetatable(-2);
     }
 

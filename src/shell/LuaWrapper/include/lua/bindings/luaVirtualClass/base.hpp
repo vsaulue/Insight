@@ -57,6 +57,13 @@ public:
 };
 
 /**
+ * SFINAE constrcut returning type void if the parameter is derived from LuaVirtualClass.
+ * @tparam T Type to check for inheritance from LuaVirtualClass.
+ */
+template<typename T>
+using void_t_if_LuaVirtualClass = typename std::enable_if<std::is_base_of<LuaVirtualClass,T>::value>::type;
+
+/**
  * See LuaBinding in LuaBinding.hpp.
  *
  * This template defines the binding of all types deriving from LuaVirtualClass.
@@ -72,7 +79,7 @@ public:
  * </code>
  */
 template<typename T>
-class LuaBinding<T, typename std::enable_if<std::is_base_of<LuaVirtualClass,T>::value>::type> : public LuaDefaultClassName<T> {
+class LuaBinding<T, void_t_if_LuaVirtualClass<T>> : public LuaDefaultClassName<T> {
 private:
     template<typename Type>
     using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<Type>::value, Type>::type;
@@ -125,7 +132,7 @@ private:
      *
      * @param state State in which to push the metatable.
      */
-    static void pushMetatable(LuaStateView& state, LuaVirtualClass* object) {
+    static void pushMetatable(LuaStateView& state) {
         bool newTable = state.newMetatable(LuaBinding<T>::luaClassName());
         if (newTable) {
             state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
@@ -168,7 +175,7 @@ public:
     template<typename... ArgsType>
     static void push(LuaStateView& state, ArgsType&&... constructorArgs) {
         LuaVirtualClass* object = state.newObject<T>(std::forward<ArgsType>(constructorArgs)...);
-        pushMetatable(state, object);
+        pushMetatable(state);
         state.setMetatable(-2);
     }
 
