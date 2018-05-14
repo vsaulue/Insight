@@ -36,7 +36,7 @@ namespace detail {
     };
 
     template<typename BoundType>
-    struct HasTableConstructor<BoundType, std::void_t<decltype(LuaBinding<BoundType>::getFromTable)>> {
+    struct HasTableConstructor<BoundType, std::void_t<decltype(LuaBinding<BoundType>::getFromTable(std::declval<LuaTable&>()))>> {
         static constexpr bool value = true;
     };
 }
@@ -48,13 +48,13 @@ namespace detail {
  */
 template<typename BoundType>
 class LuaDefaultGet {
-private:
+public:
     /** True if BoundType is copy constructible.*/
     static constexpr bool is_copy_constructible = std::is_copy_constructible<BoundType>::value;
 
     /** True if this C++ type can be constructed from a Lua table.*/
     static constexpr bool has_table_constructor = detail::HasTableConstructor<BoundType>::value;
-public:
+
     /**
      * Builds a C++ object from the Lua stack item at the specified index.
      *

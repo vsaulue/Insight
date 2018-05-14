@@ -34,3 +34,12 @@ void defineReadBool(LuaStateView& state, bool& res) {
     state.push<LuaFunction>(function);
     state.setGlobal("readBool");
 }
+
+void defineReadFloat(LuaStateView& state, float& res) {
+    std::function<int(LuaStateView&)> function = [&res](LuaStateView& state) -> int {
+        res = state.get<float>(1);
+        return 0;
+    };
+    state.push<LuaFunction>(function);
+    state.setGlobal("readFloat");
+}

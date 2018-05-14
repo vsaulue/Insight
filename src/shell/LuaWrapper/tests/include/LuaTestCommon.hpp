@@ -25,8 +25,16 @@
  * Defines the global function "readBool" in Lua, reading a Lua bool into a C++ variable.
  *
  * @param state Lua state in which the read function will be defined.
- * @param res Reference to the variable read
+ * @param res Reference to the output variable.
  */
 void defineReadBool(LuaStateView& state, bool& res);
+
+/**
+ * Defines the global function "readFloat" in Lua, reading a Lua number into a C++ variable.
+ *
+ * @param state Lua state in which the read function will be defined.
+ * @param res Reference to the output variable.
+ */
+void defineReadFloat(LuaStateView& state, float& res);
 
 #endif /* LUATESTCOMMON_HPP */

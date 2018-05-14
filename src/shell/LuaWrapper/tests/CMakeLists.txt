@@ -18,6 +18,7 @@ add_executable(testLuaWrapper
     LuaTestCommon.cpp
     LuaTestDefaultBinding.cpp
     LuaTestDefaultPointers.cpp
+    LuaTestDefaultSharedPtr.cpp
     LuaTestFundamentalTypes.cpp
     LuaTestFunctions.cpp
     LuaTestTable.cpp

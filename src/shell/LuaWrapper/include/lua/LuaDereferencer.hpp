@@ -19,6 +19,7 @@
 #ifndef LUADEREFERENCER_HPP
 #define LUADEREFERENCER_HPP
 
+#include <memory>
 #include <type_traits>
 
 #include "LuaException.hpp"
@@ -77,6 +78,7 @@ public:
     }
 };
 
+// See non-specialized documentation.
 template<typename PointedType>
 class LuaDereferencer<PointedType*> {
 public:
@@ -95,6 +97,29 @@ public:
     }
 };
 
+// See non-specialized documentation.
+template<typename PointedType>
+class LuaDereferencer<std::shared_ptr<PointedType>> {
+public:
+    using basetype = typename LuaDereferencer<PointedType>::basetype;
+
+    static basetype& dereferenceGetter(LuaStateView& state, int stackIndex) {
+        auto& ptr = state.getRef<std::shared_ptr<PointedType>>(stackIndex);
+        return dereference(ptr);
+    }
+
+    static basetype& dereference(std::shared_ptr<PointedType>& smartPtr) {
+        PointedType* ptr = smartPtr.get();
+        if (ptr == nullptr) {
+            throw LuaException("Attempt to dereference nullptr.");
+        }
+        return LuaDereferencer<PointedType>::dereference(*ptr);
+    }
+};
+
+/**
+ * Gets the type of reference returned by the Lua dereferencer of type T.
+ */
 template<typename T>
 using LuaBasetype = typename LuaDereferencer<T>::basetype;
 

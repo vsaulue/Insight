@@ -21,6 +21,8 @@
 #ifndef LUABINDING_HPP
 #define LUABINDING_HPP
 
+#include <memory>
+
 /**
  * Template class used to bind C++ object to/from Lua userdata.
  *
@@ -94,6 +96,25 @@ class LuaPointerBinding;
  */
 template <typename PointedType>
 class LuaBinding<PointedType*> : public LuaPointerBinding<PointedType> {
+
+};
+
+/**
+ * Class defining Lua bindings for the C++ type std::shared_ptr<PointedType>.
+ *
+ * This class should define the static methods of LuaBinding<std::shared_ptr<PointedType>>.
+ *
+ * @tparam PointedType Type which pointer will be bound in Lua.
+ * @tparam Enable Unused type (used only to enable a specialisation under specific conditions).
+ */
+template<typename PointedType, typename Enabled=void>
+class LuaSharedPtrBinding;
+
+/**
+ * Default template specialization for std::shared_ptr types.
+ */
+template<typename PointedType>
+class LuaBinding<std::shared_ptr<PointedType>> : public LuaSharedPtrBinding<PointedType> {
 
 };
 
