@@ -34,6 +34,7 @@ protected:
     template<typename,typename> friend class LuaBinding;
     template<typename> friend class LuaDefaultBinding;
     template<typename,typename> friend class LuaPointerBinding;
+    template<typename,typename> friend class LuaSharedPtrBinding;
     template<typename T> friend T& luaDefaultDereferenceGet(LuaStateView&, int);
 
     /** Function type used by the C api of Lua. */

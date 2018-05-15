@@ -17,6 +17,7 @@
  */
 
 #include <functional>
+#include <memory>
 
 #include "catch.hpp"
 #include "LuaTestCommon.hpp"
@@ -24,6 +25,7 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/LuaState.hpp"
@@ -314,6 +316,117 @@ TEST_CASE("LuaVirtualClass** (& derived types) bindings") {
             REQUIRE(derived.derivedValue == true);
             state.doString("object:setBase(nil)");
             REQUIRE(derived.baseValue == false);
+        }
+    }
+}
+
+template<typename T>
+using shared_ptr = std::shared_ptr<T>;
+
+TEST_CASE("std::shared_ptr<LuaVirtualClass> (derived shared_ptrs) bindings.") {
+    LuaState state;
+
+    SECTION("push<shared_ptr<Base>> (points to Derived2)") {
+        std::shared_ptr<Derived2> derived = std::make_shared<Derived2>(false);
+        state.push<shared_ptr<Base>>(derived);
+
+        SECTION("get<shared_ptr<Base>>") {
+            shared_ptr<Base> fromStack = state.get<shared_ptr<Base>>(-1);
+            REQUIRE(fromStack == derived);
+        }
+
+        SECTION("getRef<shared_ptr<Base>>") {
+            shared_ptr<Base>& refFromStack = state.getRef<shared_ptr<Base>>(-1);
+            shared_ptr<Base> newBase = std::make_shared<Base>(false);
+            refFromStack = newBase;
+
+            shared_ptr<Base> ptrFromStack = state.get<shared_ptr<Base>>(-1);
+            REQUIRE(ptrFromStack == newBase);
+        }
+
+        SECTION("get<shared_ptr<LuaVirtualClass>> (upcast)") {
+            shared_ptr<LuaVirtualClass> fromStack = state.get<shared_ptr<LuaVirtualClass>>(-1);
+            REQUIRE(fromStack == derived);
+        }
+
+        SECTION("get<shared_ptr<Derived2>> (downcast)") {
+            shared_ptr<Derived2> fromStack = state.get<shared_ptr<Derived2>>(-1);
+            REQUIRE(fromStack == derived);
+        }
+
+        SECTION("get<shared_ptr<Derived1>> (invalid cast, must throw)") {
+            bool error = false;
+            try {
+                state.get<shared_ptr<Derived1>>(-1);
+            } catch (const LuaException& e) {
+                error = true;
+            }
+            REQUIRE(error);
+        }
+    }
+
+    SECTION("push<shared_ptr<Derived2>>") {
+        shared_ptr<Derived2> derived = std::make_shared<Derived2>(false);
+        state.push<shared_ptr<Derived2>>(derived);
+
+        SECTION("get<shared_ptr<Base>> (upcast)") {
+            shared_ptr<Base> fromStack = state.get<shared_ptr<Base>>(-1);
+            REQUIRE(fromStack == derived);
+        }
+
+        SECTION("get<shared_ptr<LuaVirtualClass>> (upcast)") {
+            shared_ptr<LuaVirtualClass> fromStack = state.get<shared_ptr<LuaVirtualClass>>(-1);
+            REQUIRE(fromStack == derived);
+        }
+
+        SECTION("get<shared_ptr<Derived1>> (invalid cast)") {
+            bool error = false;
+            try {
+                state.get<shared_ptr<Derived1>>(-1);
+            } catch (const LuaException& e) {
+                error = true;
+            }
+            REQUIRE(error);
+        }
+    }
+
+    SECTION("push<shared_ptr<LuaVirtualClass>> (points to Derived1)") {
+        shared_ptr<Derived1> derived = std::make_shared<Derived1>(false, false);
+        state.push<shared_ptr<LuaVirtualClass>>(derived);
+        state.setGlobal("object");
+
+        SECTION("Read fields from Lua") {
+            bool readValue = false;
+            defineReadBool(state, readValue);
+
+            state.doString("readBool(object.baseValue)");
+            REQUIRE(readValue == false);
+            state.doString("readBool(object.derivedValue)");
+            REQUIRE(readValue == false);
+
+            derived->baseValue = true;
+            state.doString("readBool(object.baseValue)");
+            REQUIRE(readValue == true);
+        }
+
+        SECTION("Call methods from Lua") {
+            state.doString("object:setDerived(true)");
+            REQUIRE(derived->derivedValue == true);
+            state.doString("object:setBase(nil)");
+            REQUIRE(derived->baseValue == false);
+        }
+
+        SECTION("Store methods in Lua variables") {
+            state.doString("method=object.setBase");
+
+            SECTION("Call stored method on another type") {
+                state.push<shared_ptr<Base>>(std::make_shared<Base>(false));
+                shared_ptr<Base>& base = state.getRef<shared_ptr<Base>>(-1);
+                state.setGlobal("base");
+
+                state.doString("method(base, true)");
+                REQUIRE(base->baseValue == true);
+            }
         }
     }
 }
