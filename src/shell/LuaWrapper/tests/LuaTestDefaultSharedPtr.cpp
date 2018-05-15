@@ -19,159 +19,85 @@
 #include <memory>
 
 #include <catch.hpp>
-
 #include "LuaTestCommon.hpp"
+#include "LuaDefaultBindingClass.hpp"
+
 #include "lua/bindings/FundamentalTypes.hpp"
-#include "lua/bindings/LuaDefaultBinding.hpp"
-#include "lua/bindings/pointers.hpp"
 #include "lua/bindings/std/shared_ptr.hpp"
-#include "lua/LuaBinding.hpp"
 #include "lua/LuaState.hpp"
-#include "lua/types/LuaFunction.hpp"
-#include "lua/types/LuaMethod.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "lua/types/LuaTable.hpp"
 
-class TestSharedPtrClass {
-private:
-    bool& deleted;
-public:
-    TestSharedPtrClass(bool& deleteFlag, float value) : deleted(deleteFlag), value(value) {}
+TEST_CASE("LuaDefaultBinding<T> : shared_ptr<T> binding") {
+    SECTION("Init lua") {
+        LuaState state;
+        using std::shared_ptr;
+        using std::make_shared;
+        using TestedType = shared_ptr<LuaDefaultBindingClass>;
 
-    ~TestSharedPtrClass() {
-        deleted = true;
-    }
+        SECTION("push<shared_ptr<T>>") {
+            const float INIT_VALUE = -0.75f;
+            TestedType object = make_shared<LuaDefaultBindingClass>(INIT_VALUE);
+            state.push<TestedType>(object);
 
-    float value;
-};
-
-template<>
-class LuaBinding<TestSharedPtrClass> : public LuaDefaultBinding<TestSharedPtrClass> {
-public:
-    static int luaIndexImpl(TestSharedPtrClass& object, const std::string& memberName, LuaStateView& state) {
-        using Method = LuaMethod<TestSharedPtrClass>;
-        int result = 1;
-        if (memberName=="setValue") {
-            state.push<Method>([](TestSharedPtrClass& object, LuaStateView& state) -> int {
-                object.value = state.get<float>(2);
-                return 0;
-            });
-        } else if (memberName=="value") {
-            state.push<float>(object.value);
-        } else {
-            result = 0;
-        }
-        return result;
-    }
-
-    static TestSharedPtrClass getFromTable(LuaTable& table) {
-        bool *flag = table.get<LuaNativeString,bool*>("flag");
-        float value = table.get<LuaNativeString,float>("value");
-        return TestSharedPtrClass(*flag, value);
-    }
-};
-
-#include <iostream>
-
-TEST_CASE("std::shared_ptr<TestSharedPtrClass>") {
-    using TestedType = std::shared_ptr<TestSharedPtrClass>;
-    LuaState state;
-
-    SECTION("state.push<shared_ptr>") {
-        float readValue;
-        defineReadFloat(state, readValue);
-
-        bool deleted = false;
-        const float INIT_VALUE = 3.75f;
-        TestedType pushed = std::make_shared<TestSharedPtrClass>(deleted, INIT_VALUE);
-        state.push<TestedType>(pushed);
-
-        SECTION("state.get<shared_ptr>") {
-            TestedType fromStack = state.get<TestedType>(-1);
-            REQUIRE(pushed.get() == fromStack.get());
-            fromStack = nullptr;
-            pushed = nullptr;
-            REQUIRE_FALSE(deleted);
-        }
-
-        SECTION("state.getRef<shared_ptr>") {
-            TestedType& fromStack = state.getRef<TestedType>(-1);
-            REQUIRE(pushed.get() == fromStack.get());
-            pushed = nullptr;
-            REQUIRE_FALSE(deleted);
-            fromStack = nullptr;
-            REQUIRE(deleted);
-        }
-
-        SECTION("Lua index") {
-            state.pushValue(-1);
-            state.setGlobal("object");
-
-            SECTION("Lua field") {
-                state.doString("readFloat(object.value)");
-                REQUIRE(readValue == INIT_VALUE);
+            SECTION("get<shared_ptr<T>>") {
+                TestedType fromStack = state.get<TestedType>(-1);
+                REQUIRE(fromStack->value == INIT_VALUE);
             }
 
-            SECTION("Lua method") {
-                state.doString("object:setValue(-45)");
-                REQUIRE(pushed->value == -45.0f);
+            SECTION("getRef<shared_ptr<T>>") {
+                TestedType& refFromStack = state.getRef<TestedType>(-1);
+                refFromStack = nullptr;
+
+                TestedType fromStack = state.get<TestedType>(-1);
+                REQUIRE(fromStack == nullptr);
             }
+
+            SECTION("shared_ptr<T> interactions from Lua.") {
+                state.pushValue(-1);
+                state.setGlobal("object");
+
+                float readValue;
+                defineReadFloat(state, readValue);
+
+                SECTION("Read fields from Lua") {
+                    state.doString("readFloat(object.value)");
+                    REQUIRE(readValue == INIT_VALUE);
+                }
+
+                SECTION("Method call from Lua") {
+                    state.doString("object:setValue(2020)");
+                    state.doString("readFloat(object.value)");
+                    REQUIRE(readValue == 2020);
+                }
+
+                SECTION("Store method in variable") {
+                    state.push<LuaDefaultBindingClass>(55);
+                    state.setGlobal("object2");
+
+                    state.doString("method=object.add");
+                    state.doString("readFloat(method(object2,5))");
+                    REQUIRE(readValue == 60);
+                    state.doString("readFloat(method(object,-3))");
+                    REQUIRE(readValue == INIT_VALUE-3);
+                }
+
+                SECTION("Lua call") {
+                    state.doString("readFloat(object(159))");
+                    REQUIRE(readValue == -159);
+                }
+            }
+        }
+
+        SECTION("getFromTable") {
+            LuaTable table(state);
+            const float TEST_VALUE = -375.0f;
+            table.set<LuaNativeString,float>("value", TEST_VALUE);
+            TestedType fromTable = state.get<TestedType>(-1);
+            REQUIRE(fromTable->value == TEST_VALUE);
         }
     }
 
-    SECTION("getFromTable") {
-        bool deleted = false;
-        state.push<bool*>(&deleted);
-        state.setGlobal("flag");
-
-        float readValue;
-        const std::string funcName("testFunc");
-        state.push<LuaFunction>([&readValue](LuaStateView& state) -> int {
-            TestedType obj = state.get<TestedType>(1);
-            readValue = obj->value;
-            return 0;
-        });
-        state.setGlobal(funcName);
-
-        state.doString(funcName+"({flag=flag, value=123})");
-        REQUIRE(readValue == 123.0f);
-        REQUIRE(deleted);
-    }
-}
-
-// Just for the sake of testing that the recursive bindings work as intented: don't do this at home
-/// (or at least not in production code).
-TEST_CASE("std::shared_ptr<TestSharedPtrClass*>*") {
-    LuaState state;
-    using TestedType = std::shared_ptr<TestSharedPtrClass*>*;
-
-    float readValue;
-    defineReadFloat(state, readValue);
-
-    SECTION("state.push<T>") {
-        bool deleted = false;
-        const float INIT_VALUE = 321.0f;
-        TestSharedPtrClass object(deleted, INIT_VALUE);
-        std::shared_ptr<TestSharedPtrClass*> shared = std::make_shared<TestSharedPtrClass*>(&object);
-        state.push<TestedType>(&shared);
-
-        SECTION("state.get<T>") {
-            TestedType fromStack = state.get<TestedType>(-1);
-            REQUIRE(fromStack == &shared);
-        }
-
-        SECTION("Lua index") {
-            state.pushValue(-1);
-            state.setGlobal("object");
-
-            SECTION("Lua field") {
-                state.doString("readFloat(object.value)");
-                REQUIRE(readValue == INIT_VALUE);
-            }
-
-            SECTION("Lua method") {
-                state.doString("object:setValue(-123)");
-                REQUIRE(object.value == -123.0f);
-            }
-        }
-    }
+    // Default delete test.
+    REQUIRE(LuaDefaultBindingClass::createCounter == LuaDefaultBindingClass::deleteCounter);
 }

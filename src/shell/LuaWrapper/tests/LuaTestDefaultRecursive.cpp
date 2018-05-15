@@ -16,38 +16,43 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "catch.hpp"
+#include <memory>
+
+#include <catch.hpp>
 #include "LuaDefaultBindingClass.hpp"
 #include "LuaTestCommon.hpp"
 
-#include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/pointers.hpp"
+#include "lua/bindings/std/shared_ptr.hpp"
 #include "lua/LuaState.hpp"
 
-TEST_CASE("LuaDefaultBinding<T> : T** binding") {
+// Just for the sake of testing that the recursive bindings work as intented: don't do this at home
+/// (or at least not in production code).
+TEST_CASE("LuaDefaultBinding<T> : std::shared_ptr<T*>*") {
     SECTION("Init Lua") {
         LuaState state;
+        using TestedType = std::shared_ptr<LuaDefaultBindingClass*>*;
 
-        SECTION("push<T**>") {
+        SECTION("push<TestedType>") {
             const float INIT_VALUE = -654;
             LuaDefaultBindingClass object(INIT_VALUE);
-            LuaDefaultBindingClass* ptr = &object;
-            state.push<LuaDefaultBindingClass**>(&ptr);
+            std::shared_ptr<LuaDefaultBindingClass*> sptr = std::make_shared<LuaDefaultBindingClass*>(&object);
+            state.push<TestedType>(&sptr);
 
-            SECTION("get<T**>") {
-                LuaDefaultBindingClass** fromStack = state.get<LuaDefaultBindingClass**>(-1);
-                REQUIRE(fromStack == &ptr);
+            SECTION("get<TestedType>") {
+                TestedType fromStack = state.get<TestedType>(-1);
+                REQUIRE(fromStack == &sptr);
             }
 
-            SECTION("getRef<T**>") {
-                LuaDefaultBindingClass**& refFromStack = state.getRef<LuaDefaultBindingClass**>(-1);
+            SECTION("getRef<TestedType>") {
+                TestedType& refFromStack = state.getRef<TestedType>(-1);
                 refFromStack = nullptr;
 
-                LuaDefaultBindingClass** fromStack = state.get<LuaDefaultBindingClass**>(-1);
+                TestedType fromStack = state.get<TestedType>(-1);
                 REQUIRE (fromStack == nullptr);
             }
 
-            SECTION("T** interactions from Lua.") {
+            SECTION("TestedType interactions from Lua.") {
                 state.pushValue(-1);
                 state.setGlobal("object");
 
@@ -66,7 +71,7 @@ TEST_CASE("LuaDefaultBinding<T> : T** binding") {
                 }
 
                 SECTION("Store method in variable") {
-                    // Checks that the same method can be called on T** & T.
+                    // Checks that the same method can be called on TestedType & T.
                     state.push<LuaDefaultBindingClass>(91);
                     state.setGlobal("object2");
 
@@ -86,58 +91,4 @@ TEST_CASE("LuaDefaultBinding<T> : T** binding") {
     }
 
     REQUIRE(LuaDefaultBindingClass::createCounter == LuaDefaultBindingClass::deleteCounter);
-}
-
-TEST_CASE("Default pointers binding: bool") {
-    LuaState state;
-
-    SECTION("Type bool*") {
-        bool boolA = false;
-
-        SECTION("push test") {
-            state.push<bool*>(&boolA);
-
-            SECTION("get test") {
-                bool* fromStack = state.get<bool*>(-1);
-                *fromStack = true;
-                REQUIRE(boolA);
-            }
-
-            SECTION("getRef test") {
-                bool boolB = true;
-                bool*& refFromStack = state.getRef<bool*>(-1);
-
-                refFromStack = &boolB;
-
-                bool* ptrFromStack = state.get<bool*>(-1);
-                REQUIRE(ptrFromStack == &boolB);
-            }
-        }
-    }
-
-    SECTION("Type bool**") {
-        bool boolA = false;
-        bool* boolPtr = &boolA;
-
-        SECTION("push test") {
-            state.push<bool**>(&boolPtr);
-
-            SECTION("get test") {
-                bool** fromStack = state.get<bool**>(-1);
-                REQUIRE(**fromStack == false);
-                boolA = true;
-                REQUIRE(**fromStack == true);
-            }
-
-            SECTION("getRef test") {
-                bool**& refFromStack = state.getRef<bool**>(-1);
-                bool boolB = true;
-                bool* boolPtrB = &boolB;
-                refFromStack = &boolPtrB;
-
-                bool** ptrFromStack = state.get<bool**>(-1);
-                REQUIRE(**ptrFromStack == true);
-            }
-        }
-    }
 }
