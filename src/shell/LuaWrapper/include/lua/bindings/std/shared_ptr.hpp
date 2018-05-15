@@ -54,6 +54,24 @@ public:
     }
 
     /**
+     * Implementation of Lua __call metamethod (wrapped by LuaDefaultBinding).
+     *
+     * Defined only if LuaBinding<PointedType> has an luaCallImpl function.
+     *
+     * @param object Object on which the call function is called.
+     * @param state Lua state performing the call.
+     * @return The number of return values pushed on the stack.
+     */
+    template<typename T=PointedType>
+    static typename std::enable_if<LuaDefaultCall<T>::hasCall,int>::type luaCallImpl(std::shared_ptr<T>& object, LuaStateView& state) {
+        T* ptr = object.get();
+        if (ptr == nullptr) {
+            state.throwArgError(1, "Cannot call a null pointer.");
+        }
+        return LuaBinding<PointedType>::luaCallImpl(*ptr, state);
+    }
+
+    /**
      * Creates a std::shared_ptr directly from a Lua table.
      *
      * Requires T binding to define a table constructor, and T to be copy or move constructible.

@@ -44,6 +44,8 @@ public:
     /**
      * Implementation of Lua __index metamethod (wrapped by LuaDefaultBinding).
      *
+     * Defined only if LuaBinding<PointedType> has an luaIndexImpl function.
+     *
      * @param object Object on which the index function is called.
      * @param memberName Name of the field requested in object by Lua.
      * @param state Lua state requesting the field.
@@ -55,6 +57,23 @@ public:
             state.throwArgError(1, "Cannot get field or method from a null pointer.");
         }
         return LuaBinding<PointedType>::luaIndexImpl(*object, memberName, state);
+    }
+
+    /**
+     * Implementation of Lua __call metamethod (wrapped by LuaDefaultBinding).
+     *
+     * Defined only if LuaBinding<PointedType> has an luaCallImpl function.
+     *
+     * @param object Object on which the call function is called.
+     * @param state Lua state performing the call.
+     * @return The number of return values pushed on the stack.
+     */
+    template<typename T=PointedType>
+    static typename std::enable_if<LuaDefaultCall<T>::hasCall,int>::type luaCallImpl(PointedType* object, LuaStateView& state) {
+        if (object == nullptr) {
+            state.throwArgError(1, "Cannot call a null pointer.");
+        }
+        return LuaBinding<PointedType>::luaCallImpl(*object, state);
     }
 };
 

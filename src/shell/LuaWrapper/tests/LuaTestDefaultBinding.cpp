@@ -153,11 +153,10 @@ TEST_CASE("LuaDefaultBinding<T> : T** binding") {
                     REQUIRE(readValue == INIT_VALUE+25);
                 }
 
-                // TODO: recursive lua call function.
-                /*SECTION("Lua call") {
+                SECTION("Lua call") {
                     state.doString("readFloat(object(195))");
                     REQUIRE(readValue == -195);
-                }*/
+                }
             }
         }
     }
