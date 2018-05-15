@@ -21,6 +21,7 @@
 
 #include <catch.hpp>
 #include "LuaTestCommon.hpp"
+#include "LuaDefaultBindingClass.hpp"
 
 #include "lua/LuaState.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
@@ -31,161 +32,135 @@
 #include "lua/types/LuaNativeString.hpp"
 #include "lua/bindings/pointers.hpp"
 
-class TestClass {
-private:
-    bool& flag;
-    bool value;
-public:
-    TestClass(bool& flag) : flag(flag), value(false) {
+TEST_CASE("LuaDefaultBinding<T> : T binding") {
+    SECTION("Init lua") {
+        LuaState state;
 
-    }
+        SECTION("push<T>") {
+            const float INIT_VALUE = -100.0f;
+            state.push<LuaDefaultBindingClass>(INIT_VALUE);
 
-    void setFlag(bool value) {
-        flag = value;
-    }
+            SECTION("get<T>") {
+                LuaDefaultBindingClass fromStack = state.get<LuaDefaultBindingClass>(-1);
+                REQUIRE(fromStack.value == INIT_VALUE);
+            }
 
-    void setValue(bool value) {
-        this->value = value;
-    }
+            SECTION("getRef<T>") {
+                LuaDefaultBindingClass& refFromStack = state.getRef<LuaDefaultBindingClass>(-1);
+                refFromStack.value = -8;
 
-    bool& getFlag() {
-        return flag;
-    }
+                LuaDefaultBindingClass fromStack = state.get<LuaDefaultBindingClass>(-1);
+                REQUIRE(fromStack.value == -8);
+            }
 
-    bool getValue() {
-        return value;
-    }
-};
+            SECTION("T interactions from Lua.") {
+                state.pushValue(-1);
+                state.setGlobal("object");
 
-template<>
-class LuaBinding<TestClass> : public LuaDefaultBinding<TestClass> {
-public:
-    static int luaIndexImpl(TestClass& object, const std::string& memberName, LuaStateView& state) {
-        using Method = LuaMethod<TestClass>;
-        int result = 1;
-        if (memberName == "setFlag") {
-            state.push<Method>([](TestClass& o, LuaStateView & s) -> int {
-                o.setFlag(s.get<bool>(2));
-                return 0;
-            });
-        } else if (memberName == "flag") {
-            state.push<bool>(object.getFlag());
-        } else {
-            result = 0;
-        }
-        return result;
-    }
-};
+                float readValue;
+                defineReadFloat(state, readValue);
 
-TEST_CASE("TestClass default binding") {
-    LuaState state;
+                SECTION("Read fields from Lua") {
+                    state.doString("readFloat(object.value)");
+                    REQUIRE(readValue == INIT_VALUE);
+                }
 
-    SECTION("push<TestClass>") {
-        bool flag = false;
-        state.push<TestClass>(flag);
+                SECTION("Method call from Lua") {
+                    state.doString("object:setValue(6363)");
+                    state.doString("readFloat(object.value)");
+                    REQUIRE(readValue == 6363);
+                }
 
-        SECTION("get<TestClass>") {
-            TestClass fromStack = state.get<TestClass>(-1);
-            REQUIRE(&fromStack.getFlag() == &flag);
+                SECTION("Store method in variable") {
+                    state.push<LuaDefaultBindingClass>(-1);
+                    state.setGlobal("object2");
+
+                    state.doString("method=object.add");
+                    state.doString("readFloat(method(object2,5))");
+                    REQUIRE(readValue == 4);
+                }
+
+                SECTION("Lua call") {
+                    state.doString("readFloat(object(159))");
+                    REQUIRE(readValue == -159);
+                }
+            }
         }
 
-        SECTION("getRef<TestClass>") {
-            TestClass& refFromStack = state.getRef<TestClass>(-1);
-            refFromStack.setValue(true);
-
-            TestClass fromStack = state.get<TestClass>(-1);
-            REQUIRE(fromStack.getValue() == true);
-        }
-
-        SECTION("Method call from Lua") {
-            state.setGlobal("object");
-            state.doString("object:setFlag(true)");
-            REQUIRE(flag==true);
-        }
-
-        SECTION("Read fields from Lua") {
-            state.setGlobal("object");
-            bool readValue = false;
-            defineReadBool(state, readValue);
-
-            state.doString("readBool(object.flag)");
-            REQUIRE(readValue == flag);
+        SECTION("getFromTable") {
+            LuaTable table(state);
+            const float TEST_VALUE = -852.5f;
+            table.set<LuaNativeString,float>("value", TEST_VALUE);
+            LuaDefaultBindingClass fromTable = state.get<LuaDefaultBindingClass>(-1);
+            REQUIRE(fromTable.value == TEST_VALUE);
         }
     }
+
+    // Default delete test.
+    REQUIRE(LuaDefaultBindingClass::createCounter == LuaDefaultBindingClass::deleteCounter);
 }
 
-TEST_CASE("TestClass** default binding") {
-    LuaState state;
+TEST_CASE("LuaDefaultBinding<T> : T** binding") {
+    SECTION("Init Lua") {
+        LuaState state;
 
-    SECTION("push<TestClass**>") {
-        bool flag = true;
-        TestClass object(flag);
-        TestClass* ptr = &object;
-        state.push<TestClass**>(&ptr);
+        SECTION("push<T**>") {
+            const float INIT_VALUE = -654;
+            LuaDefaultBindingClass object(INIT_VALUE);
+            LuaDefaultBindingClass* ptr = &object;
+            state.push<LuaDefaultBindingClass**>(&ptr);
 
-        SECTION("get<TestClass**>") {
-            TestClass** fromStack = state.get<TestClass**>(-1);
-            REQUIRE(fromStack == &ptr);
-        }
+            SECTION("get<T**>") {
+                LuaDefaultBindingClass** fromStack = state.get<LuaDefaultBindingClass**>(-1);
+                REQUIRE(fromStack == &ptr);
+            }
 
-        SECTION("getRef<TestClass**>") {
-            TestClass**& refFromStack = state.getRef<TestClass**>(-1);
-            refFromStack = nullptr;
+            SECTION("getRef<T**>") {
+                LuaDefaultBindingClass**& refFromStack = state.getRef<LuaDefaultBindingClass**>(-1);
+                refFromStack = nullptr;
 
-            TestClass** fromStack = state.get<TestClass**>(-1);
-            REQUIRE (fromStack == nullptr);
-        }
+                LuaDefaultBindingClass** fromStack = state.get<LuaDefaultBindingClass**>(-1);
+                REQUIRE (fromStack == nullptr);
+            }
 
-        SECTION("Method call from Lua") {
-            state.setGlobal("object");
-            state.doString("object:setFlag(false)");
-            REQUIRE(flag==false);
-        }
+            SECTION("T** interactions from Lua.") {
+                state.pushValue(-1);
+                state.setGlobal("object");
 
-        SECTION("Read fields from Lua") {
-            state.setGlobal("object");
-            bool readValue = false;
-            defineReadBool(state, readValue);
+                float readValue;
+                defineReadFloat(state, readValue);
 
-            state.doString("readBool(object.flag)");
-            REQUIRE(readValue == flag);
+                SECTION("Read fields from Lua") {
+                    state.doString("readFloat(object.value)");
+                    REQUIRE(readValue == INIT_VALUE);
+                }
+
+                SECTION("Method call from Lua") {
+                    state.doString("object:setValue(3636)");
+                    state.doString("readFloat(object.value)");
+                    REQUIRE(readValue == 3636);
+                }
+
+                SECTION("Store method in variable") {
+                    // Checks that the same method can be called on T** & T.
+                    state.push<LuaDefaultBindingClass>(91);
+                    state.setGlobal("object2");
+
+                    state.doString("method=object.add");
+                    state.doString("readFloat(method(object2,5))");
+                    REQUIRE(readValue == 96);
+                    state.doString("readFloat(method(object,25))");
+                    REQUIRE(readValue == INIT_VALUE+25);
+                }
+
+                // TODO: recursive lua call function.
+                /*SECTION("Lua call") {
+                    state.doString("readFloat(object(195))");
+                    REQUIRE(readValue == -195);
+                }*/
+            }
         }
     }
-}
 
-struct FloatWrapper {
-    FloatWrapper(float v) : value(v) {}
-    float value;
-};
-
-template<>
-class LuaBinding<FloatWrapper> : public LuaDefaultBinding<FloatWrapper> {
-public:
-    static FloatWrapper getFromTable(LuaTable& table) {
-        return {table.get<LuaNativeString,float>("value")};
-    }
-};
-
-TEST_CASE("FloatWrapper (constructible from Lua table)") {
-    LuaState state;
-
-    SECTION("Build from Lua table") {
-        std::string funcName("makeFromTable");
-        float readValue;
-        state.push<LuaFunction>([&readValue](LuaStateView& state) -> int {
-            FloatWrapper wrapper = state.get<FloatWrapper>(1);
-            readValue = wrapper.value;
-            return 0;
-        });
-        state.setGlobal(funcName);
-
-        state.doString(funcName+"({value=321})");
-        REQUIRE(readValue == 321);
-    }
-
-    SECTION("Build from Userdatum") {
-        state.push<FloatWrapper>(123);
-        FloatWrapper wrapper = state.get<FloatWrapper>(1);
-        REQUIRE(wrapper.value == 123);
-    }
+    REQUIRE(LuaDefaultBindingClass::createCounter == LuaDefaultBindingClass::deleteCounter);
 }
