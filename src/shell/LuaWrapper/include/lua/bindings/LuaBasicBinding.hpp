@@ -155,6 +155,21 @@ public:
     static T get(LuaStateView& state, int stackIndex) {
         return LuaDefaultGet<T>::get(state, stackIndex);
     }
+
+    /**
+     * Implementation of Lua metamethod call.
+     *
+     * <p>This function is defined if BindedType has the following operator:</p>
+     * <code>int operator()(LuaStateView&)</code>
+     *
+     * @param object Object on which the call is performed.
+     * @param state Lua state performing the call.
+     * @return The number of returned values on the Lua stack.
+     */
+    template<typename T=BoundType>
+    static typename std::enable_if<std::is_invocable_r<int, T, LuaStateView&>::value,int>::type luaCallImpl(T& object, LuaStateView& state) {
+        return object(state);
+    }
 };
 
 #endif /* LUABASICBINDING_HPP */

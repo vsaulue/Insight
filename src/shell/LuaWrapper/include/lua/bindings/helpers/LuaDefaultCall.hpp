@@ -33,18 +33,32 @@
 template<typename BoundType, typename Enable=void>
 class LuaDefaultCall {
 public:
+    /* Flag indicating if this class defines a __call metamethod. */
     static constexpr bool hasCall = false;
 };
 
+/**
+ * Tests if LuaBinding<T>::luaCallImpl exists and can be wrapped into a __call metamethod.
+ */
+template<typename T>
+using void_t_if_hasCallImpl = std::void_t<decltype(LuaBinding<T>::luaCallImpl(std::declval<T&>(), std::declval<LuaStateView&>()))>;
+
+// See non-specialized description.
 template<typename BoundType>
-class LuaDefaultCall<BoundType, typename std::enable_if<std::is_same<int,decltype(std::declval<BoundType>()(std::declval<LuaStateView&>()))>::value>::type> {
+class LuaDefaultCall<BoundType, void_t_if_hasCallImpl<BoundType>> {
 public:
     static constexpr bool hasCall = true;
 
+    /**
+     * Implementation of Lua __call metamethod for BoundType.
+     *
+     * @param state State calling the metamethod.
+     * @return The number of return value on the Lua stack.
+     */
     static int luaCall(LuaStateView& state) {
         BoundType& object = state.getRef<BoundType>(1);
         state.remove(1);
-        return object(state);
+        return LuaBinding<BoundType>::luaCallImpl(object, state);
     }
 };
 
