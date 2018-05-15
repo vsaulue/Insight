@@ -33,24 +33,24 @@
 template<typename Base>
 class LuaUpcaster {
 private:
-    /** Wrapped function performing the ucpast. */
-    Base*(*upcaster)(void*);
+    /** Wrapped function performing the upcast. */
+    Base(*upcaster)(void*);
 public:
     /**
      * Creates a new LuaUpcaster.
      *
      * @param upcaster Function implementing the upcast operation.
      */
-    LuaUpcaster(Base*(*upcaster)(void*)) : upcaster(upcaster) {
+    LuaUpcaster(Base(*upcaster)(void*)) : upcaster(upcaster) {
 
     }
 
     /**
      * Upcast the given rax pointer into a pointer to Base*.
-     * @param rawPtr
-     * @return
+     * @param rawPtr Pointer to the userdatum in Lua.
+     * @return The smart/raw pointer stored in the userdatum upcasted to Base.
      */
-    Base* operator()(void* rawPtr) {
+    Base operator()(void* rawPtr) {
         return upcaster(rawPtr);
     }
 };

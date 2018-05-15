@@ -135,7 +135,7 @@ private:
     static void pushMetatable(LuaStateView& state) {
         bool newTable = state.newMetatable(LuaBinding<T>::luaClassName());
         if (newTable) {
-            state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
+            state.push<LuaUpcaster<LuaVirtualClass*>>(luaCastPtr);
             state.setField(-2, "castPtr");
             state.push<LuaCFunction>(luaWrapFunction<luaDelete>);
             state.setField(-2,"__gc");
@@ -195,7 +195,7 @@ public:
             std::string errorMsg = "Expected LuaVirtualClass or derived type";
             state.throwArgError(stackIndex, errorMsg);
         }
-        LuaUpcaster<LuaVirtualClass> upcast = state.get<LuaUpcaster<LuaVirtualClass>>(-1);
+        LuaUpcaster<LuaVirtualClass*> upcast = state.get<LuaUpcaster<LuaVirtualClass*>>(-1);
         state.pop(1);
         LuaVirtualClass* luaVirtual = upcast(basePtr);
 

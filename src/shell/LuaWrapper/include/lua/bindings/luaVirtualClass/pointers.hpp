@@ -55,11 +55,11 @@ private:
      *
      * @param userData Pointer to a userdatum of type PointedType*.
      *
-     * @return A pointer to the userdatum upcasted to LuaVirtualClass*.
+     * @return The value of the pointer stored in the userdatum, upcasted to LuaVirtualClass*.
      */
     static LuaVirtualClass* luaCastPtr(void* userdata) {
-        PointedType* basePtr = reinterpret_cast<PointedType*>(userdata);
-        return static_cast<LuaVirtualClass*>(basePtr);
+        PointedType** basePtr = reinterpret_cast<PointedType**>(userdata);
+        return static_cast<LuaVirtualClass*>(*basePtr);
     }
 
     /**
@@ -83,7 +83,7 @@ private:
     static void pushMetatable(LuaStateView& state) {
         bool newTable = state.newMetatable(LuaBinding<PointedType*>::luaClassName());
         if (newTable) {
-            state.push<LuaUpcaster<LuaVirtualClass>>(luaCastPtr);
+            state.push<LuaUpcaster<LuaVirtualClass*>>(luaCastPtr);
             state.setField(-2, "castPtr*");
             state.push<LuaCFunction>(luaWrapFunction<luaIndex>);
             state.setField(-2, "__index");
@@ -140,13 +140,12 @@ public:
             std::string errorMsg = "Expected pointer to LuaVirtualClass or derived type";
             state.throwArgError(stackIndex, errorMsg);
         }
-        void* rawPtr = *reinterpret_cast<void**> (userdata);
-        PointedType* result = nullptr;
-        if (rawPtr != nullptr) {
-            LuaUpcaster<LuaVirtualClass> upcast = state.get<LuaUpcaster<LuaVirtualClass>>(-1);
-            state.pop(1);
-            LuaVirtualClass* luaVirtual = upcast(rawPtr);
+        LuaUpcaster<LuaVirtualClass*> upcast = state.get<LuaUpcaster<LuaVirtualClass*>>(-1);
+        state.pop(1);
+        LuaVirtualClass* luaVirtual = upcast(userdata);
 
+        PointedType* result = nullptr;
+        if (userdata != nullptr) {
             result = dynamic_cast<PointedType*>(luaVirtual);
             if (result == nullptr) {
                 std::string errorMsg = "Expected ";
