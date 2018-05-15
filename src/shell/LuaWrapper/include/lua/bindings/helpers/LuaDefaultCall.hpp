@@ -34,10 +34,6 @@ template<typename BoundType, typename Enable=void>
 class LuaDefaultCall {
 public:
     static constexpr bool hasCall = false;
-
-    static int luaCall(LuaStateView& state) {
-        return 0;
-    }
 };
 
 template<typename BoundType>

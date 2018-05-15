@@ -38,11 +38,6 @@ class LuaDefaultIndex {
 public:
     /** Tells if this type defines a useful Lua __index metamethod. */
     static constexpr bool hasIndex = false;
-
-    /** Implementation of Lua __index metamethod. */
-    static int luaIndex(LuaStateView& state) {
-        return 0;
-    }
 };
 
 template<typename T>

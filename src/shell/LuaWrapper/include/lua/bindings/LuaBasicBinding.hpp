@@ -78,19 +78,19 @@ class LuaBasicBinding : public LuaDefaultClassName<BoundType> {
 protected:
     static void setMetafields(LuaStateView& state) {
         using DefaultDelete = LuaDefaultDelete<BoundType>;
-        if (DefaultDelete::hasDeletor) {
+        if constexpr (DefaultDelete::hasDeletor) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultDelete::luaDelete>);
             state.setField(-2, "__gc");
         }
 
         using DefaultCall = LuaDefaultCall<BoundType>;
-        if (DefaultCall::hasCall) {
+        if constexpr (DefaultCall::hasCall) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultCall::luaCall>);
             state.setField(-2, "__call");
         }
 
         using DefaultIndex = LuaDefaultIndex<BoundType>;
-        if (DefaultIndex::hasIndex) {
+        if constexpr (DefaultIndex::hasIndex) {
             state.push<LuaCFunction>(luaWrapFunction<DefaultIndex::luaIndex>);
             state.setField(-2, "__index");
         }

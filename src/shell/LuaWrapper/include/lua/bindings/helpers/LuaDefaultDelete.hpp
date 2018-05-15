@@ -52,17 +52,6 @@ public:
 template<typename BoundType>
 class LuaDefaultDelete<BoundType, typename std::enable_if<std::is_trivially_destructible<BoundType>::value>::type> {
 public:
-    /**
-     * Implementation of Lua metamethod "__gc" for this type.
-     *
-     * @param state State calling this function.
-     *
-     * @return The number of return values of this Lua function.
-     */
-    static int luaDelete(LuaStateView& state) {
-        return 0;
-    }
-
     /** Indicates if this template defines a useful __gc method for Lua. */
     static constexpr bool hasDeletor = false;
 };
