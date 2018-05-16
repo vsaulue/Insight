@@ -234,5 +234,9 @@ public:
 template<typename T>
 class LuaPointerBinding<T, typename std::enable_if<std::is_base_of<LuaVirtualClass, T>::value>::type>;
 
+// Defined in lua/bindings/luaVirtualClass/shared_ptr.hpp.
+template<typename T>
+class LuaSharedPtrBinding<T, typename std::enable_if<std::is_base_of<LuaVirtualClass, T>::value>::type>;
+
 #endif /* LUABINDINGVIRTUALCLASS_HPP */
 
