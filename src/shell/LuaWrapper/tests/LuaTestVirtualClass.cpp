@@ -441,9 +441,9 @@ TEST_CASE("std::shared_ptr<LuaVirtualClass> (derived shared_ptrs) bindings.") {
         }
     }
 
-    SECTION("push<shared_ptr<LuaVirtualClass>> (points to Derived1)") {
+    SECTION("push<shared_ptr<Base>> (points to Derived1)") {
         shared_ptr<Derived1> derived = std::make_shared<Derived1>(false, false);
-        state.push<shared_ptr<LuaVirtualClass>>(derived);
+        state.push<shared_ptr<Base>>(derived);
         state.setGlobal("object");
 
         SECTION("Read fields from Lua") {

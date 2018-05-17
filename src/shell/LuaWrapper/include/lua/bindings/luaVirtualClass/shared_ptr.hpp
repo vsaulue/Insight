@@ -77,7 +77,7 @@ private:
      * @return The number of values returned to Lua.
      */
     static int luaIndex(LuaStateView& state) {
-        std::shared_ptr<LuaVirtualClass>& object = state.getRef<std::shared_ptr<LuaVirtualClass>>(1);
+        BoundType& object = state.getRef<BoundType>(1);
         std::string memberName(state.get<LuaNativeString>(2));
 
         return luaIndexImpl(object, memberName, state);
@@ -160,8 +160,8 @@ public:
      * @param state Lua state requesting the field.
      * @return The number of values returned to Lua.
      */
-    static int luaIndexImpl(std::shared_ptr<LuaVirtualClass>& object, const std::string& memberName, LuaStateView& state) {
-        LuaVirtualClass* ptr = object.get();
+    static int luaIndexImpl(BoundType& object, const std::string& memberName, LuaStateView& state) {
+        PointedType* ptr = object.get();
         if (ptr == nullptr) {
             state.throwArgError(1, "Cannot get field or method from a null pointer.");
         }
