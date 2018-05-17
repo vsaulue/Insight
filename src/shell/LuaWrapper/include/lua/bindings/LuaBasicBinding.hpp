@@ -33,6 +33,7 @@
 #include "lua/bindings/helpers/LuaDefaultGet.hpp"
 #include "lua/bindings/helpers/LuaDefaultIndex.hpp"
 #include "lua/bindings/helpers/LuaDefaultToString.hpp"
+#include "lua/bindings/helpers/LuaTraits.hpp"
 #include "lua/bindings/helpers/LuaWrapFunction.hpp"
 
 /**
@@ -167,7 +168,7 @@ public:
      * @return The number of returned values on the Lua stack.
      */
     template<typename T=BoundType>
-    static typename std::enable_if<std::is_invocable_r<int, T, LuaStateView&>::value,int>::type luaCallImpl(T& object, LuaStateView& state) {
+    static typename std::enable_if<LuaTraits<T>::has_lua_call_operator,int>::type luaCallImpl(T& object, LuaStateView& state) {
         return object(state);
     }
 };
