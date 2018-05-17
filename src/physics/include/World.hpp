@@ -36,7 +36,7 @@
 class World : public LuaVirtualClass {
 public:
     /** Constant iterator over all the bodies of this engine. */
-    using const_iterator = std::unordered_set<std::unique_ptr<Body>>::const_iterator;
+    using const_iterator = std::unordered_set<std::shared_ptr<Body>>::const_iterator;
 
     /** Creates a new empty world with default settings.*/
     World();
@@ -56,7 +56,7 @@ public:
      *
      * @param object The new object.
      */
-    void addObject(std::unique_ptr<Body>&& object);
+    void addObject(std::shared_ptr<Body> object);
 
     /**
      * Adds a new constraint into the world.
@@ -102,7 +102,7 @@ private:
     std::unique_ptr<btDiscreteDynamicsWorld> world;
 
     /** List of objects in the world. */
-    std::unordered_set<std::unique_ptr<Body>> objects;
+    std::unordered_set<std::shared_ptr<Body>> objects;
     /** List of constraints between objects of this world. */
     std::unordered_set<std::shared_ptr<btTypedConstraint>> constraints;
     /** List of objects to inform of new Bodies. */

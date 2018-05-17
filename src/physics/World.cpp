@@ -20,7 +20,7 @@
 
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
-#include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/LuaStateView.hpp"
 #include "SphereShape.hpp"
@@ -36,9 +36,9 @@ World::World() :
 
 }
 
-void World::addObject(std::unique_ptr<Body>&& object) {
+void World::addObject(std::shared_ptr<Body> object) {
     Body& body = *object.get();
-    world->addRigidBody(&object->getBulletBody());
+    world->addRigidBody(&body.getBulletBody());
     objects.insert(std::move(object));
     for (auto listener : createListener) {
         listener->onBodyCreation(body);
@@ -57,9 +57,9 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
             btScalar mass = state.get<btScalar>(2);
             btScalar radius = state.get<btScalar>(3);
-            std::unique_ptr<Body> newObject = std::make_unique<Body>(std::make_shared<SphereShape>(mass, radius));
-            state.push<Body*>(newObject.get());
-            object.addObject(std::move(newObject));
+            std::shared_ptr<Body> newObject = std::make_shared<Body>(std::make_shared<SphereShape>(mass, radius));
+            state.push<std::shared_ptr<Body>>(newObject);
+            object.addObject(newObject);
             return 1;
         });
         result = 1;
@@ -67,9 +67,9 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
             btVector3 normal = state.get<btVector3>(2);
             btScalar offset = state.get<btScalar>(3);
-            std::unique_ptr<Body> newObject = std::make_unique<Body>(std::make_shared<StaticPlaneShape>(normal, offset));
-            state.push<Body*>(newObject.get());
-            object.addObject(std::move(newObject));
+            std::shared_ptr<Body> newObject = std::make_shared<Body>(std::make_shared<StaticPlaneShape>(normal, offset));
+            state.push<std::shared_ptr<Body>>(newObject);
+            object.addObject(newObject);
             return 1;
         });
         result = 1;

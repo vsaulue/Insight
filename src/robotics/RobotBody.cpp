@@ -231,12 +231,10 @@ static std::unordered_map<std::string, std::shared_ptr<CompoundShape>> initShape
 static const std::unordered_map<std::string, std::shared_ptr<CompoundShape>> SHAPES = initShapes();
 
 RobotBody::RobotBody(World& world) {
-    std::vector<std::unique_ptr<Body>> bodyParts;
-    auto newPart = [this, &bodyParts](const std::string& partName, std::string shapeName) -> Body& {
-        std::unique_ptr<Body> part = std::make_unique<Body>(SHAPES.at(shapeName));
+    auto newPart = [this](const std::string& partName, std::string shapeName) -> Body& {
+        std::shared_ptr<Body> part = std::make_shared<Body>(SHAPES.at(shapeName));
         Body& result = *part;
-        this->parts[partName] = part.get();
-        bodyParts.push_back(std::move(part));
+        this->parts[partName] = part;
         return result;
     };
     Body& chest = newPart("Chest", "Chest");
@@ -271,8 +269,8 @@ RobotBody::RobotBody(World& world) {
     joints["LeftToes"] = std::make_unique<CylindricJoint>(leftFoot, leftToes, TOES_JOINT);
     joints["RightToes"] = std::make_unique<CylindricJoint>(rightFoot, rightToes, TOES_JOINT);
 
-    for (auto& part : bodyParts) {
-        world.addObject(std::move(part));
+    for (auto& pair : parts) {
+        world.addObject(pair.second);
     }
     for (auto& pair : joints) {
         world.addConstraint(pair.second->getConstraint());

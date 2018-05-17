@@ -47,7 +47,7 @@ public:
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
     /** Set of body parts, indexed by their names. */
-    std::unordered_map<std::string, Body*> parts;
+    std::unordered_map<std::string, std::shared_ptr<Body>> parts;
     /** Set of joints between body parts, indexed by their names. */
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
 
