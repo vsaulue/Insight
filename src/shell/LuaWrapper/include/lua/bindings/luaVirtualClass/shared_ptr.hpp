@@ -25,6 +25,7 @@
 #include "lua/bindings/helpers/LuaDefaultClassName.hpp"
 #include "lua/bindings/helpers/LuaDefaultDelete.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/bindings/luaVirtualClass/helpers/LuaVirtualTraits.hpp"
 #include "lua/LuaBinding.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 
@@ -50,6 +51,8 @@ class LuaSharedPtrBinding<PointedType, void_t_if_LuaVirtualClass<PointedType>> :
 private:
     /** C++ type bound to Lua in this class. */
     using BoundType = std::shared_ptr<PointedType>;
+    /** Lua traits of the class pointed by the bound shared_ptr. */
+    using Traits = LuaVirtualTraits<PointedType>;
 
     /**
      * Upcast a shared_ptr<PointedType> to shared_ptr<LuaVirtualClass>.
@@ -99,6 +102,53 @@ private:
         }
     }
 
+    /**
+     * Get a copy of a userdatum in the stack at the given index.
+     * @param state Lua stack containing the item.
+     * @param stackIndex Index of the item on the stack.
+     * @return A copy of the userdatum on the stack.
+     */
+    static BoundType getUserData(LuaStateView& state, int stackIndex) {
+        void* userdata = state.checkUserData(stackIndex);
+
+        if (!state.pushMetafield(stackIndex, "castSharedPtr")) {
+            std::string errorMsg = "Expected shared_ptr to LuaVirtualClass or derived type";
+            state.throwArgError(stackIndex, errorMsg);
+        }
+        LuaUpcaster<std::shared_ptr<LuaVirtualClass>> upcast = state.get<LuaUpcaster<std::shared_ptr<LuaVirtualClass>>>(-1);
+        state.pop(1);
+        std::shared_ptr<LuaVirtualClass> luaVirtual = upcast(userdata);
+
+        BoundType result = nullptr;
+        if (userdata != nullptr) {
+            result = std::dynamic_pointer_cast<PointedType>(luaVirtual);
+            if (result.get() == nullptr) {
+                std::string errorMsg = "Expected ";
+                errorMsg = errorMsg + LuaBinding<BoundType>::luaClassName() + ", got " + state.getTypename(stackIndex);
+                state.throwArgError(stackIndex, errorMsg);
+            }
+        }
+        return result;
+    }
+
+    /** True if <code>static T getFromTable(...);</code> can be turned into a constructor form Lua table. */
+    static constexpr bool can_getFromTable = Traits::has_getFromTable_T && Traits::is_copy_or_move_constructible;
+    /** True if BoundType can be constructed from a Lua table. */
+    static constexpr bool has_table_constructor = can_getFromTable || Traits::has_getFromTable_ptr_T;
+
+    /**
+     * Constructs a BoundType object from a Lua table in the stack.
+     * @param table Lua table read to construct the C++ object.
+     * @return A C++ object constructed from the given Lua table.
+     */
+    template<typename T=BoundType>
+    static typename std::enable_if<has_table_constructor,T>::type getFromTable(LuaTable& table) {
+        if constexpr (Traits::has_getFromTable_ptr_T) {
+            return BoundType(PointedType::luaGetFromTable(table));
+        } else if constexpr (can_getFromTable) {
+            return std::make_shared<PointedType>(PointedType::luaGetFromTable(table));
+        }
+    }
 public:
     /**
      * Implementation of Lua __index metamethod.
@@ -145,33 +195,23 @@ public:
      * @return The desired function pointer, if the object in the stack is of this type.
      */
     static BoundType get(LuaStateView& state, int stackIndex) {
-        void* userdata = state.checkUserData(stackIndex);
-
-        if (!state.pushMetafield(stackIndex, "castSharedPtr")) {
-            std::string errorMsg = "Expected shared_ptr to LuaVirtualClass or derived type";
-            state.throwArgError(stackIndex, errorMsg);
-        }
-        LuaUpcaster<std::shared_ptr<LuaVirtualClass>> upcast = state.get<LuaUpcaster<std::shared_ptr<LuaVirtualClass>>>(-1);
-        state.pop(1);
-        std::shared_ptr<LuaVirtualClass> luaVirtual = upcast(userdata);
-
-        BoundType result = nullptr;
-        if (userdata != nullptr) {
-            result = std::dynamic_pointer_cast<PointedType>(luaVirtual);
-            if (result.get() == nullptr) {
-                std::string errorMsg = "Expected ";
-                errorMsg = errorMsg + LuaBinding<BoundType>::luaClassName() + ", got " + state.getTypename(stackIndex);
-                state.throwArgError(stackIndex, errorMsg);
+        if (state.isTable(stackIndex)) {
+            if constexpr (has_table_constructor) {
+                LuaTable table(state, stackIndex);
+                return getFromTable(table);
+            } else {
+                std::string msg = std::string("Type ") + LuaBinding<BoundType>::luaClassName() + " can't be constructed from an Lua table.";
+                state.throwArgError(stackIndex, msg);
             }
         }
-        return result;
+        return getUserData(state, stackIndex);
     }
 
     /**
      * Get a reference to the pointer to PointedType at the given index from the stack.
      *
-     * This function does not support polymorphism: LuaStateView::getRef<PointedType*>
-     * can work only on a lua value constructed by LuaStateView::push<PointedType*>.
+     * This function does not support polymorphism: LuaStateView::getRef<BoundType>
+     * can work only on a lua value constructed by LuaStateView::push<BoundType>.
      *
      * @param state State where the lookup is done.
      * @param stackIndex Index in the Lua stack to search.

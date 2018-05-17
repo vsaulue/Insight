@@ -28,6 +28,7 @@
 #include "lua/bindings/helpers/LuaDefaultClassName.hpp"
 #include "lua/bindings/helpers/LuaDefaultDereferenceGet.hpp"
 #include "lua/bindings/helpers/LuaWrapFunction.hpp"
+#include "lua/bindings/luaVirtualClass/helpers/LuaVirtualTraits.hpp"
 
 #include "lua/types/LuaDereferenceGetter.hpp"
 #include "lua/types/LuaCFunction.hpp"
@@ -81,8 +82,13 @@ using void_t_if_LuaVirtualClass = typename std::enable_if<std::is_base_of<LuaVir
 template<typename T>
 class LuaBinding<T, void_t_if_LuaVirtualClass<T>> : public LuaDefaultClassName<T> {
 private:
-    template<typename Type>
-    using enable_if_copy_constructible = typename std::enable_if<std::is_copy_constructible<Type>::value, Type>::type;
+    /** Traits of the bound type T. */
+    using Traits = LuaVirtualTraits<T>;
+
+    /** True if <code>unique_ptr<T> luaGetFromTable(...);</code> can be turned into a constructor form Lua table. */
+    static constexpr bool can_getFromTable_ptr_T = (Traits::has_getFromTable_ptr_T && Traits::is_copy_or_move_constructible);
+    /** True if this type has a constructor from Lua table. */
+    static constexpr bool has_table_constructor = can_getFromTable_ptr_T || Traits::has_getFromTable_T;
 
     /**
      * Upcast a pointer from base T to LuaVirtualClass.
@@ -212,8 +218,24 @@ public:
      * @return A copy of the object at the given index, if it is of type T (or derived).
      */
     template<typename U=T>
-    static enable_if_copy_constructible<U> get(LuaStateView& state, int stackIndex) {
-        return getRef(state, stackIndex);
+    static U get(LuaStateView& state, int stackIndex) {
+        return LuaDefaultGet<T>::get(state, stackIndex);
+    }
+
+    /**
+     * Constructs an object of type T from the given Lua table.
+     *
+     * @param[in] table Table used to construct the C++ object.
+     * @return An object built from the content of the table.
+     */
+    template<typename U=T>
+    static typename std::enable_if<has_table_constructor,U>::type getFromTable(LuaTable& table) {
+        if constexpr (Traits::has_getFromTable_T) {
+            return T::luaGetFromTable(table);
+        } else if constexpr (can_getFromTable_ptr_T) {
+            std::unique_ptr<T> ptr = T::luaGetFromTable(table);
+            return *ptr;
+        }
     }
 
     /**

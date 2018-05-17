@@ -26,8 +26,9 @@
 #include "lua/bindings/luaVirtualClass/base.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
-#include "lua/types/LuaVirtualClass.hpp"
 #include "lua/types/LuaMethod.hpp"
+#include "lua/types/LuaTable.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "lua/LuaState.hpp"
 
 class Base : public LuaVirtualClass {
@@ -49,6 +50,8 @@ public:
         }
         return result;
     }
+
+    static std::unique_ptr<Base> luaGetFromTable(LuaTable& table);
 };
 
 class Derived1 : public Base {
@@ -77,7 +80,28 @@ public:
     Derived2(bool value) : Base(value) {
 
     }
+
+    static Derived2 luaGetFromTable(LuaTable& table) {
+        bool value = table.get<LuaNativeString,bool>("baseValue");
+        return Derived2(value);
+    }
 };
+
+std::unique_ptr<Base> Base::luaGetFromTable(LuaTable& table) {
+    std::string type(table.get<LuaNativeString,LuaNativeString>("type"));
+    bool baseValue = table.get<LuaNativeString,bool>("baseValue");
+    std::unique_ptr<Base> result = nullptr;
+    if (type=="Derived1") {
+        bool derivedValue = table.get<LuaNativeString,bool>("derivedValue");
+        result = std::make_unique<Derived1>(baseValue, derivedValue);
+    } else if (type=="Derived2") {
+        result = std::make_unique<Derived2>(baseValue);
+    } else {
+        std::string msg = std::string("Invalid 'type' field in Base table constructor: ") + type;
+        throw LuaException(msg.c_str());
+    }
+    return result;
+}
 
 TEST_CASE("LuaVirtualClass (& derived types) binding") {
     LuaState state;
@@ -173,6 +197,33 @@ TEST_CASE("LuaVirtualClass (& derived types) binding") {
 
             state.doString("object:setBase(false)");
             REQUIRE(ref.baseValue == false);
+        }
+    }
+
+    SECTION("Table constructors") {
+        LuaTable table(state);
+        const bool BASE_VALUE = true;
+        table.set<LuaNativeString,bool>("baseValue", BASE_VALUE);
+
+        SECTION("Base table constructor") {
+            SECTION("table {type=Derived1, ...}") {
+                const bool DERIVED_VALUE = false;
+                table.set<LuaNativeString,LuaNativeString>("type", "Derived1");
+                table.set<LuaNativeString,bool>("derivedValue", DERIVED_VALUE);
+                Base base = state.get<Base>(table.getStackIndex());
+                REQUIRE(base.baseValue == BASE_VALUE);
+            }
+
+            SECTION("table {type=Derived2, ...}") {
+                table.set<LuaNativeString,LuaNativeString>("type", "Derived2");
+                Base base = state.get<Base>(table.getStackIndex());
+                REQUIRE(base.baseValue == BASE_VALUE);
+            }
+        }
+
+        SECTION("Derived2 table constructor") {
+            Derived2 derived2 = state.get<Derived2>(table.getStackIndex());
+            REQUIRE(derived2.baseValue == BASE_VALUE);
         }
     }
 }
@@ -427,6 +478,37 @@ TEST_CASE("std::shared_ptr<LuaVirtualClass> (derived shared_ptrs) bindings.") {
                 state.doString("method(base, true)");
                 REQUIRE(base->baseValue == true);
             }
+        }
+    }
+
+    SECTION("Table constructors") {
+        LuaTable table(state);
+        const bool BASE_VALUE = true;
+        table.set<LuaNativeString,bool>("baseValue", BASE_VALUE);
+
+        SECTION("shared_ptr<Base> table constructor") {
+            SECTION("table {type=Derived1, ...}") {
+                const bool DERIVED_VALUE = false;
+                table.set<LuaNativeString,LuaNativeString>("type", "Derived1");
+                table.set<LuaNativeString,bool>("derivedValue", DERIVED_VALUE);
+                std::shared_ptr<Base> base = state.get<std::shared_ptr<Base>>(table.getStackIndex());
+                REQUIRE(base->baseValue == BASE_VALUE);
+                Derived1* derived1 = dynamic_cast<Derived1*>(base.get());
+                REQUIRE(derived1 != nullptr);
+                REQUIRE(derived1->derivedValue == DERIVED_VALUE);
+
+            }
+
+            SECTION("table {type=Derived2, ...}") {
+                table.set<LuaNativeString,LuaNativeString>("type", "Derived2");
+                std::shared_ptr<Base> base = state.get<std::shared_ptr<Base>>(table.getStackIndex());
+                REQUIRE(base->baseValue == BASE_VALUE);
+            }
+        }
+
+        SECTION("shared_ptr<Derived2> table constructor") {
+            std::shared_ptr<Derived2> derived2 = state.get<std::shared_ptr<Derived2>>(table.getStackIndex());
+            REQUIRE(derived2->baseValue == BASE_VALUE);
         }
     }
 }
