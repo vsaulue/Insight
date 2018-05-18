@@ -51,6 +51,7 @@ TEST_CASE("Lua table bindings.") {
 
         SECTION("get<LuaTable>()") {
             LuaTable table = state.get<LuaTable>(1);
+            table.setOwnership(true); // Pop the tables when the C++ object is destroyed.
             SECTION("LuaTable.get()") {
                 float num = table.get<LuaNativeString, float>("num");
                 REQUIRE(num==42);
@@ -70,6 +71,7 @@ TEST_CASE("Lua table bindings.") {
                 std::string subFieldName("subField");
                 state.push<LuaTable>();
                 LuaTable subTable = state.get<LuaTable>(-1);
+                subTable.setOwnership(true); // Pop the tables when the C++ object is destroyed.
                 subTable.set<LuaNativeString, float>(subFieldName.c_str(), subValue);
 
                 SECTION("globalTable[float]=subTable (C++)") {
@@ -95,6 +97,7 @@ TEST_CASE("Lua table bindings.") {
                 state.doString("globalTable.someField={foo=\"bar\"}");
                 SECTION("LuaTable.get<float,LuaTable>(...)") {
                     LuaTable subTable = table.get<LuaNativeString, LuaTable>("someField");
+                    // subTable should be auto popped.
                     const char *str = subTable.get<LuaNativeString, LuaNativeString>("foo");
                     REQUIRE(std::strcmp(str,"bar")==0);
                 }

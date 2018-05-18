@@ -24,7 +24,7 @@
 #include <type_traits>
 
 /**
- * Metaprogramming object used to check if a C++ type binded in Lua is a stack alias.
+ * Metaprogramming object used to check if a C++ type bound in Lua is a stack alias.
  *
  * <p>
  *   A C++ type is a stack alias if it requires an item to remain on the stack during its lifespan.
@@ -36,8 +36,12 @@
  *     <li>Non stack alias: LuaNativeString</li>
  *   </ul>
  * </p>
+ * <p>
+ *   The LuaBinding of such an object must define a function to set the ownership inside the C++ object:
+ *   <code>static void setStackOwnership(BoundType& object, bool value);</code>
+ * </p>
  */
-template<typename BindedType, typename Enable=void>
+template<typename BoundType, typename Enable=void>
 struct LuaIsStackAlias {
 public:
     /** False if the item on the Lua stack can be popped after the C++ object was constructed. True otherwise. */
@@ -45,10 +49,22 @@ public:
 };
 
 // See non-specialized description.
-template<typename BindedType>
-struct LuaIsStackAlias<BindedType, std::void_t<decltype(LuaBinding<BindedType>::isStackAlias)>> {
+template<typename BoundType>
+struct LuaIsStackAlias<BoundType, std::void_t<decltype(LuaBinding<BoundType>::isStackAlias)>> {
 public:
-    static constexpr bool value = LuaBinding<BindedType>::isStackAlias;
+    static constexpr bool value = LuaBinding<BoundType>::isStackAlias;
+private:
+    // SFINAE implementation of has_setStackOwnership.
+    template<typename T, typename Enable=void>
+    struct has_setStackOwnershipImpl : std::false_type {};
+
+    template<typename T>
+    struct has_setStackOwnershipImpl<T,decltype(LuaBinding<T>::setStackOwnership(std::declval<T&>(), true))> : std::true_type {};
+
+    /** True if the LuaBinding<BoundType>::setStackOwnership(T&,bool) is defined. */
+    static constexpr bool has_setStackOwnership = has_setStackOwnershipImpl<BoundType>::value;
+
+    static_assert(!(value && !has_setStackOwnership), "The binding of a stack alias must define: static void setStackOwnership(T&,bool);");
 };
 
 #endif /* LUAISSTACKALIAS_HPP */

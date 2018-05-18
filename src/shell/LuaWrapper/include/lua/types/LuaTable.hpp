@@ -36,16 +36,18 @@ public:
      * Creates a new empty table on the top of a Lua stack.
      *
      * @param state Lua stack in which the table will be created.
+     * @param ownership The Lua table should be popped from the stack when this C++ object is deleted.
      */
-    LuaTable(LuaStateView& state);
+    LuaTable(LuaStateView& state, bool ownership=false);
 
     /**
      * Points to a table already existing on a Lua stack.
      *
      * @param state State containing the Lua table.
      * @param stackIndex Index of the Lua table in the stack;
+     * @param ownership The Lua table should be popped from the stack when this C++ object is deleted.
      */
-    LuaTable(LuaStateView& state, int stackIndex);
+    LuaTable(LuaStateView& state, int stackIndex, bool ownership=false);
 
     LuaTable(const LuaTable& table) = delete;
 
@@ -89,7 +91,9 @@ public:
         state.push<KeyType>(key);
         state.getField(stackIndex);
         ValueType result = state.get<ValueType>(state.getTop());
-        if constexpr (!LuaIsStackAlias<ValueType>::value) {
+        if constexpr (LuaIsStackAlias<ValueType>::value) {
+            LuaBinding<ValueType>::setStackOwnership(result, true);
+        } else {
             state.pop(1);
         }
         return result;
@@ -131,6 +135,14 @@ public:
     }
 
     /**
+     * Sets if this C++ objects owns its associated stack item.
+     * @param value
+     */
+    void setOwnership(bool value) {
+        hasOwnership = value;
+    }
+
+    /**
      * Gets the index of this table on the Lua stack.
      * @return The stack index of this table.
      */
@@ -146,10 +158,12 @@ public:
         return state;
     }
 private:
-    /** Absolute index of the table in the Lua stack (or 0 for dangling pointer). */
+    /** Absolute index of the table in the Lua stack. */
     int stackIndex;
     /** Lua state containing the table.*/
     LuaStateView& state;
+    /** True if this C++ object owns the Lua table (the destructor of this object will pop the value). */
+    bool hasOwnership;
 };
 
 /** See LuaBinding in LuaBinding.hpp. */
@@ -172,6 +186,11 @@ public:
 
     static LuaTable get(LuaStateView& state, int stackIndex) {
         return LuaTable(state, stackIndex);
+    }
+
+    // See LuaIsStackAlias in luaIsStackAlias.hpp
+    static void setStackOwnership(LuaTable& object, bool value) {
+        object.setOwnership(value);
     }
 };
 

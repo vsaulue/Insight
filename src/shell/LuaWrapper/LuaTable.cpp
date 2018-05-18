@@ -21,16 +21,18 @@
 #include "lua/LuaException.hpp"
 #include "lua/types/LuaTable.hpp"
 
-LuaTable::LuaTable(LuaStateView& state) :
-    state(state)
+LuaTable::LuaTable(LuaStateView& state, bool ownership) :
+    state(state),
+    hasOwnership(ownership)
 {
     state.newTable();
     stackIndex = state.getTop();
 }
 
-LuaTable::LuaTable(LuaStateView& state, int stackIndex) :
+LuaTable::LuaTable(LuaStateView& state, int stackIndex, bool ownership) :
     stackIndex(state.absIndex(stackIndex)),
-    state(state)
+    state(state),
+    hasOwnership(ownership)
 {
     if (!state.isTable(stackIndex)) {
         std::stringstream msg;
@@ -41,13 +43,14 @@ LuaTable::LuaTable(LuaStateView& state, int stackIndex) :
 
 LuaTable::LuaTable(LuaTable&& table) :
     stackIndex(table.stackIndex),
-    state(table.state)
+    state(table.state),
+    hasOwnership(table.hasOwnership)
 {
-    table.stackIndex = 0;
+    table.hasOwnership = false;
 }
 
 LuaTable::~LuaTable() {
-    if (stackIndex != 0 && stackIndex == state.getTop()) {
+    if (hasOwnership && stackIndex == state.getTop()) {
         state.pop(1);
     }
 }
