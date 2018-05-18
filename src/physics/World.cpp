@@ -52,27 +52,22 @@ void World::addConstraint(std::shared_ptr<btTypedConstraint> constraint) {
 
 int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<World>;
-    int result = 0;
-    if (memberName=="newSphere") {
+    int result = 1;
+    if (memberName=="newBody") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
-            btScalar mass = state.get<btScalar>(2);
-            btScalar radius = state.get<btScalar>(3);
-            std::shared_ptr<Body> newObject = std::make_shared<Body>(std::make_shared<SphereShape>(mass, radius));
-            state.push<std::shared_ptr<Body>>(newObject);
-            object.addObject(newObject);
+            std::shared_ptr<Body> newBody = state.get<std::shared_ptr<Body>>(2);
+            state.push<std::shared_ptr<Body>>(newBody);
+            object.addObject(std::move(newBody));
             return 1;
         });
-        result = 1;
-    } else if (memberName=="newStaticPlane") {
+    } else if (memberName=="newShape") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
-            btVector3 normal = state.get<btVector3>(2);
-            btScalar offset = state.get<btScalar>(3);
-            std::shared_ptr<Body> newObject = std::make_shared<Body>(std::make_shared<StaticPlaneShape>(normal, offset));
-            state.push<std::shared_ptr<Body>>(newObject);
-            object.addObject(newObject);
+            std::shared_ptr<Shape> newShape = state.get<std::shared_ptr<Shape>>(2);
+            state.push<std::shared_ptr<Shape>>(std::move(newShape));
             return 1;
         });
-        result = 1;
+    } else {
+        result = 0;
     }
     return result;
 }

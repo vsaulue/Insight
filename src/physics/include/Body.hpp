@@ -24,6 +24,7 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "BodyMoveListener.hpp"
+#include "lua/types/LuaTable.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "Shape.hpp"
 #include "ShapeDrawer.hpp"
@@ -66,6 +67,8 @@ public:
     btRigidBody& getBulletBody();
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    static std::unique_ptr<Body> luaGetFromTable(LuaTable& table);
 
     /**
      * Draws the collision shape of this Body into the specified Drawer object.

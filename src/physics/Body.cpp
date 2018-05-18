@@ -21,7 +21,7 @@
 #include "Body.hpp"
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
-#include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/types/LuaMethod.hpp"
 
 /** Custom implementation of btMotionState. */
@@ -126,6 +126,12 @@ int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
         result = 0;
     }
     return result;
+}
+
+std::unique_ptr<Body> Body::luaGetFromTable(LuaTable& table) {
+    std::shared_ptr<Shape> shape = table.get<LuaNativeString,std::shared_ptr<Shape>>("shape");
+    // TODO: position, orientation, velocity, angular velocity...
+    return std::make_unique<Body>(shape);
 }
 
 void Body::addMoveListener(BodyMoveListener& listener) const {

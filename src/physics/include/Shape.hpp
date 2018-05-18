@@ -94,7 +94,7 @@ public:
      * Constructs a Shape type from a Lua table.
      * @return A Shape (or derived type) constructed from the content of the table.
      */
-    std::unique_ptr<Shape> luaGetFromTable(LuaTable& table);
+    static std::unique_ptr<Shape> luaGetFromTable(LuaTable& table);
 protected:
     /** Mass of this shape. */
     btScalar mass;
