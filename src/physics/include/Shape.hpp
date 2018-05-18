@@ -19,8 +19,12 @@
 #ifndef SHAPE_HPP
 #define SHAPE_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/types/LuaTable.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 #include "ShapeDrawer.hpp"
 
 /**
@@ -29,7 +33,7 @@
  * This class wraps a Bullet btCollisionShape (geometry of the object), and also
  * holds mass & inertia data of this shape.
  */
-class Shape {
+class Shape : public LuaVirtualClass {
 public:
     /**
      * Floating point type holding a density (in kg/m^3).
@@ -83,6 +87,14 @@ public:
      * @return The inertia vector of this shape.
      */
     btVector3 getInertia() const;
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    /**
+     * Constructs a Shape type from a Lua table.
+     * @return A Shape (or derived type) constructed from the content of the table.
+     */
+    std::unique_ptr<Shape> luaGetFromTable(LuaTable& table);
 protected:
     /** Mass of this shape. */
     btScalar mass;

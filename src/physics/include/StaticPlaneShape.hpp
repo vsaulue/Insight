@@ -19,8 +19,11 @@
 #ifndef STATICPLANESHAPE_HPP
 #define STATICPLANESHAPE_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
 
 /** Static plane shape. */
@@ -34,11 +37,35 @@ public:
 
     virtual ~StaticPlaneShape();
 
+    /**
+     * Gets a normal vector of the plane.
+     * @return A normal vector of the plane.
+     */
+    const btVector3& getNormal() const;
+
+    /**
+     * Gets the offset parameter of the plane.
+     *
+     * The point Origin + getOffset()*getNormal is included in the plane.
+     *
+     * @return The offset parameter of the plane.
+     */
+    btScalar getOffset() const;
+
     btCollisionShape& getBulletShape() override;
 
     const btCollisionShape& getBulletShape() const override;
 
     void draw(ShapeDrawer& drawer, const btTransform& transform) const override;
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    /**
+     * Constructs a StaticPlaneShape from a Lua table.
+     * @param table Lua table containing the parameters of the new shape.
+     * @return The new shape.
+     */
+    static std::unique_ptr<StaticPlaneShape> luaGetFromTable(LuaTable& table);
 private:
     /** Bullet shape. */
     btStaticPlaneShape shape;

@@ -16,6 +16,9 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/types/LuaNativeString.hpp"
+#include "lua/types/LuaTable.hpp"
 #include "SphereShape.hpp"
 
 SphereShape::SphereShape(btScalar mass, btScalar radius) :
@@ -42,6 +45,11 @@ SphereShape::SphereShape(Density density, btScalar radius) :
 
 SphereShape::~SphereShape() = default;
 
+btScalar SphereShape::getRadius() const {
+    return shape.getRadius();
+}
+
+
 btCollisionShape& SphereShape::getBulletShape() {
     return shape;
 }
@@ -52,4 +60,26 @@ const btCollisionShape& SphereShape::getBulletShape() const {
 
 void SphereShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
     drawer.drawSphere(transform.getOrigin(), shape.getRadius());
+}
+
+int SphereShape::luaIndex(const std::string& memberName, LuaStateView& state) {
+    int result = 1;
+    if (memberName=="radius") {
+        state.push<btScalar>(getRadius());
+    } else {
+        result = Shape::luaIndex(memberName, state);
+    }
+    return result;
+}
+
+std::unique_ptr<SphereShape> SphereShape::luaGetFromTable(LuaTable& table) {
+    btScalar radius = table.get<LuaNativeString,btScalar>("radius");
+    btScalar mass;
+    if (table.has<LuaNativeString>("mass")) {
+        mass = table.get<LuaNativeString,btScalar>("mass");
+    } else {
+        btScalar density = table.get<LuaNativeString,btScalar>("density");
+        mass = density * sphereVolume(radius);
+    }
+    return std::make_unique<SphereShape>(mass, radius);
 }

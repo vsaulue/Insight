@@ -19,8 +19,11 @@
 #ifndef CUBOIDSHAPE_HPP
 #define CUBOIDSHAPE_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
 
 /** Cuboid shape. */
@@ -42,11 +45,26 @@ public:
 
     virtual ~CuboidShape();
 
+    /**
+     * Gets the half extents of this cuboid.
+     * @return The half extents of this cuboid.
+     */
+    const btVector3& getHalfExtents() const;
+
     btCollisionShape& getBulletShape() override;
 
     const btCollisionShape& getBulletShape() const override;
 
     void draw(ShapeDrawer& drawer, const btTransform& transform) const override;
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    /**
+     * Creates anew CuboidShape from a Lua table.
+     * @param table Lua table containing the parameters of this shape.
+     * @return The new CuboidShape.
+     */
+    static std::unique_ptr<CuboidShape> luaGetFromTable(LuaTable& table);
 private:
     /** Bullt shape. */
     btBoxShape shape;

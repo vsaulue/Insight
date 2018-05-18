@@ -16,7 +16,15 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+
 #include "Shape.hpp"
+#include "CuboidShape.hpp"
+#include "CylinderShape.hpp"
+#include "SphereShape.hpp"
+#include "StaticPlaneShape.hpp"
+
 
 Shape::Shape(btScalar mass) : mass(mass) {
 
@@ -30,4 +38,33 @@ btVector3 Shape::getInertia() const {
         inertia={0,0,0};
     }
     return inertia;
+}
+
+int Shape::luaIndex(const std::string& memberName, LuaStateView& state) {
+    int result = 1;
+    if (memberName=="mass") {
+        state.push<btScalar>(mass);
+    } else if (memberName=="inertia") {
+        state.push<btVector3>(getInertia());
+    } else {
+        result = 0;
+    }
+    return result;
+}
+
+std::unique_ptr<Shape> Shape::luaGetFromTable(LuaTable& table) {
+    std::string type = table.get<LuaNativeString, LuaNativeString>("type");
+    LuaTable params = table.get<LuaNativeString, LuaTable>("params");
+    if (type=="Cuboid") {
+        return CuboidShape::luaGetFromTable(params);
+    } else if (type=="Cylinder") {
+        return CylinderShape::luaGetFromTable(params);
+    } else if (type=="Sphere") {
+        return SphereShape::luaGetFromTable(params);
+    } else if (type=="StaticPlane") {
+        return StaticPlaneShape::luaGetFromTable(params);
+    } else {
+        std::string msg = std::string("Invalid 'type' field in Shape table constructor: ") + type;
+        throw LuaException(msg.c_str());
+    }
 }

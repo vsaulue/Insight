@@ -19,8 +19,11 @@
 #ifndef SPHERESHAPE_HPP
 #define SPHERESHAPE_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
 
 /** Sphere shape. */
@@ -42,11 +45,26 @@ public:
 
     virtual ~SphereShape();
 
+    /**
+     * Gets the radius of this sphere.
+     * @return The radius of this sphere.
+     */
+    btScalar getRadius() const;
+
     btCollisionShape& getBulletShape() override;
 
     const btCollisionShape& getBulletShape() const override;
 
     void draw(ShapeDrawer& drawer, const btTransform& transform) const override;
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    /**
+     * Constructs a SphereShape object from a Lua table.
+     * @param table Lua table containing the parameters of this shape.
+     * @return The new SphereShape object.
+     */
+    static std::unique_ptr<SphereShape> luaGetFromTable(LuaTable& table);
 private:
     /** Bullet shape. */
     btSphereShape shape;

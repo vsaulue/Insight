@@ -17,6 +17,9 @@
  */
 
 #include "CuboidShape.hpp"
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/types/LuaNativeString.hpp"
 
 CuboidShape::CuboidShape(btScalar mass, const btVector3& halfExtents) :
     Shape(mass),
@@ -42,6 +45,10 @@ CuboidShape::CuboidShape(Density density, const btVector3& halfExtents) :
 
 CuboidShape::~CuboidShape() = default;
 
+const btVector3& CuboidShape::getHalfExtents() const {
+    return shape.getHalfExtentsWithoutMargin();
+}
+
 btCollisionShape& CuboidShape::getBulletShape() {
     return shape;
 }
@@ -52,4 +59,26 @@ const btCollisionShape& CuboidShape::getBulletShape() const {
 
 void CuboidShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
     drawer.drawCuboid(transform, shape.getHalfExtentsWithoutMargin());
+}
+
+int CuboidShape::luaIndex(const std::string& memberName, LuaStateView& state) {
+    int result = 1;
+    if (memberName=="halfExtents") {
+        state.push<btVector3>(getHalfExtents());
+    } else {
+        result = Shape::luaIndex(memberName, state);
+    }
+    return result;
+}
+
+std::unique_ptr<CuboidShape> CuboidShape::luaGetFromTable(LuaTable& table) {
+    btVector3 halfExtents = table.get<LuaNativeString,btVector3>("halfExtents");
+    btScalar mass;
+    if (table.has<LuaNativeString>("mass")) {
+        mass = table.get<LuaNativeString,btScalar>("mass");
+    } else {
+        btScalar density = table.get<LuaNativeString,btScalar>("density");
+        mass = density * cuboidVolume(halfExtents);
+    }
+    return std::make_unique<CuboidShape>(mass, halfExtents);
 }

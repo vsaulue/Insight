@@ -19,8 +19,11 @@
 #ifndef CYLINDERSHAPE_HPP
 #define CYLINDERSHAPE_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
 
 /**
@@ -46,11 +49,26 @@ public:
 
     virtual ~CylinderShape();
 
+    /**
+     * Gets the half extents of this cylinder.
+     * @return The half extents of this cylinder.
+     */
+    const btVector3& getHalfExtents() const;
+
     btCollisionShape& getBulletShape() override;
 
     const btCollisionShape& getBulletShape() const override;
 
     void draw(ShapeDrawer& drawer, const btTransform& transform) const override;
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    /**
+     * Creates a new CylinderShape from a Lua table.
+     * @param table Lua table containing the parameters of the new shape.
+     * @return The new shape.
+     */
+    static std::unique_ptr<CylinderShape> luaGetFromTable(LuaTable& table);
 private:
     btCylinderShape shape;
 };

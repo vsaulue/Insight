@@ -16,6 +16,9 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "CylinderShape.hpp"
 
 CylinderShape::CylinderShape(btScalar mass, const btVector3& halfExtents) :
@@ -42,6 +45,10 @@ CylinderShape::CylinderShape(Density density, const btVector3& halfExtents) :
 
 CylinderShape::~CylinderShape() = default;
 
+const btVector3& CylinderShape::getHalfExtents() const {
+    return shape.getHalfExtentsWithoutMargin();
+}
+
 btCollisionShape& CylinderShape::getBulletShape() {
     return shape;
 }
@@ -52,4 +59,26 @@ const btCollisionShape& CylinderShape::getBulletShape() const {
 
 void CylinderShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
     drawer.drawCylinder(transform, shape.getHalfExtentsWithoutMargin());
+}
+
+int CylinderShape::luaIndex(const std::string& memberName, LuaStateView& state) {
+    int result = 1;
+    if (memberName=="halfExtents") {
+        state.push<btVector3>(getHalfExtents());
+    } else {
+        result = Shape::luaIndex(memberName, state);
+    }
+    return result;
+}
+
+std::unique_ptr<CylinderShape> CylinderShape::luaGetFromTable(LuaTable& table) {
+    btVector3 halfExtents = table.get<LuaNativeString,btVector3>("halfExtents");
+    btScalar mass;
+    if (table.has<LuaNativeString>("mass")) {
+        mass = table.get<LuaNativeString,btScalar>("mass");
+    } else {
+        btScalar density = table.get<LuaNativeString,btScalar>("density");
+        mass = density * cylinderVolume(halfExtents);
+    }
+    return std::make_unique<CylinderShape>(mass, halfExtents);
 }
