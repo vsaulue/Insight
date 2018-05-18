@@ -110,3 +110,31 @@ std::string LuaBinding<btQuaternion>::luaToStringImpl(btQuaternion& object) {
     result << "{x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << ", w=" << object.w() << "}";
     return result.str();
 }
+
+btTransform LuaBinding<btTransform>::getFromTable(LuaTable& table) {
+    using Str = LuaNativeString;
+    btVector3 position = table.get<Str,btVector3>("position");
+    btQuaternion rotation = table.get<Str,btQuaternion>("rotation");
+    return btTransform(rotation, position);
+}
+
+int LuaBinding<btTransform>::luaIndexImpl(btTransform& object, const std::string& memberName, LuaStateView& state) {
+    int result = 1;
+    if (memberName=="rotation") {
+        state.push<btQuaternion>(object.getRotation());
+    } else if (memberName=="position") {
+        state.push<btVector3>(object.getOrigin());
+    } else {
+        result = 0;
+    }
+    return result;
+}
+
+std::string LuaBinding<btTransform>::luaToStringImpl(btTransform& object) {
+    std::ostringstream result;
+    std::string position = LuaBinding<btVector3>::luaToStringImpl(object.getOrigin());
+    btQuaternion quat = object.getRotation();
+    std::string rotation = LuaBinding<btQuaternion>::luaToStringImpl(quat);
+    result << "{position=" << position << ", rotation=" << rotation << "}";
+    return result.str();
+}
