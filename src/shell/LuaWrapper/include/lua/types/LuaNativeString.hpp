@@ -21,14 +21,32 @@
 
 #include "lua/LuaStateView.hpp"
 
+/** Wrapper of a native Lua string. */
 struct LuaNativeString {
+    /** Pointer to the string stored inside Lua. */
     const char* value;
 
+    /**
+     * Constructs a new object that can be converted to/from a Lua native string.
+     * @param value Value of the string.
+     */
     LuaNativeString(const char* value) : value(value) {
 
     }
 
-    operator const char*() {
+    /**
+     * Returns a pointer to the stored value.
+     * @return Pointer to the wrapped string.
+     */
+    operator const char*() const {
+        return value;
+    }
+
+    /**
+     * Constructs a copy of the string value.
+     * @return A copy of the wrapped string.
+     */
+    operator std::string() const {
         return value;
     }
 };
