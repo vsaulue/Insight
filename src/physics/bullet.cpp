@@ -80,8 +80,12 @@ btQuaternion LuaBinding<btQuaternion>::getFromTable(LuaTable& table) {
         btScalar z = table.get<float,btScalar>(3);
         btScalar w = table.get<float,btScalar>(4);
         return btQuaternion(x,y,z,w);
+    } else if (table.has<Str>("axis")) {
+        btVector3 axis = table.get<Str,btVector3>("axis");
+        btScalar angle = table.get<Str,btScalar>("angle");
+        return btQuaternion(axis, angle);
     } else {
-        throw LuaException("Cannot build btQuaternion from the given Lua table. Requires \"x\",\"y\",\"z\",\"w\" or 1,2,3,4 fields.");
+        throw LuaException("Cannot build btQuaternion from the given Lua table. Requires {x,y,z,w}, {1,2,3,4}, or {axis,angle} fields.");
     }
 }
 
