@@ -62,7 +62,7 @@ int LuaBinding<btVector3>::luaIndexImpl(btVector3& object, const std::string& me
 
 std::string LuaBinding<btVector3>::luaToStringImpl(btVector3& object) {
     std::ostringstream result;
-    result << luaClassName() << ": {x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << "}";
+    result << "{x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << "}";
     return result.str();
 }
 
@@ -107,6 +107,6 @@ int LuaBinding<btQuaternion>::luaIndexImpl(btQuaternion& object, const std::stri
 
 std::string LuaBinding<btQuaternion>::luaToStringImpl(btQuaternion& object) {
     std::ostringstream result;
-    result << luaClassName() << ": {x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << ", w=" << object.w() << "}";
+    result << "{x=" << object.x() << ", y=" << object.y() << ", z=" << object.z() << ", w=" << object.w() << "}";
     return result.str();
 }

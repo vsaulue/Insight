@@ -52,7 +52,7 @@ public:
      */
     static int luaToString(LuaStateView& state) {
         BoundType& object = state.getRef<BoundType>(1);
-        std::string str = LuaBinding<BoundType>::luaToStringImpl(object);
+        std::string str = LuaBinding<BoundType>::luaClassName() + ": " + LuaBinding<BoundType>::luaToStringImpl(object);
         state.push<LuaNativeString>(str.c_str());
         return 1;
     }
