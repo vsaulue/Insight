@@ -153,7 +153,7 @@ private:
     }
 
     /**
-     * Downcast an Lua argument of type LuaVirtualClass* into T*.
+     * Downcast a Lua argument of type LuaVirtualClass* into T*.
      *
      * @param basePtr Pointer to downcast.
      * @param state Current Lua state (used for error reporting).

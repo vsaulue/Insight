@@ -70,7 +70,7 @@
  *     </code>
  *     <p>
  *       Indicates that the BoundType instance returned by get() is just an alias of a stack item.
- *       This value is used in LuaTable to handle the lifespan of objects read from an Lua table.
+ *       This value is used in LuaTable to handle the lifespan of objects read from a Lua table.
  *     </p>
  *   </li>
  * </ul>

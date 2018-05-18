@@ -53,7 +53,7 @@ protected:
     void* newUserData(std::size_t size);
 
     /**
-     * Gets an object from the stack it it is an Lua Userdata.
+     * Gets an object from the stack it it is a Lua Userdata.
      *
      * @param[in] stackIndex Index of the item to get on the stack.
      * @param[in] metatableName Expected name of its metatable.
@@ -318,7 +318,7 @@ public:
      * Checks if the item at the specified index is a Lua table.
      *
      * @param[in] stackIndex Index of the item to check.
-     * @return True if it is an Lua table, false for any other type.
+     * @return True if it is a Lua table, false for any other type.
      */
     bool isTable(int stackIndex);
 
@@ -417,14 +417,14 @@ public:
     void remove(int stackIndex);
 
     /**
-     * Throws an Lua error.
+     * Throws a Lua error.
      *
      * @param[in] msg An error message.
      */
     void throwError(const std::string& msg);
 
     /**
-     * Throws an Lua error when an argument on the Lua stack is invalid.
+     * Throws a Lua error when an argument on the Lua stack is invalid.
      *
      * @param[in] stackIndex Index of the invalid argument.
      * @param[in] msg An error message.

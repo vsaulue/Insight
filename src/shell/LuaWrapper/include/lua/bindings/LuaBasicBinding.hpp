@@ -42,7 +42,7 @@
  * This will define the following functions for Luabinding:
  * - push
  * - getRef
- * - get (if BoundType is copy constructible, or constructible from an Lua table).
+ * - get (if BoundType is copy constructible, or constructible from a Lua table).
  *
  * LuaBinding<BoundType> can be derived from this object.
  *

@@ -70,7 +70,7 @@ public:
                 LuaTable table = state.get<LuaTable>(stackIndex);
                 return LuaBinding<BoundType>::getFromTable(table);
             } else {
-                std::string msg = std::string("Type ") + LuaBinding<BoundType>::luaClassName() + " can't be constructed from an Lua table.";
+                std::string msg = std::string("Type ") + LuaBinding<BoundType>::luaClassName() + " can't be constructed from a Lua table.";
                 state.throwArgError(stackIndex, msg);
             }
         }
