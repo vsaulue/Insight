@@ -18,7 +18,6 @@ terrain = world:newBody({
         },
     },
 })
-terrain:setPosition({0, -2, 0})
 
 -- 2) Sphere shape
 sphere = world:newBody({
@@ -59,3 +58,25 @@ cuboid = world:newBody({
     },
 })
 cuboid:setPosition({-1,3,2})
+
+-- It is possible to combine the 4 basic shapes into a compound shape:
+table = world:newBody({
+    shape= {
+        type= "Compound",
+        params= {
+            children= {
+                {
+                    transform={position={0,0.25,0}, rotation={0,0,0,1}},
+                    shape= {type="Cylinder", params={density=2000, halfExtents={1.5,0.075,1.5}}},
+                },{
+                    transform={position={0,-1,0}, rotation={0,0,0,1}},
+                    shape= {type="Cuboid", params={density=2000, halfExtents={0.5,0.1,0.5}}},
+                },{
+                    transform={position={0,-0.375,0}, rotation={0,0,0,1}},
+                    shape= {type="Cylinder", params={density=2000, halfExtents={0.1,0.65,0.1}}},
+                },
+            },
+        },
+    },
+})
+table:setPosition({2,-0.90,5})

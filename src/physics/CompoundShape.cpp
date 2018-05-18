@@ -16,6 +16,10 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "CompoundShape.hpp"
 
 CompoundShape::CompoundShape(const std::vector<ChildInfo>& constructionInfo) {
@@ -44,4 +48,19 @@ void CompoundShape::draw(ShapeDrawer& drawer, const btTransform& transform) cons
         btTransform childAbsTransform = transform * shape.getChildTransform(i);
         children[i]->draw(drawer, childAbsTransform);
     }
+}
+
+std::unique_ptr<CompoundShape> CompoundShape::luaGetFromTable(LuaTable& table) {
+    using Str = LuaNativeString;
+    std::vector<ChildInfo> children;
+    LuaTable childrenTable = table.get<Str, LuaTable>("children");
+    for (int index = 1; childrenTable.has<float>(index); index++) {
+        LuaTable childTable = childrenTable.get<float,LuaTable>(index);
+        ChildInfo child = {
+            childTable.get<Str, std::shared_ptr<Shape>>("shape"),
+            childTable.get<Str, btTransform>("transform"),
+        };
+        children.push_back(child);
+    }
+    return std::make_unique<CompoundShape>(children);
 }

@@ -24,6 +24,7 @@
 
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
 
 /** Shape made of multiple child shapes. */
@@ -52,6 +53,14 @@ public:
     const btCollisionShape& getBulletShape() const override;
 
     void draw(ShapeDrawer& drawer, const btTransform& transform) const override;
+
+    /**
+     * Creates a new CompoundShape from a Lua table.
+     *
+     * @param table Lua table containing the shape parameters.
+     * @return The new CompoundShape object.
+     */
+    static std::unique_ptr<CompoundShape> luaGetFromTable(LuaTable& table);
 private:
     /** Bullet shape. */
     btCompoundShape shape;

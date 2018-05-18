@@ -20,6 +20,7 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 
 #include "Shape.hpp"
+#include "CompoundShape.hpp"
 #include "CuboidShape.hpp"
 #include "CylinderShape.hpp"
 #include "SphereShape.hpp"
@@ -55,7 +56,9 @@ int Shape::luaIndex(const std::string& memberName, LuaStateView& state) {
 std::unique_ptr<Shape> Shape::luaGetFromTable(LuaTable& table) {
     std::string type = table.get<LuaNativeString, LuaNativeString>("type");
     LuaTable params = table.get<LuaNativeString, LuaTable>("params");
-    if (type=="Cuboid") {
+    if (type=="Compound") {
+        return CompoundShape::luaGetFromTable(params);
+    } else if (type=="Cuboid") {
         return CuboidShape::luaGetFromTable(params);
     } else if (type=="Cylinder") {
         return CylinderShape::luaGetFromTable(params);
