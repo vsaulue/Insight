@@ -24,41 +24,44 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "CompoundShape.hpp"
+#include "JointInfo.hpp"
 
 /**
  * Parameters to describe & construct a cylindric joint.
  */
-struct CylindricJointInfo {
+struct CylindricJointInfo : public JointInfo {
+    /** No intialisation constructor. */
+    CylindricJointInfo() = default;
+
+    /**
+     * Full initialisation constructor.
+     * @param density Density of the generated body parts.
+     * @param placeCylinder True if the ball body should be moved to match the position of the socket. False otherwise.
+     * @param cylinderTransform Relative transform of the ball in its body part.
+     * @param generateCylinder True if the ball shape should be added to the shape of its body.
+     * @param socketTransform Relative transform of the socket in its body part.
+     * @param radius Radius of the cylinder.
+     * @param length Length of the cylinder.
+     * @param startRotation Relative orientation of the cylinder body part to the socket part (radian).
+     */
+    CylindricJointInfo(btScalar density, bool placeCylinder, const btTransform& cylinderTransform, bool generateCylinder, const btTransform& socketTransform,
+                       btScalar radius, btScalar length, btScalar startRotation) :
+        JointInfo(density, placeCylinder, cylinderTransform, generateCylinder, socketTransform),
+        cylinderRadius(radius),
+        cylinderLength(length),
+        startRotation(startRotation)
+    {
+
+    }
+
     /** Radius of the cylinder (m). */
     btScalar cylinderRadius;
     /** Length of the cylinder (m). */
     btScalar cylinderLength;
-    /** Relative orientation of the cylinder body part to the socket part. */
+    /** Relative orientation of the cylinder body part to the socket part (radian). */
     btScalar startRotation;
-    /** Density of the generated parts (kg/m^3). */
-    btScalar jointDensity;
-    /**
-     * Tells which body part should be moved to match the position of the other part.
-     *
-     * True if the cylinder part should be placed in the socket part.
-     * False will place the socket according to the current position of the cylinder. */
-    bool placeCylinder;
-    /** Relative position of the cylinder to the CompoundBody containing it. */
-    btTransform cylinderTransform;
-    /** Generates the collision shape of the cylinder. */
-    bool generateCylinder;
-    /**
-     * Relative position of the socket to the CompoundBody containing it.
-     *
-     * The socket position/origin is the center of the associated cylinder.
-     */
-    btTransform socketTransform;
 
-    /**
-     * Adds the cylinder part of the joint to a body part shape.
-     * @param shapeInfo Shape in which the cylinder should be inserted.
-     */
-    void addCylinderShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const;
+    void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 };
 
 #endif /* CYLINDRICJOINTINFO_HPP */

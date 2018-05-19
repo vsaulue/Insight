@@ -19,9 +19,9 @@
 #include "SphereShape.hpp"
 #include "SphericalJointInfo.hpp"
 
-void SphericalJointInfo::addSphereShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const {
+void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const {
     using Density = Shape::Density;
-    if (generateBallShape) {
-        shapeInfo.push_back({std::make_shared<SphereShape>(Density(jointDensity), ballRadius), ballTransform});
+    if (generateConvexShape) {
+        shapeInfo.push_back({std::make_shared<SphereShape>(Density(jointDensity), ballRadius), convexTransform});
     }
 }

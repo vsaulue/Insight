@@ -46,23 +46,22 @@ static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, B
 static std::shared_ptr<btHingeConstraint> makeConstraint(Body& cylinder, Body& socket, const CylindricJointInfo& info) {
     btRigidBody& bodyA = cylinder.getBulletBody();
     btRigidBody& bodyB = socket.getBulletBody();
-    const btVector3& pivotA = info.cylinderTransform.getOrigin();
-    const btVector3& pivotB = info.socketTransform.getOrigin();
-    const btVector3 axisA = info.cylinderTransform.getBasis() * btVector3(1,0,0);
-    const btVector3 axisB = info.socketTransform.getBasis() * btVector3(1,0,0);
+    const btVector3& pivotA = info.convexTransform.getOrigin();
+    const btVector3& pivotB = info.concaveTransform.getOrigin();
+    const btVector3 axisA = info.convexTransform.getBasis() * btVector3(1,0,0);
+    const btVector3 axisB = info.concaveTransform.getBasis() * btVector3(1,0,0);
     return std::make_shared<btHingeConstraint>(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
 }
 
 CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info) :
-    cylinder(cylinder),
-    socket(socket),
+    Joint(cylinder, socket),
     jointInfo(info),
     constraint(makeConstraint(cylinder, socket, info))
 {
-    if (info.placeCylinder) {
-        initPosition(socket, info.socketTransform, cylinder, info.cylinderTransform, info.startRotation);
+    if (info.placeConvex) {
+        initPosition(socket, info.concaveTransform, cylinder, info.convexTransform, info.startRotation);
     } else {
-        initPosition(cylinder, info.cylinderTransform, socket, info.socketTransform, -info.startRotation);
+        initPosition(cylinder, info.convexTransform, socket, info.concaveTransform, -info.startRotation);
     }
 }
 

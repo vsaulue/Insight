@@ -51,10 +51,6 @@ public:
 
     virtual ~CylindricJoint();
 private:
-    /** Body containing the convex part of the joint. */
-    Body& cylinder;
-    /** Body containing the concave part of the joint. */
-    Body& socket;
     /** Joint configuration. */
     const CylindricJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/

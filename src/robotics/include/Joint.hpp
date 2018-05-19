@@ -19,13 +19,43 @@
 #ifndef JOINT_HPP
 #define JOINT_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
-#include <memory>
+#include "Body.hpp"
 
 /** Common interface for all joint types. */
 class Joint {
+protected:
+    /** Body part holding the convex part (ex: sphere, cylinder) of the joint. */
+    Body& convexPart;
+    /** Body part holding the concave part of the joint. */
+    Body& concavePart;
 public:
+    /**
+     * Creates a new Joint.
+     * @param convexPart Body part containing the convex part of the joint.
+     * @param concavePart Body part containing the concave part of the joint.
+     */
+    Joint(Body& convexPart, Body& concavePart) : convexPart(convexPart), concavePart(concavePart) {}
+
+    /**
+     * Gets the body part containing the convex part of the joint.
+     * @return The convex part of the joint.
+     */
+    Body& getConvexPart() {
+        return convexPart;
+    }
+
+    /**
+     * Gets the body part containing the concave part of the joint.
+     * @return The concave part of the joint.
+     */
+    Body& getConcavePart() {
+        return concavePart;
+    }
+
     virtual ~Joint() = default;
 
     /**

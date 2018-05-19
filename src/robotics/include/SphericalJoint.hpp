@@ -53,10 +53,6 @@ public:
         return constraint;
     }
 private:
-    /** Body containing the convex part of the joint. */
-    Body& ball;
-    /** Body containing the concave part of the joint. */
-    Body& socket;
     /** Joint configuration. */
     const SphericalJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/

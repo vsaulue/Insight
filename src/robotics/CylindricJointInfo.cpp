@@ -19,11 +19,11 @@
 #include "CylinderShape.hpp"
 #include "CylindricJointInfo.hpp"
 
-void CylindricJointInfo::addCylinderShape(std::vector<CompoundShape::ChildInfo>& info) const {
+void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& info) const {
     using Density = Shape::Density;
-    if (generateCylinder) {
+    if (generateConvexShape) {
         btVector3 halfExtents(cylinderRadius, cylinderLength/2, cylinderRadius);
-        btTransform transform = cylinderTransform * btTransform(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
+        btTransform transform = convexTransform * btTransform(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
         info.push_back({std::make_shared<CylinderShape>(Density(jointDensity), halfExtents), transform});
     }
 }

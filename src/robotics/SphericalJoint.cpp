@@ -25,19 +25,18 @@ static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, B
 }
 
 static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& socket, const SphericalJointInfo& info) {
-    return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), info.ballTransform, info.socketTransform);
+    return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), info.convexTransform, info.concaveTransform);
 }
 
 SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info) :
-    ball(ball),
-    socket(socket),
+    Joint(ball, socket),
     jointInfo(info),
     constraint(makeConstraint(ball, socket, info))
 {
-    if (info.placeBall) {
-        initPosition(socket, info.socketTransform, ball, info.ballTransform, info.startRotation);
+    if (info.placeConvex) {
+        initPosition(socket, info.concaveTransform, ball, info.convexTransform, info.startRotation);
     } else {
-        initPosition(ball, info.ballTransform, socket, info.socketTransform, info.startRotation.inverse());
+        initPosition(ball, info.convexTransform, socket, info.concaveTransform, info.startRotation.inverse());
     }
 }
 

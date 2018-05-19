@@ -24,36 +24,43 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "CompoundShape.hpp"
+#include "JointInfo.hpp"
 
 /**
  * Parameters to describe & construct a spherical joint.
  */
-struct SphericalJointInfo {
+struct SphericalJointInfo : public JointInfo {
 public:
+    /** No initialisation constructor. */
+    SphericalJointInfo() = default;
+
+    /**
+     * Full initialisation constructor.
+     * @param density Density of the generated body parts.
+     * @param placeConvex True if the ball body should be moved to match the position of the socket. False otherwise.
+     * @param ballTransform Relative transform of the ball in its body part.
+     * @param generateBall True if the ball shape should be added to the shape of its body.
+     * @param socketTransform Relative transform of the socket in its body part.
+     * @param radius Radius of the ball.
+     * @param startRotation Relative orientation of the ball body part to the socket part.
+     */
+    SphericalJointInfo(btScalar density, bool placeConvex, const btTransform& ballTransform, bool generateBall, const btTransform& socketTransform,
+                   btScalar radius, const btQuaternion& startRotation) :
+        JointInfo(density, placeConvex, ballTransform, generateBall, socketTransform),
+        ballRadius(radius),
+        startRotation(startRotation)
+    {
+
+    }
+
+    virtual ~SphericalJointInfo() = default;
+
     /** Radius of the ball (m).*/
     btScalar ballRadius;
     /** Relative orientation of the ball body part to the socket part. */
     btQuaternion startRotation;
-    /** Density of the generated parts (kg/m^3). */
-    btScalar jointDensity;
-    /**
-     * Tells which body part should be moved to match the position of the other part.
-     *
-     * True if the ball part should be placed in the socket part.
-     * False will place the socket according to the current position of the ball. */
-    bool placeBall;
-    /** Relative position of the ball to the CompoundBody containing it. */
-    btTransform ballTransform;
-    /** Generates the collision shape of the ball. */
-    bool generateBallShape;
-    /**
-     * Relative position of the socket to the CompoundBody containing it.
-     *
-     * The socket position/origin is the center of the associated ball.
-     */
-    btTransform socketTransform;
 
-    void addSphereShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const;
+    void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 };
 
 #endif /* SPHERICALJOINTINFO_HPP */

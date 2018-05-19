@@ -68,122 +68,122 @@ static const btVector3 TOES_HALF_EXTENTS = {0.225f, 0.1f, 0.15f};
 static const btVector3 HAND_HALF_EXTENTS = {0.05f, 0.18f, 0.15f};
 
 static const SphericalJointInfo NECK = {
-    HEAD_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion(1,0,0,0), btVector3(0, 1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion(1,0,0,0), btVector3(0, -HEAD_JOINT_BALL_RADIUS-HEAD_RADIUS, 0)), // socket transform
+    HEAD_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const SphericalJointInfo LEFT_SHOULDER = {
-    ARM_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(-1.08 , 0.7, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, ARM_HALF_EXTENTS.y()+ARM_JOINT_BALL_RADIUS, 0)), // socket transform
+    ARM_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const SphericalJointInfo RIGHT_SHOULDER = {
-    ARM_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(1.08 , 0.7, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, ARM_HALF_EXTENTS.y()+ARM_JOINT_BALL_RADIUS, 0)), // socket transform
+    ARM_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const CylindricJointInfo LEFT_ELBOW = {
-    ELBOW_JOINT_CYLINDER_RADIUS, // cylinder radius
-    ARM_HALF_EXTENTS.x()*2, // cylinder length
-    0, // start rotation
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion(btVector3(0,1,0), SIMD_HALF_PI), btVector3(0, -ARM_HALF_EXTENTS.y(), 0)), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion(btVector3(0,1,0), SIMD_HALF_PI), btVector3(0, ARM_HALF_EXTENTS.y()+ELBOW_JOINT_CYLINDER_RADIUS, 0)), // socket transform
-};
-
-static const CylindricJointInfo RIGHT_ELBOW = {
     ELBOW_JOINT_CYLINDER_RADIUS, // cylinder radius
     ARM_HALF_EXTENTS.x()*2, // cylinder length
     0, // start rotation
+};
+
+static const CylindricJointInfo RIGHT_ELBOW = {
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion(btVector3(0,1,0), -SIMD_HALF_PI), btVector3(0, -ARM_HALF_EXTENTS.y(), 0)), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion(btVector3(0,1,0), -SIMD_HALF_PI), btVector3(0, ARM_HALF_EXTENTS.y()+ELBOW_JOINT_CYLINDER_RADIUS, 0)), // socket transform
+    ELBOW_JOINT_CYLINDER_RADIUS, // cylinder radius
+    ARM_HALF_EXTENTS.x()*2, // cylinder length
+    0, // start rotation
 };
 
 static const SphericalJointInfo WRIST = {
-    WRIST_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     true, // place ball
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0 , HAND_HALF_EXTENTS.y(), 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ARM_HALF_EXTENTS.y()-WRIST_JOINT_BALL_RADIUS, 0)), // socket transform
+    WRIST_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const SphericalJointInfo LEFT_HIP = {
-    HIP_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(-0.6, -1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, THIGH_HALF_EXTENTS.y()+HIP_JOINT_BALL_RADIUS, 0)), // socket transform
+    HIP_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const SphericalJointInfo RIGHT_HIP = {
-    HIP_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(0.6, -1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, THIGH_HALF_EXTENTS.y()+HIP_JOINT_BALL_RADIUS, 0)), // socket transform
+    HIP_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const CylindricJointInfo KNEE = {
-    KNEE_JOINT_CYLINDER_RADIUS, // cylinder radius
-    THIGH_HALF_EXTENTS.x()*2, // cylinder length
-    0, // start rotation
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion::getIdentity(), btVector3(0, -THIGH_HALF_EXTENTS.y(), 0)), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, LEG_HALF_EXTENTS.y()+KNEE_JOINT_CYLINDER_RADIUS, 0)), // socket transform
+    KNEE_JOINT_CYLINDER_RADIUS, // cylinder radius
+    THIGH_HALF_EXTENTS.x()*2, // cylinder length
+    0, // start rotation
 };
 
 static const SphericalJointInfo ANKLE = {
-    ANKLE_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
     DENSITY, // joint density
     true, // place ball
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, 0.125f, -0.2f)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ANKLE_JOINT_BALL_RADIUS-LEG_HALF_EXTENTS.y(), 0)), // socket transform
+    ANKLE_JOINT_BALL_RADIUS, // ball radius
+    btQuaternion::getIdentity(), // start rotation
 };
 
 static const CylindricJointInfo TOES_JOINT = {
-    FOOT_HALF_EXTENTS.y(), // cylinder radius
-    FOOT_HALF_EXTENTS.x()*2-0.01f, // cylinder length
-    0, // start rotation
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, FOOT_HALF_EXTENTS.z())), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, -TOES_HALF_EXTENTS.z()-FOOT_HALF_EXTENTS.y())), // socket transform
+    FOOT_HALF_EXTENTS.y(), // cylinder radius
+    FOOT_HALF_EXTENTS.x()*2-0.01f, // cylinder length
+    0, // start rotation
 };
 
 static const btVector3 TORSO_HALF_EXTENTS = {1,1,1};
 
-static const std::unordered_map<std::string, std::tuple<const SphericalJointInfo&,std::string>> SPHERICAL_JOINTS = {
+static const std::unordered_map<std::string, std::tuple<const JointInfo&,std::string>> JOINTS = {
     {"Ankle", {ANKLE, "Foot"}},
     {"Wrist", {WRIST, "Hand"}},
     {"RightHip", {RIGHT_HIP, "Chest"}},
@@ -191,9 +191,6 @@ static const std::unordered_map<std::string, std::tuple<const SphericalJointInfo
     {"RightShoulder", {RIGHT_SHOULDER, "Chest"}},
     {"LeftShoulder", {LEFT_SHOULDER, "Chest"}},
     {"Neck", {NECK, "Chest"}},
-};
-
-static const std::unordered_map<std::string, std::tuple<const CylindricJointInfo&,std::string>> CYLINDRIC_JOINTS = {
     {"Toes", {TOES_JOINT, "Foot"}},
     {"Knee", {KNEE, "Thigh"}},
     {"Elbow", {RIGHT_ELBOW, "Arm"}},
@@ -211,15 +208,10 @@ static std::unordered_map<std::string, std::shared_ptr<CompoundShape>> initShape
         {"Toes", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, TOES_HALF_EXTENTS), btTransform::getIdentity() }}},
         {"Hand", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, HAND_HALF_EXTENTS), btTransform::getIdentity() }}},
     };
-    for (const auto& joint : SPHERICAL_JOINTS) {
+    for (const auto& joint : JOINTS) {
         std::vector<CompoundShape::ChildInfo>& sphereShapeInfo = shapesInfo[std::get<1>(joint.second)];
-        const SphericalJointInfo& jointInfo = std::get<0>(joint.second);
-        jointInfo.addSphereShape(sphereShapeInfo);
-    }
-    for (const auto& joint : CYLINDRIC_JOINTS) {
-        std::vector<CompoundShape::ChildInfo>& cylinderShapeInfo = shapesInfo[std::get<1>(joint.second)];
-        const CylindricJointInfo& jointInfo = std::get<0>(joint.second);
-        jointInfo.addCylinderShape(cylinderShapeInfo);
+        const JointInfo& jointInfo = std::get<0>(joint.second);
+        jointInfo.addConvexShape(sphereShapeInfo);
     }
     std::unordered_map<std::string, std::shared_ptr<CompoundShape>> result;
     for (auto& shape : shapesInfo) {
