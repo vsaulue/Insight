@@ -16,73 +16,90 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <array>
 #include <exception>
-#include <vector>
+#include <string>
 
 #include <catch.hpp>
 
-#include "BasicUndirectedGraph.hpp"
+#include "UndirectedGraph.hpp"
 
-TEST_CASE("BasicUndirectedGraph") {
-    const int VERTICES_COUNT = 5;
-    using Index = BasicUndirectedGraph::VertexIndex;
-    using Vertex = BasicUndirectedGraph::Vertex;
-    BasicUndirectedGraph graph;
-    SECTION("Add vertices") {
-        std::array<Index,VERTICES_COUNT> indices;
-        for (Index& i : indices) {
-            i = graph.newVertex();
+TEST_CASE("UndirectedGraph<std::string&,std::string>") {
+    UndirectedGraph<std::string,std::string> graph;
+
+    SECTION("newVertex") {
+        const int VERTICES_COUNT = 8;
+        const std::array<std::string,VERTICES_COUNT> vertices = {{
+            "head","torso","leftArm","leftForearm","leftHand","rightThigh","leftThigh","rightArm",
+        }};
+        for (auto& vertex : vertices) {
+            graph.newVertex(vertex);
         }
 
-        REQUIRE(graph.countVertices() == VERTICES_COUNT);
-
-        std::vector<Vertex> vertices;
-        for (Index i : indices) {
-            vertices.push_back(graph.getVertex(i));
+        SECTION("countVertices") {
+            REQUIRE(graph.countVertices() == VERTICES_COUNT);
         }
 
-        REQUIRE(graph.countVertices() == VERTICES_COUNT);
+        SECTION("newVertex (duplicate, must throw)") {
+            REQUIRE_THROWS(graph.newVertex(vertices[5]));
+        }
 
-        SECTION("0 edge case") {
-            for (Vertex& v : vertices) {
-                REQUIRE(v.getNeighbours().size() == 0);
+        SECTION("Check neighbours (0 edge case).") {
+            int totalEdge2 = 0;
+            for (auto& key : vertices) {
+                auto vertex = graph.getVertex(key);
+                for (const auto& neighbourInfo : vertex.getNeighbours()) {
+                    totalEdge2++;
+                }
+                REQUIRE(vertex.getNeighbours().size() == 0);
             }
+            REQUIRE(totalEdge2 == 0);
         }
 
-        SECTION("Add valid edges") {
-            const int EDGES_COUNT = 4;
-            std::array<std::pair<Index,Index>, EDGES_COUNT> edges = {{
-                {indices[1],indices[4]},
-                {indices[2],indices[3]}, {indices[2],indices[4]},
-                {indices[4],indices[3]},
+        SECTION("addEdge") {
+            //                          edge        v1          v2
+            const std::array<std::tuple<std::string,std::string,std::string>,8> edges = {{
+                {"neck","head","torso"},
+                {"leftShoulder","torso","leftArm"},
+                {"rightShoulder","rightArm","torso"},
+                {"rightHip","rightThigh","torso"},
+                {"leftElbow","leftArm","leftForearm"},
+                {"leftHand","leftForearm","leftHand"},
+                {"leftHip","leftThigh","torso"},
+                {"WOLOLO","leftForearm","rightThigh"}, // have to check cycles somehow...
             }};
             for (auto& edge : edges) {
-                graph.addEdge(edge.first, edge.second);
+                graph.addEdge(std::get<0>(edge), std::get<1>(edge), std::get<2>(edge));
             }
 
-            int countEdge2 = 0;
-            for (Vertex& v1 : vertices) {
-                Index i1 = v1.getIndex();
-                for (Index i2 : v1.getNeighbours()) {
-                    countEdge2++;
-                    auto iterator = std::find_if(edges.begin(),edges.end(),[i1,i2](auto& pair)->bool {
-                        return (pair == std::make_pair(i1,i2)) || (pair == std::make_pair(i2,i1));
-                    });
-                    REQUIRE(iterator != edges.end());
-                }
+            SECTION("addEdge (duplicate key, must throw)") {
+                REQUIRE_THROWS(graph.addEdge(std::get<0>(edges[2]),"head","leftArm"));
             }
-            REQUIRE(countEdge2/2 == edges.size());
 
-            SECTION("Re-add existing edge (must throw)") {
-                bool error = false;
-                Index badIndex = 1+*std::max_element(indices.begin(), indices.end());
-                try {
-                    graph.addEdge(badIndex, indices[0]);
-                } catch (const std::exception&) {
-                    error = true;
+            SECTION("addEdge (duplicate vertices, must throw)") {
+                auto& edge = edges[4];
+                REQUIRE_THROWS(graph.addEdge("Valid",std::get<1>(edge),std::get<2>(edge)));
+            }
+
+            SECTION("Check neighbours") {
+                int totalEdge2 = 0;
+                for (auto& key : vertices) {
+                    auto vertex = graph.getVertex(key);
+                    for (const auto& neighbourInfo : vertex.getNeighbours()) {
+                        const std::string& edgeName = *neighbourInfo.second;
+                        const std::string& neighbourName = *neighbourInfo.first;
+                        auto it = std::find_if(edges.begin(), edges.end(), [&edgeName](auto& item) -> bool {
+                            return std::get<0>(item) == edgeName;
+                        });
+                        REQUIRE(it != edges.end());
+
+                        bool srcVertexValid = (key == std::get<1>(*it) || key == std::get<2>(*it));
+                        REQUIRE(srcVertexValid);
+                        bool destVertexValid = (neighbourName == std::get<1>(*it) || neighbourName == std::get<2>(*it));
+                        REQUIRE(destVertexValid);
+                        totalEdge2++;
+                    }
                 }
-                REQUIRE(error);
+                REQUIRE(totalEdge2/2 == edges.size());
             }
         }
     }

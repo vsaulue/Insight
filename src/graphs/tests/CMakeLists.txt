@@ -15,9 +15,10 @@
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
 add_executable(testGraphs
-    GraphsTestBasicMinimumSpanningTree
-    GraphsTestCommon
-    GraphsTestUndirectedGraph
+    GraphsTestBasicMinimumSpanningTree.cpp
+    GraphsTestBasicUndirectedGraph.cpp
+    GraphsTestCommon.cpp
+    GraphsTestUndirectedGraph.cpp
 )
 
 target_link_libraries(testGraphs Catch Graphs)
