@@ -50,11 +50,12 @@ public:
          * Constructs a new Vertex.
          * @param graph Graph holding this vertex.
          * @param key Key of the vertex in the graph.
+         * @param index Index of the vertex in the basic graph.
          */
-        Vertex(const UndirectedGraph& graph, const VertexKeyType& key) :
+        Vertex(const UndirectedGraph& graph, const VertexKeyType& key, VertexIndex index) :
             graph(graph),
             key(key),
-            basicIndex(graph.keyToVertex.left.at(key)),
+            basicIndex(index),
             basicNeighbours(graph.basicGraph.getVertex(basicIndex).getNeighbours()),
             neighbours(*this)
         {
@@ -67,6 +68,14 @@ public:
          */
         const VertexKeyType& getkey() const {
             return key;
+        }
+
+        /**
+         * Gets the index of this vertex in the BasicUndirectedGraph.
+         * @return The index of this vertex.
+         */
+        VertexIndex getIndex() const {
+            return basicIndex;
         }
 
         /** Class used to interact with the neighbours of a given vertex. */
@@ -164,8 +173,7 @@ public:
                         VertexIndex i2 = vertex.basicIndex;
                         value.first = &vertex.graph.keyToVertex.right.at(i1);
 
-                        EdgeIndex basicPair(std::min(i1,i2),std::max(i1,i2));
-                        value.second = &vertex.graph.keyToEdge.right.at(basicPair);
+                        value.second = &vertex.graph.getEdgeByIndexes(i1, i2);
                         upToDate = true;
                     }
                 }
@@ -273,7 +281,39 @@ public:
      * @return A vertex object associated to the given key.
      */
     Vertex getVertex(const VertexKeyType& key) const {
-        return Vertex(*this, key);
+        return Vertex(*this, key, keyToVertex.left.at(key));
+    }
+
+    /**
+     * Gets an object representing a vertex of this graph.
+     *
+     * This object can be used for more advances operation on a vertex (like accessing
+     * all its neighbours).
+     *
+     * @param index Index of the vertex in the underlying BasicUnorientedGraph.
+     * @return A vertex object associated to the given index.
+     */
+    Vertex getVertexByIndex(VertexIndex index) const {
+        return Vertex(*this, keyToVertex.right.at(index), index);
+    }
+
+    /**
+     * Gets the index of a vertex.
+     * @param key Key of the vertex.
+     * @return The index of the specified vertex.
+     */
+    VertexIndex getVertexIndex(const VertexKeyType& key) const {
+        return keyToVertex.left.at(key);
+    }
+
+    /**
+     * Gets the key of a given edge.
+     * @param v1 Index of the first vertex of the edge.
+     * @param v2 Index of the second vertex of the edge.
+     * @return The key of the edge connecting v1 and v2.
+     */
+    const EdgeKeyType& getEdgeByIndexes(VertexIndex v1, VertexIndex v2) const {
+        return keyToEdge.right.at(std::make_pair(std::min(v1,v2),std::max(v1,v2)));
     }
 
     /**
@@ -282,6 +322,14 @@ public:
      */
     std::size_t countVertices() const {
         return basicGraph.countVertices();
+    }
+
+    /**
+     * Gets the basic graph representing this undirected graph.
+     * @return The BasicUndirectedGraph of this graph.
+     */
+    const BasicUndirectedGraph& getBasicGraph() const {
+        return basicGraph;
     }
 private:
     /**
@@ -300,14 +348,6 @@ private:
 
     /** Basic graph: representation of this graph using integer indexes. */
     BasicUndirectedGraph basicGraph;
-
-    VertexIndex getVertexIndex(const VertexKeyType& vertex) const {
-        auto it = this->keyToVertex.left.find(vertex);
-        if (it == this->keyToVertex.left.end()) {
-            throw std::invalid_argument("Vertex does not exist.");
-        }
-        return it->second;
-    }
 };
 
 #endif /* UNDIRECTEDGRAPH_HPP */

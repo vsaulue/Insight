@@ -18,10 +18,12 @@ add_executable(testGraphs
     GraphsTestBasicMinimumSpanningTree.cpp
     GraphsTestBasicUndirectedGraph.cpp
     GraphsTestCommon.cpp
+    GraphsTestMinimumSpanningTree.cpp
     GraphsTestUndirectedGraph.cpp
 )
 
 target_link_libraries(testGraphs Catch Graphs)
+target_include_directories(testGraphs PUBLIC include)
 
 add_custom_target(run-testGraphs "./testGraphs"
     DEPENDS testGraphs

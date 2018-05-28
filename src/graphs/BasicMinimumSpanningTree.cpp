@@ -26,14 +26,13 @@ BasicMinimumSpanningTree::BasicMinimumSpanningTree(const BasicUndirectedGraph& g
     buildTree(root, root);
 }
 
-bool BasicMinimumSpanningTree::isUnique() {
+bool BasicMinimumSpanningTree::isUnique() const {
     return unique;
 }
 
-bool BasicMinimumSpanningTree::isGraphConnected() {
+bool BasicMinimumSpanningTree::isGraphConnected() const {
     return tree.size() == graph.countVertices();
 }
-
 
 void BasicMinimumSpanningTree::buildTree(VertexIndex current, VertexIndex origin) {
     std::unordered_set<VertexIndex>& node = tree[current];

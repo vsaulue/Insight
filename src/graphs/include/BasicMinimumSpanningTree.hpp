@@ -38,13 +38,13 @@ public:
      * Checks if the tree cover all the vertices in the graph.
      * @return True if the graph is connected.
      */
-    bool isGraphConnected();
+    bool isGraphConnected() const;
 
     /**
      * Checks if the spanning tree of the current connected component is unique.
      * @return True if the parsed connected component does not contain any cycle.
      */
-    bool isUnique();
+    bool isUnique() const;
 
     /**
      * Iterates over each node of the spanning tree in a Depth-First order.
@@ -54,6 +54,14 @@ public:
     template<typename Callable>
     void depthFirstForEach(Callable operation) const {
         depthFirstForEach(operation, rootIndex);
+    }
+
+    /**
+     * Returns the data structure containing the tree.
+     * @return A map associating a vertex index to the indices of its child in the tree.
+     */
+    const std::unordered_map<VertexIndex,std::unordered_set<VertexIndex>>& getTree() const {
+        return tree;
     }
 private:
     /** Graph parsed by this algorithm. */

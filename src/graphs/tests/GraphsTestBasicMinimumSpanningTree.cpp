@@ -22,6 +22,7 @@
 
 #include "BasicMinimumSpanningTree.hpp"
 #include "BasicUndirectedGraph.hpp"
+#include "GraphsTestCommon.hpp"
 
 using Index = BasicUndirectedGraph::VertexIndex;
 
@@ -73,18 +74,6 @@ static void initGraphB(BasicUndirectedGraph& graph, std::array<Index, GRAPH_B_CO
     for (auto& edge : edges) {
         graph.addEdge(indices[edge.first], indices[edge.second]);
     }
-}
-
-/**
- * Looks for an item in a vector, and returns its index.
- * @param vector Looked up vector.
- * @param value Value to search.
- * @return The index ot value in vector.
- */
-static unsigned getIndex(const std::vector<Index>& vector, Index value) {
-    auto it = std::find(vector.begin(), vector.end(), value);
-    REQUIRE(it != vector.end());
-    return std::distance(vector.begin(), it);
 }
 
 TEST_CASE("BasicMinimumSpanningTree") {
