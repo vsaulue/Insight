@@ -45,7 +45,7 @@ public:
             /** Unique name of the joint. */
             std::string jointName;
             /** Construction info about this type of joint. */
-            std::shared_ptr<JointInfo> jointInfo;
+            std::shared_ptr<const JointInfo> jointInfo;
             /** Name of the body part holding the convex part of th joint. */
             std::string convexPartName;
             /** Name of the body part holding the concave part of the joint. */
@@ -60,7 +60,7 @@ public:
          */
         ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
                          const std::string& basePartName,
-                         const std::unordered_map<std::string, std::tuple<std::shared_ptr<JointInfo>, std::string, std::string>>& joints);
+                         const std::unordered_map<std::string, std::tuple<std::shared_ptr<const JointInfo>, std::string, std::string>>& joints);
 
         /**
          * Gets the set of body aprts names and their shapes.
@@ -96,17 +96,10 @@ public:
 
     /**
      * Creates a new robot body.
-     *
-     * @param world World in which the body will be created.
-     */
-    RobotBody(World& world);
-
-    /**
-     * Creates a new robot body.
      * @param world World in which the body will be created.
      * @param info Construction info for the robot.
      */
-    RobotBody(World& world, const ConstructionInfo& info);
+    RobotBody(World& world, const ConstructionInfo& info = DEFAULT_INFO);
 
     virtual ~RobotBody();
 
@@ -125,6 +118,8 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
     /** Reference body (position & rotation of the RobotBody is the one of this body). */
     Body* baseBody;
+    /** Default construction info for the RobotBody. */
+    static const ConstructionInfo DEFAULT_INFO;
 };
 
 #endif /* ROBOTBODY_HPP */

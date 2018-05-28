@@ -69,37 +69,37 @@ static const btVector3 TOES_HALF_EXTENTS = {0.225f, 0.1f, 0.15f};
 /** Dimensions of the cuboid of the hand. */
 static const btVector3 HAND_HALF_EXTENTS = {0.05f, 0.18f, 0.15f};
 
-static const SphericalJointInfo NECK = {
+static const std::shared_ptr<const JointInfo> NECK = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion(1,0,0,0), btVector3(0, 1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion(1,0,0,0), btVector3(0, -HEAD_JOINT_BALL_RADIUS-HEAD_RADIUS, 0)), // socket transform
     HEAD_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const SphericalJointInfo LEFT_SHOULDER = {
+static const std::shared_ptr<const JointInfo> LEFT_SHOULDER = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(-1.08 , 0.7, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, ARM_HALF_EXTENTS.y()+ARM_JOINT_BALL_RADIUS, 0)), // socket transform
     ARM_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const SphericalJointInfo RIGHT_SHOULDER = {
+static const std::shared_ptr<const JointInfo> RIGHT_SHOULDER = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(1.08 , 0.7, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, ARM_HALF_EXTENTS.y()+ARM_JOINT_BALL_RADIUS, 0)), // socket transform
     ARM_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const CylindricJointInfo LEFT_ELBOW = {
+static const std::shared_ptr<const JointInfo> LEFT_ELBOW = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion(btVector3(0,1,0), SIMD_HALF_PI), btVector3(0, -ARM_HALF_EXTENTS.y(), 0)), // cylinder transform
@@ -107,10 +107,10 @@ static const CylindricJointInfo LEFT_ELBOW = {
     btTransform(btQuaternion(btVector3(0,1,0), SIMD_HALF_PI), btVector3(0, ARM_HALF_EXTENTS.y()+ELBOW_JOINT_CYLINDER_RADIUS, 0)), // socket transform
     ELBOW_JOINT_CYLINDER_RADIUS, // cylinder radius
     ARM_HALF_EXTENTS.x()*2, // cylinder length
-    0, // start rotation
-};
+    0 // start rotation
+);
 
-static const CylindricJointInfo RIGHT_ELBOW = {
+static const std::shared_ptr<const JointInfo> RIGHT_ELBOW = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion(btVector3(0,1,0), -SIMD_HALF_PI), btVector3(0, -ARM_HALF_EXTENTS.y(), 0)), // cylinder transform
@@ -118,40 +118,40 @@ static const CylindricJointInfo RIGHT_ELBOW = {
     btTransform(btQuaternion(btVector3(0,1,0), -SIMD_HALF_PI), btVector3(0, ARM_HALF_EXTENTS.y()+ELBOW_JOINT_CYLINDER_RADIUS, 0)), // socket transform
     ELBOW_JOINT_CYLINDER_RADIUS, // cylinder radius
     ARM_HALF_EXTENTS.x()*2, // cylinder length
-    0, // start rotation
-};
+    0 // start rotation
+);
 
-static const SphericalJointInfo WRIST = {
+static const std::shared_ptr<const JointInfo> WRIST = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     true, // place ball
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0 , HAND_HALF_EXTENTS.y(), 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ARM_HALF_EXTENTS.y()-WRIST_JOINT_BALL_RADIUS, 0)), // socket transform
     WRIST_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const SphericalJointInfo LEFT_HIP = {
+static const std::shared_ptr<const JointInfo> LEFT_HIP = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(-0.6, -1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, THIGH_HALF_EXTENTS.y()+HIP_JOINT_BALL_RADIUS, 0)), // socket transform
     HIP_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const SphericalJointInfo RIGHT_HIP = {
+static const std::shared_ptr<const JointInfo> RIGHT_HIP = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(0.6, -1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, THIGH_HALF_EXTENTS.y()+HIP_JOINT_BALL_RADIUS, 0)), // socket transform
     HIP_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const CylindricJointInfo KNEE = {
+static const std::shared_ptr<const JointInfo> KNEE = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion::getIdentity(), btVector3(0, -THIGH_HALF_EXTENTS.y(), 0)), // cylinder transform
@@ -159,20 +159,20 @@ static const CylindricJointInfo KNEE = {
     btTransform(btQuaternion::getIdentity(), btVector3(0, LEG_HALF_EXTENTS.y()+KNEE_JOINT_CYLINDER_RADIUS, 0)), // socket transform
     KNEE_JOINT_CYLINDER_RADIUS, // cylinder radius
     THIGH_HALF_EXTENTS.x()*2, // cylinder length
-    0, // start rotation
-};
+    0 // start rotation
+);
 
-static const SphericalJointInfo ANKLE = {
+static const std::shared_ptr<const JointInfo> ANKLE = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
     true, // place ball
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, 0.125f, -0.2f)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ANKLE_JOINT_BALL_RADIUS-LEG_HALF_EXTENTS.y(), 0)), // socket transform
     ANKLE_JOINT_BALL_RADIUS, // ball radius
-    btQuaternion::getIdentity(), // start rotation
-};
+    btQuaternion::getIdentity() // start rotation
+);
 
-static const CylindricJointInfo TOES_JOINT = {
+static const std::shared_ptr<const JointInfo> TOES_JOINT = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
     false, // place cylinder
     btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, FOOT_HALF_EXTENTS.z())), // cylinder transform
@@ -180,53 +180,26 @@ static const CylindricJointInfo TOES_JOINT = {
     btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, -TOES_HALF_EXTENTS.z()-FOOT_HALF_EXTENTS.y())), // socket transform
     FOOT_HALF_EXTENTS.y(), // cylinder radius
     FOOT_HALF_EXTENTS.x()*2-0.01f, // cylinder length
-    0, // start rotation
-};
+    0 // start rotation
+);
 
 static const btVector3 TORSO_HALF_EXTENTS = {1,1,1};
 
-static const std::unordered_map<std::string, std::tuple<const JointInfo&,std::string>> JOINTS = {
-    {"Ankle", {ANKLE, "Foot"}},
-    {"Wrist", {WRIST, "Hand"}},
-    {"RightHip", {RIGHT_HIP, "Chest"}},
-    {"LeftHip", {LEFT_HIP, "Chest"}},
-    {"RightShoulder", {RIGHT_SHOULDER, "Chest"}},
-    {"LeftShoulder", {LEFT_SHOULDER, "Chest"}},
-    {"Neck", {NECK, "Chest"}},
-    {"Toes", {TOES_JOINT, "Foot"}},
-    {"Knee", {KNEE, "Thigh"}},
-    {"Elbow", {RIGHT_ELBOW, "Arm"}},
+static const std::unordered_map<std::string, std::shared_ptr<Shape>> SHAPES = {
+    {"Head", std::make_shared<SphereShape>(SHAPE_DENSITY, HEAD_RADIUS)},
+    {"Chest", std::make_shared<CylinderShape>(SHAPE_DENSITY, TORSO_HALF_EXTENTS)},
+    {"Arm", std::make_shared<CylinderShape>(SHAPE_DENSITY, ARM_HALF_EXTENTS)},
+    {"Forearm", std::make_shared<CylinderShape>(SHAPE_DENSITY, FOREARM_HALF_EXTENTS)},
+    {"Thigh", std::make_shared<CylinderShape>(SHAPE_DENSITY, THIGH_HALF_EXTENTS)},
+    {"Leg", std::make_shared<CylinderShape>(SHAPE_DENSITY, LEG_HALF_EXTENTS)},
+    {"Foot", std::make_shared<CuboidShape>(SHAPE_DENSITY, FOOT_HALF_EXTENTS)},
+    {"Toes", std::make_shared<CuboidShape>(SHAPE_DENSITY, TOES_HALF_EXTENTS)},
+    {"Hand", std::make_shared<CuboidShape>(SHAPE_DENSITY, HAND_HALF_EXTENTS)},
 };
-
-static std::unordered_map<std::string, std::shared_ptr<CompoundShape>> initShapes() {
-    std::unordered_map<std::string, std::vector<CompoundShape::ChildInfo>> shapesInfo = {
-        {"Head", {{std::make_shared<SphereShape>(SHAPE_DENSITY, HEAD_RADIUS), btTransform::getIdentity() }}},
-        {"Chest", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, TORSO_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Arm", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, ARM_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Forearm", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, FOREARM_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Thigh", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, THIGH_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Leg", {{std::make_shared<CylinderShape>(SHAPE_DENSITY, LEG_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Foot", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, FOOT_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Toes", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, TOES_HALF_EXTENTS), btTransform::getIdentity() }}},
-        {"Hand", {{std::make_shared<CuboidShape>(SHAPE_DENSITY, HAND_HALF_EXTENTS), btTransform::getIdentity() }}},
-    };
-    for (const auto& joint : JOINTS) {
-        std::vector<CompoundShape::ChildInfo>& sphereShapeInfo = shapesInfo[std::get<1>(joint.second)];
-        const JointInfo& jointInfo = std::get<0>(joint.second);
-        jointInfo.addConvexShape(sphereShapeInfo);
-    }
-    std::unordered_map<std::string, std::shared_ptr<CompoundShape>> result;
-    for (auto& shape : shapesInfo) {
-        result[shape.first] = std::make_shared<CompoundShape>(shape.second);
-    }
-    return result;
-}
-
-static const std::unordered_map<std::string, std::shared_ptr<CompoundShape>> SHAPES = initShapes();
 
 RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
                                               const std::string& basePartName,
-                                              const std::unordered_map<std::string, std::tuple<std::shared_ptr<JointInfo>, std::string, std::string>>& joints) :
+                                              const std::unordered_map<std::string, std::tuple<std::shared_ptr<const JointInfo>, std::string, std::string>>& joints) :
     basePartName(basePartName)
 {
     UndirectedGraph<std::string,std::string> graph;
@@ -297,52 +270,46 @@ const std::vector<RobotBody::ConstructionInfo::JointData>& RobotBody::Constructi
     return joints;
 }
 
-RobotBody::RobotBody(World& world) {
-    auto newPart = [this](const std::string& partName, std::string shapeName) -> Body& {
-        std::shared_ptr<Body> part = std::make_shared<Body>(SHAPES.at(shapeName));
-        Body& result = *part;
-        this->parts[partName] = part;
-        return result;
-    };
-    Body& chest = newPart("Chest", "Chest");
-    Body& head = newPart("Head", "Head");
-    Body& leftArm = newPart("LeftArm", "Arm");
-    Body& rightArm = newPart("RightArm", "Arm");
-    Body& leftForearm = newPart("LeftForearm", "Forearm");
-    Body& rightForearm = newPart("RightForearm", "Forearm");
-    Body& leftHand = newPart("LeftHand", "Hand");
-    Body& rightHand = newPart("RightHand", "Hand");
-    Body& leftThigh = newPart("LeftThigh", "Thigh");
-    Body& rightThigh = newPart("RightThigh", "Thigh");
-    Body& leftLeg = newPart("LeftLeg", "Leg");
-    Body& rightLeg = newPart("RightLeg", "Leg");
-    Body& leftFoot = newPart("LeftFoot", "Foot");
-    Body& rightFoot = newPart("RightFoot", "Foot");
-    Body& leftToes = newPart("LeftToes", "Toes");
-    Body& rightToes = newPart("RightToes", "Toes");
-    joints["Neck"] = std::make_unique<SphericalJoint>(chest, head, NECK);
-    joints["LeftShoulder"] = std::make_unique<SphericalJoint>(chest, leftArm, LEFT_SHOULDER);
-    joints["RightShoulder"] = std::make_unique<SphericalJoint>(chest, rightArm, RIGHT_SHOULDER);
-    joints["LeftElbow"] = std::make_unique<CylindricJoint>(leftArm, leftForearm, LEFT_ELBOW);
-    joints["RightElbow"] = std::make_unique<CylindricJoint>(rightArm, rightForearm, RIGHT_ELBOW);
-    joints["LeftWrist"] = std::make_unique<SphericalJoint>(leftHand, leftForearm, WRIST);
-    joints["RightWrist"] = std::make_unique<SphericalJoint>(rightHand, rightForearm, WRIST);
-    joints["LeftHip"] = std::make_unique<SphericalJoint>(chest, leftThigh, LEFT_HIP);
-    joints["RightHip"] = std::make_unique<SphericalJoint>(chest, rightThigh, RIGHT_HIP);
-    joints["LeftLeg"] = std::make_unique<CylindricJoint>(leftThigh, leftLeg, KNEE);
-    joints["RightLeg"] = std::make_unique<CylindricJoint>(rightThigh, rightLeg, KNEE);
-    joints["LeftFoot"] = std::make_unique<SphericalJoint>(leftFoot, leftLeg, ANKLE);
-    joints["RightFoot"] = std::make_unique<SphericalJoint>(rightFoot, rightLeg, ANKLE);
-    joints["LeftToes"] = std::make_unique<CylindricJoint>(leftFoot, leftToes, TOES_JOINT);
-    joints["RightToes"] = std::make_unique<CylindricJoint>(rightFoot, rightToes, TOES_JOINT);
 
-    for (auto& pair : parts) {
-        world.addObject(pair.second);
+
+const RobotBody::ConstructionInfo RobotBody::DEFAULT_INFO{
+    {
+        {"Chest",SHAPES.at("Chest")},
+        {"Head", SHAPES.at("Head")},
+        {"LeftArm", SHAPES.at("Arm")},
+        {"RightArm", SHAPES.at("Arm")},
+        {"LeftForearm", SHAPES.at("Forearm")},
+        {"RightForearm", SHAPES.at("Forearm")},
+        {"LeftHand", SHAPES.at("Hand")},
+        {"RightHand", SHAPES.at("Hand")},
+        {"LeftThigh", SHAPES.at("Thigh")},
+        {"RightThigh", SHAPES.at("Thigh")},
+        {"LeftLeg", SHAPES.at("Leg")},
+        {"RightLeg", SHAPES.at("Leg")},
+        {"LeftFoot", SHAPES.at("Foot")},
+        {"RightFoot", SHAPES.at("Foot")},
+        {"LeftToes", SHAPES.at("Toes")},
+        {"RightToes", SHAPES.at("Toes")},
+    },
+    "Chest",
+    {
+        {"Neck", {NECK, "Chest", "Head"}},
+        {"LeftShoulder", {LEFT_SHOULDER, "Chest", "LeftArm"}},
+        {"RightShoulder", {RIGHT_SHOULDER, "Chest", "RightArm"}},
+        {"LeftElbow", {LEFT_ELBOW, "LeftArm", "LeftForearm"}},
+        {"RightElbow", {RIGHT_ELBOW, "RightArm", "RightForearm"}},
+        {"LeftWrist", {WRIST, "LeftHand", "LeftForearm"}},
+        {"RightWrist", {WRIST, "RightHand", "RightForearm"}},
+        {"LeftHip", {LEFT_HIP, "Chest", "LeftThigh"}},
+        {"RightHip", {RIGHT_HIP, "Chest", "RightThigh"}},
+        {"LeftLeg", {KNEE, "LeftThigh", "LeftLeg"}},
+        {"RightLeg", {KNEE, "RightThigh", "RightLeg"}},
+        {"LeftFoot", {ANKLE, "LeftFoot", "LeftLeg"}},
+        {"RightFoot", {ANKLE, "RightFoot", "RightLeg"}},
+        {"LeftToes", {TOES_JOINT, "LeftFoot", "LeftToes"}},
+        {"RightToes", {TOES_JOINT, "RightFoot", "RightToes"}},
     }
-    for (auto& pair : joints) {
-        world.addConstraint(pair.second->getConstraint());
-    }
-}
+};
 
 RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
     for (const auto& pair : info.getParts()) {
