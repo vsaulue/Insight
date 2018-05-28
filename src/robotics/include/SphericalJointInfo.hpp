@@ -61,6 +61,8 @@ public:
     btQuaternion startRotation;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
+
+    std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart) const override;
 };
 
 #endif /* SPHERICALJOINTINFO_HPP */

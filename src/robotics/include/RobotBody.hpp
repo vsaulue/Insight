@@ -21,9 +21,12 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "Body.hpp"
 #include "Joint.hpp"
+#include "JointInfo.hpp"
+#include "lua/types/LuaTable.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "World.hpp"
 
@@ -35,6 +38,62 @@
  */
 class RobotBody : public LuaVirtualClass {
 public:
+    struct ConstructionInfo {
+    public:
+        /** Information to build new joints. */
+        struct JointData {
+            /** Unique name of the joint. */
+            std::string jointName;
+            /** Construction info about this type of joint. */
+            std::shared_ptr<JointInfo> jointInfo;
+            /** Name of the body part holding the convex part of th joint. */
+            std::string convexPartName;
+            /** Name of the body part holding the concave part of the joint. */
+            std::string concavePartName;
+        };
+
+        /**
+         * Creates a new ConstructionInfo object.
+         * @param parts Map of body part shapes, indexed by their names in the RobotBody.
+         * @param basePartName Name of the base part in the RobotBody.
+         * @param joints Map of tuples <JointInfo, convexPartName, concavePartName>, indexed by the joint name.
+         */
+        ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
+                         const std::string& basePartName,
+                         const std::unordered_map<std::string, std::tuple<std::shared_ptr<JointInfo>, std::string, std::string>>& joints);
+
+        /**
+         * Gets the set of body aprts names and their shapes.
+         * @return The map of body part shapes, indexed bi their names.
+         */
+        const std::unordered_map<std::string, std::shared_ptr<Shape>> getParts() const;
+
+        /**
+         * Gets the name of the base body part.
+         * @return The name of the base body part.
+         */
+        const std::string& getBasePartName() const;
+
+        /**
+         * Gets a vector containing construction data for the joints.
+         *
+         * The joints has been sorted in infixed depth-first order from the base
+         * body part. Body parts can be attached one by one following this order
+         * to ensure correct final position relative to each other.
+         *
+         * @return A vector containing construction data for the joints.
+         */
+        const std::vector<JointData>& getJoints() const;
+    private:
+
+        /** Map of body part shapes, indexed by their names. */
+        std::unordered_map<std::string, std::shared_ptr<Shape>> parts;
+        /** Name of the base part. */
+        std::string basePartName;
+        /** Set of Joint construction data (infixed depth-first order from the root). */
+        std::vector<JointData> joints;
+    };
+
     /**
      * Creates a new robot body.
      *
@@ -42,23 +101,30 @@ public:
      */
     RobotBody(World& world);
 
+    /**
+     * Creates a new robot body.
+     * @param world World in which the body will be created.
+     * @param info Construction info for the robot.
+     */
+    RobotBody(World& world, const ConstructionInfo& info);
+
     virtual ~RobotBody();
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
+    /**
+     * Constructs a new RobotBody from a Lua table.
+     * @param table Table containing the parameters of the new RobotBody.
+     * @return The new RobotBody object.
+     */
+    static std::unique_ptr<RobotBody> luaGetFromTable(LuaTable& table);
 private:
     /** Set of body parts, indexed by their names. */
     std::unordered_map<std::string, std::shared_ptr<Body>> parts;
     /** Set of joints between body parts, indexed by their names. */
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
-
-    /**
-     * Gets the reference body.
-     *
-     * The reference body is used to to compute new positions, velocities, ...
-     *
-     * @return The reference body.
-     */
-    Body& getBaseBody();
+    /** Reference body (position & rotation of the RobotBody is the one of this body). */
+    Body* baseBody;
 };
 
 #endif /* ROBOTBODY_HPP */

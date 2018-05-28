@@ -17,6 +17,7 @@
  */
 
 #include "SphereShape.hpp"
+#include "SphericalJoint.hpp"
 #include "SphericalJointInfo.hpp"
 
 void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const {
@@ -24,4 +25,8 @@ void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& s
     if (generateConvexShape) {
         shapeInfo.push_back({std::make_shared<SphereShape>(Density(jointDensity), ballRadius), convexTransform});
     }
+}
+
+std::unique_ptr<Joint> SphericalJointInfo::makeJoint(Body& convexPart, Body& concavePart) const {
+    return std::make_unique<SphericalJoint>(convexPart, concavePart, *this);
 }

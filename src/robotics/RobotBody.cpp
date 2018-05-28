@@ -27,10 +27,12 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
 #include "lua/types/LuaMethod.hpp"
+#include "MinimumSpanningTree.hpp"
 #include "RobotBody.hpp"
 #include "SphereShape.hpp"
 #include "SphericalJoint.hpp"
 #include "SphericalJointInfo.hpp"
+#include "UndirectedGraph.hpp"
 
 /** Average density of body parts (kg/m^3).*/
 static const btScalar DENSITY = 1500.0f;
@@ -222,6 +224,79 @@ static std::unordered_map<std::string, std::shared_ptr<CompoundShape>> initShape
 
 static const std::unordered_map<std::string, std::shared_ptr<CompoundShape>> SHAPES = initShapes();
 
+RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
+                                              const std::string& basePartName,
+                                              const std::unordered_map<std::string, std::tuple<std::shared_ptr<JointInfo>, std::string, std::string>>& joints) :
+    basePartName(basePartName)
+{
+    UndirectedGraph<std::string,std::string> graph;
+    std::unordered_map<std::string,std::vector<CompoundShape::ChildInfo>> shapeInfos;
+
+    if (parts.find(basePartName) == parts.end()) {
+        std::string msg = std::string("Unkown part name in basePartName: ") + basePartName;
+        throw std::out_of_range(msg);
+    }
+
+    for (const auto& pair : parts) {
+        graph.newVertex(pair.first);
+    }
+
+    auto checkPart = [&parts](const std::string& name) {
+        const auto it = parts.find(name);
+        if (it == parts.end()) {
+            std::string msg = std::string("Unkown part name in joint list: ") + name;
+            throw std::out_of_range(msg);
+        }
+    };
+
+    for (const auto& pair : joints) {
+        const JointInfo& jointInfo = *std::get<0>(pair.second);
+        checkPart(std::get<1>(pair.second));
+        checkPart(std::get<2>(pair.second));
+        jointInfo.addConvexShape(shapeInfos[std::get<1>(pair.second)]);
+        graph.addEdge(pair.first, std::get<1>(pair.second), std::get<2>(pair.second));
+    }
+
+    MinimumSpanningTree<std::string,std::string> spanningTree(graph, basePartName);
+    if (!spanningTree.isUnique()) {
+        throw std::invalid_argument("Cycle of joints detected.");
+    }
+    if (!spanningTree.isGraphConnected()) {
+        throw std::invalid_argument("All the body parts are not connectec with joints.");
+    }
+
+    this->joints.reserve(joints.size());
+    spanningTree.depthFirstForEach([&joints,this](const auto& pair) {
+        if (pair.second != nullptr) {
+            const auto& jointTuple = joints.at(*pair.second);
+            this->joints.push_back({*pair.second,std::get<0>(jointTuple), std::get<1>(jointTuple), std::get<2>(jointTuple)});
+        }
+    });
+
+    for (const auto& pair : parts) {
+        auto it = shapeInfos.find(pair.first);
+        if (it == shapeInfos.end()) {
+            this->parts[pair.first] = pair.second;
+        } else {
+            auto& childInfos = it->second;
+            childInfos.push_back({pair.second, btTransform::getIdentity()});
+            this->parts[pair.first] = std::make_shared<CompoundShape>(childInfos);
+        }
+    }
+}
+
+const std::unordered_map<std::string, std::shared_ptr<Shape>> RobotBody::ConstructionInfo::getParts() const {
+    return parts;
+}
+
+const std::string& RobotBody::ConstructionInfo::getBasePartName() const {
+    return basePartName;
+}
+
+const std::vector<RobotBody::ConstructionInfo::JointData>& RobotBody::ConstructionInfo::getJoints() const {
+    return joints;
+}
+
 RobotBody::RobotBody(World& world) {
     auto newPart = [this](const std::string& partName, std::string shapeName) -> Body& {
         std::shared_ptr<Body> part = std::make_shared<Body>(SHAPES.at(shapeName));
@@ -269,16 +344,39 @@ RobotBody::RobotBody(World& world) {
     }
 }
 
+RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
+    for (const auto& pair : info.getParts()) {
+        std::shared_ptr<Body> body = std::make_shared<Body>(pair.second);
+        if (pair.first == info.getBasePartName()) {
+            baseBody = body.get();
+        }
+        parts[pair.first] = body;
+    }
+    for (const auto& jointData : info.getJoints()) {
+        const JointInfo& info = *jointData.jointInfo;
+        Body& convexPart = *parts[jointData.convexPartName];
+        Body& concavePart = *parts[jointData.concavePartName];
+        joints[jointData.jointName] = info.makeJoint(convexPart, concavePart);
+    }
+
+    for (auto& pair : parts) {
+        world.addObject(pair.second);
+    }
+    for (auto& pair : joints) {
+        world.addConstraint(pair.second->getConstraint());
+    }
+}
+
 RobotBody::~RobotBody() = default;
 
 int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<RobotBody>;
     int result = 1;
     if (memberName=="position") {
-        state.push<btVector3>(getBaseBody().getTransform().getOrigin());
+        state.push<btVector3>(baseBody->getTransform().getOrigin());
     } else if (memberName=="setPosition") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
-            Body& base = object.getBaseBody();
+            Body& base = *object.baseBody;
             btVector3 newPos = state.get<btVector3>(2);
             btVector3 translation = newPos - base.getTransform().getOrigin();
             for (auto& part : object.parts) {
@@ -287,10 +385,10 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
             return 0;
         });
     } else if (memberName=="rotation") {
-        state.push<btQuaternion>(getBaseBody().getTransform().getRotation());
+        state.push<btQuaternion>(baseBody->getTransform().getRotation());
     } else if (memberName=="setRotation") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
-            Body& base = object.getBaseBody();
+            Body& base = *object.baseBody;
             const btQuaternion curRotation = base.getTransform().getRotation();
             btTransform relTransform(state.get<btQuaternion>(2)*curRotation.inverse());
             for (auto& part : object.parts) {
@@ -302,8 +400,4 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
         result = 0;
     }
     return result;
-}
-
-Body& RobotBody::getBaseBody() {
-    return *parts["Chest"];
 }

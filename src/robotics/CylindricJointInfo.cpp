@@ -17,6 +17,7 @@
  */
 
 #include "CylinderShape.hpp"
+#include "CylindricJoint.hpp"
 #include "CylindricJointInfo.hpp"
 
 void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& info) const {
@@ -26,4 +27,8 @@ void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& i
         btTransform transform = convexTransform * btTransform(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
         info.push_back({std::make_shared<CylinderShape>(Density(jointDensity), halfExtents), transform});
     }
+}
+
+std::unique_ptr<Joint> CylindricJointInfo::makeJoint(Body& convexPart, Body& concavePart) const {
+    return std::make_unique<CylindricJoint>(convexPart, concavePart, *this);
 }

@@ -62,6 +62,8 @@ struct CylindricJointInfo : public JointInfo {
     btScalar startRotation;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
+
+    std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart) const override;
 };
 
 #endif /* CYLINDRICJOINTINFO_HPP */

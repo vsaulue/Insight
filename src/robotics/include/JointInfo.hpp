@@ -19,9 +19,12 @@
 #ifndef JOINTINFO_HPP
 #define JOINTINFO_HPP
 
+#include <memory>
+
 #include "btBulletDynamicsCommon.h"
 
 #include "Body.hpp"
+#include "CompoundShape.hpp"
 #include "Joint.hpp"
 
 /** Joint configuration info. */
@@ -55,6 +58,13 @@ public:
      * @param shapeInfo Construction info of the CompoundShape holding the convex part of the joint.
      */
     virtual void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const = 0;
+
+    /**
+     * Creates a new joint from this construction info.
+     * @param convexPart Body containing the convex part of the joint.
+     * @param concavePart Body containing the concave part of the joint.
+     */
+    virtual std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart) const = 0;
 
     /** Density of the generated parts (kg/m^3). */
     btScalar jointDensity;
