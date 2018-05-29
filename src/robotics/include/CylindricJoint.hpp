@@ -42,8 +42,9 @@ public:
      * @param cylinder Body part containing the cylindric part of the joint.
      * @param socket Body part containing the concave part of the joint.
      * @param info Configuration of this joint.
+     * @param bool placeCylinder True to move the cylinder body to match the socket body. false otherwise.
      */
-    CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info);
+    CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info, bool placeCylinder);
 
     std::shared_ptr<btTypedConstraint> getConstraint() override {
         return constraint;

@@ -28,12 +28,12 @@ static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& s
     return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), info.convexTransform, info.concaveTransform);
 }
 
-SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info) :
+SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info, bool placeBall) :
     Joint(ball, socket),
     jointInfo(info),
     constraint(makeConstraint(ball, socket, info))
 {
-    if (info.placeConvex) {
+    if (placeBall) {
         initPosition(socket, info.concaveTransform, ball, info.convexTransform, info.startRotation);
     } else {
         initPosition(ball, info.convexTransform, socket, info.concaveTransform, info.startRotation.inverse());

@@ -44,8 +44,9 @@ public:
      * @param ball Body part containing the convex part of the joint.
      * @param socket Body part containing the concave part of the joint.
      * @param info Configuration of this joint.
+     * @param placeBall True if the ball body should be moved to match the socket body. False for the opposite.
      */
-    SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info);
+    SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info, bool placeBall);
 
     virtual ~SphericalJoint();
 

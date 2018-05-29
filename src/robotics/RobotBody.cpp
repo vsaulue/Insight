@@ -71,7 +71,6 @@ static const btVector3 HAND_HALF_EXTENTS = {0.05f, 0.18f, 0.15f};
 
 static const std::shared_ptr<const JointInfo> NECK = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    false, // place ball
     btTransform(btQuaternion(1,0,0,0), btVector3(0, 1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion(1,0,0,0), btVector3(0, -HEAD_JOINT_BALL_RADIUS-HEAD_RADIUS, 0)), // socket transform
@@ -81,7 +80,6 @@ static const std::shared_ptr<const JointInfo> NECK = std::make_shared<const Sphe
 
 static const std::shared_ptr<const JointInfo> LEFT_SHOULDER = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(-1.08 , 0.7, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, ARM_HALF_EXTENTS.y()+ARM_JOINT_BALL_RADIUS, 0)), // socket transform
@@ -91,7 +89,6 @@ static const std::shared_ptr<const JointInfo> LEFT_SHOULDER = std::make_shared<c
 
 static const std::shared_ptr<const JointInfo> RIGHT_SHOULDER = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(1.08 , 0.7, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, ARM_HALF_EXTENTS.y()+ARM_JOINT_BALL_RADIUS, 0)), // socket transform
@@ -101,7 +98,6 @@ static const std::shared_ptr<const JointInfo> RIGHT_SHOULDER = std::make_shared<
 
 static const std::shared_ptr<const JointInfo> LEFT_ELBOW = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
-    false, // place cylinder
     btTransform(btQuaternion(btVector3(0,1,0), SIMD_HALF_PI), btVector3(0, -ARM_HALF_EXTENTS.y(), 0)), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion(btVector3(0,1,0), SIMD_HALF_PI), btVector3(0, ARM_HALF_EXTENTS.y()+ELBOW_JOINT_CYLINDER_RADIUS, 0)), // socket transform
@@ -112,7 +108,6 @@ static const std::shared_ptr<const JointInfo> LEFT_ELBOW = std::make_shared<cons
 
 static const std::shared_ptr<const JointInfo> RIGHT_ELBOW = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
-    false, // place cylinder
     btTransform(btQuaternion(btVector3(0,1,0), -SIMD_HALF_PI), btVector3(0, -ARM_HALF_EXTENTS.y(), 0)), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion(btVector3(0,1,0), -SIMD_HALF_PI), btVector3(0, ARM_HALF_EXTENTS.y()+ELBOW_JOINT_CYLINDER_RADIUS, 0)), // socket transform
@@ -123,7 +118,6 @@ static const std::shared_ptr<const JointInfo> RIGHT_ELBOW = std::make_shared<con
 
 static const std::shared_ptr<const JointInfo> WRIST = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    true, // place ball
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0 , HAND_HALF_EXTENTS.y(), 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ARM_HALF_EXTENTS.y()-WRIST_JOINT_BALL_RADIUS, 0)), // socket transform
@@ -133,7 +127,6 @@ static const std::shared_ptr<const JointInfo> WRIST = std::make_shared<const Sph
 
 static const std::shared_ptr<const JointInfo> LEFT_HIP = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(-0.6, -1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, THIGH_HALF_EXTENTS.y()+HIP_JOINT_BALL_RADIUS, 0)), // socket transform
@@ -143,7 +136,6 @@ static const std::shared_ptr<const JointInfo> LEFT_HIP = std::make_shared<const 
 
 static const std::shared_ptr<const JointInfo> RIGHT_HIP = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    false, // place ball
     btTransform(btQuaternion::getIdentity(), btVector3(0.6, -1, 0)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, THIGH_HALF_EXTENTS.y()+HIP_JOINT_BALL_RADIUS, 0)), // socket transform
@@ -153,7 +145,6 @@ static const std::shared_ptr<const JointInfo> RIGHT_HIP = std::make_shared<const
 
 static const std::shared_ptr<const JointInfo> KNEE = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
-    false, // place cylinder
     btTransform(btQuaternion::getIdentity(), btVector3(0, -THIGH_HALF_EXTENTS.y(), 0)), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion::getIdentity(), btVector3(0, LEG_HALF_EXTENTS.y()+KNEE_JOINT_CYLINDER_RADIUS, 0)), // socket transform
@@ -164,7 +155,6 @@ static const std::shared_ptr<const JointInfo> KNEE = std::make_shared<const Cyli
 
 static const std::shared_ptr<const JointInfo> ANKLE = std::make_shared<const SphericalJointInfo>(
     DENSITY, // joint density
-    true, // place ball
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, 0.125f, -0.2f)), // ball transform
     true, // generate ball shape
     btTransform(btQuaternion({0,0,1}, SIMD_PI), btVector3(0, -ANKLE_JOINT_BALL_RADIUS-LEG_HALF_EXTENTS.y(), 0)), // socket transform
@@ -174,7 +164,6 @@ static const std::shared_ptr<const JointInfo> ANKLE = std::make_shared<const Sph
 
 static const std::shared_ptr<const JointInfo> TOES_JOINT = std::make_shared<const CylindricJointInfo>(
     DENSITY, // joint density
-    false, // place cylinder
     btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, FOOT_HALF_EXTENTS.z())), // cylinder transform
     true, // generate cylinder shape
     btTransform(btQuaternion(btVector3(1,0,0), -SIMD_HALF_PI), btVector3(0, 0, -TOES_HALF_EXTENTS.z()-FOOT_HALF_EXTENTS.y())), // socket transform
@@ -242,7 +231,14 @@ RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::stri
     spanningTree.depthFirstForEach([&joints,this](const auto& pair) {
         if (pair.second != nullptr) {
             const auto& jointTuple = joints.at(*pair.second);
-            this->joints.push_back({*pair.second,std::get<0>(jointTuple), std::get<1>(jointTuple), std::get<2>(jointTuple)});
+            JointData data = {
+                *pair.second,                           // jointName
+                std::get<0>(jointTuple),                // jointInfo
+                std::get<1>(jointTuple),                // convexPartName
+                std::get<2>(jointTuple),                // concavePartName
+                std::get<1>(jointTuple) == *pair.first, // placeConvex
+            };
+            this->joints.push_back(data);
         }
     });
 
@@ -323,7 +319,7 @@ RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
         const JointInfo& info = *jointData.jointInfo;
         Body& convexPart = *parts[jointData.convexPartName];
         Body& concavePart = *parts[jointData.concavePartName];
-        joints[jointData.jointName] = info.makeJoint(convexPart, concavePart);
+        joints[jointData.jointName] = info.makeJoint(convexPart, concavePart, jointData.placeConvex);
     }
 
     for (auto& pair : parts) {

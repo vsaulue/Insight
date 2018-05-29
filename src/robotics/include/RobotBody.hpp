@@ -50,6 +50,8 @@ public:
             std::string convexPartName;
             /** Name of the body part holding the concave part of the joint. */
             std::string concavePartName;
+            /** Flag set when the convex part should be moved to match the position of the concave part. */
+            bool placeConvex;
         };
 
         /**

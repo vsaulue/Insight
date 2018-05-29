@@ -36,7 +36,6 @@ struct CylindricJointInfo : public JointInfo {
     /**
      * Full initialisation constructor.
      * @param density Density of the generated body parts.
-     * @param placeCylinder True if the ball body should be moved to match the position of the socket. False otherwise.
      * @param cylinderTransform Relative transform of the ball in its body part.
      * @param generateCylinder True if the ball shape should be added to the shape of its body.
      * @param socketTransform Relative transform of the socket in its body part.
@@ -44,9 +43,9 @@ struct CylindricJointInfo : public JointInfo {
      * @param length Length of the cylinder.
      * @param startRotation Relative orientation of the cylinder body part to the socket part (radian).
      */
-    CylindricJointInfo(btScalar density, bool placeCylinder, const btTransform& cylinderTransform, bool generateCylinder, const btTransform& socketTransform,
+    CylindricJointInfo(btScalar density, const btTransform& cylinderTransform, bool generateCylinder, const btTransform& socketTransform,
                        btScalar radius, btScalar length, btScalar startRotation) :
-        JointInfo(density, placeCylinder, cylinderTransform, generateCylinder, socketTransform),
+        JointInfo(density, cylinderTransform, generateCylinder, socketTransform),
         cylinderRadius(radius),
         cylinderLength(length),
         startRotation(startRotation)
@@ -63,7 +62,7 @@ struct CylindricJointInfo : public JointInfo {
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 
-    std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart) const override;
+    std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const override;
 };
 
 #endif /* CYLINDRICJOINTINFO_HPP */

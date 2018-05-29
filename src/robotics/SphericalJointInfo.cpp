@@ -27,6 +27,6 @@ void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& s
     }
 }
 
-std::unique_ptr<Joint> SphericalJointInfo::makeJoint(Body& convexPart, Body& concavePart) const {
-    return std::make_unique<SphericalJoint>(convexPart, concavePart, *this);
+std::unique_ptr<Joint> SphericalJointInfo::makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const {
+    return std::make_unique<SphericalJoint>(convexPart, concavePart, *this, placeConvex);
 }

@@ -53,12 +53,12 @@ static std::shared_ptr<btHingeConstraint> makeConstraint(Body& cylinder, Body& s
     return std::make_shared<btHingeConstraint>(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
 }
 
-CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info) :
+CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info, bool placeCylinder) :
     Joint(cylinder, socket),
     jointInfo(info),
     constraint(makeConstraint(cylinder, socket, info))
 {
-    if (info.placeConvex) {
+    if (placeCylinder) {
         initPosition(socket, info.concaveTransform, cylinder, info.convexTransform, info.startRotation);
     } else {
         initPosition(cylinder, info.convexTransform, socket, info.concaveTransform, -info.startRotation);

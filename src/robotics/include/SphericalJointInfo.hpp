@@ -37,16 +37,15 @@ public:
     /**
      * Full initialisation constructor.
      * @param density Density of the generated body parts.
-     * @param placeConvex True if the ball body should be moved to match the position of the socket. False otherwise.
      * @param ballTransform Relative transform of the ball in its body part.
      * @param generateBall True if the ball shape should be added to the shape of its body.
      * @param socketTransform Relative transform of the socket in its body part.
      * @param radius Radius of the ball.
      * @param startRotation Relative orientation of the ball body part to the socket part.
      */
-    SphericalJointInfo(btScalar density, bool placeConvex, const btTransform& ballTransform, bool generateBall, const btTransform& socketTransform,
+    SphericalJointInfo(btScalar density, const btTransform& ballTransform, bool generateBall, const btTransform& socketTransform,
                    btScalar radius, const btQuaternion& startRotation) :
-        JointInfo(density, placeConvex, ballTransform, generateBall, socketTransform),
+        JointInfo(density, ballTransform, generateBall, socketTransform),
         ballRadius(radius),
         startRotation(startRotation)
     {
@@ -62,7 +61,7 @@ public:
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 
-    std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart) const override;
+    std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const override;
 };
 
 #endif /* SPHERICALJOINTINFO_HPP */

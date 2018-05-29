@@ -29,6 +29,6 @@ void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& i
     }
 }
 
-std::unique_ptr<Joint> CylindricJointInfo::makeJoint(Body& convexPart, Body& concavePart) const {
-    return std::make_unique<CylindricJoint>(convexPart, concavePart, *this);
+std::unique_ptr<Joint> CylindricJointInfo::makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const {
+    return std::make_unique<CylindricJoint>(convexPart, concavePart, *this, placeConvex);
 }
