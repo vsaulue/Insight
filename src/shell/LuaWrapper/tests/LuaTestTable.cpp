@@ -22,9 +22,11 @@
 
 #include "lua/LuaState.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/std/string.hpp"
 #include "lua/types/LuaFunction.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "lua/types/LuaTable.hpp"
+#include "LuaTestCommon.hpp"
 
 TEST_CASE("Lua table bindings.") {
     LuaState state;
@@ -106,6 +108,20 @@ TEST_CASE("Lua table bindings.") {
             SECTION("LuaTable.has()") {
                 REQUIRE(table.has<LuaNativeString>("num"));
                 REQUIRE_FALSE(table.has<float>(123));
+            }
+
+            SECTION("LuaTable.asMap()") {
+                const std::unordered_map<std::string,float> values = {
+                    {"first",1}, {"second",2}, {"third",3}, {"fourth",4}, {"Leeroy Jenkins",-50}, {"num",45},
+                };
+                for (auto& pair : values) {
+                    table.set<LuaNativeString,float>(pair.first.c_str(), pair.second);
+                }
+                auto asMap = table.asMap<std::string,float>();
+                REQUIRE(asMap.size() == values.size());
+                for (auto& pair : asMap) {
+                    REQUIRE(values.at(pair.first) == pair.second);
+                }
             }
         }
     }

@@ -95,6 +95,10 @@ void LuaStateView::setTable(int stackIndex) {
     lua_settable(state, stackIndex);
 }
 
+bool LuaStateView::next(int stackIndex) {
+    return lua_next(state, stackIndex) != 0;
+}
+
 LuaStateView::~LuaStateView() {}
 
 void LuaStateView::pop(int n) {
@@ -187,6 +191,9 @@ double LuaStateView::getDouble(int stackIndex) {
     return luaL_checknumber(state, stackIndex);
 }
 
+void LuaStateView::pushNil() {
+    lua_pushnil(state);
+}
 
 const char* LuaStateView::getTypename(int stackIndex) {
     return luaL_typename(state, stackIndex);

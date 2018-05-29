@@ -178,6 +178,11 @@ protected:
      * @return The value of the double in the stack.
      */
     double getDouble(int stackIndex);
+
+    /**
+     * Pushes a nil value on the Lua stack.
+     */
+    void pushNil();
 public:
 
     /**
@@ -315,6 +320,17 @@ public:
      * @param[in] stackIndex Index of the table being modified.
      */
     void setTable(int stackIndex);
+
+    /**
+     * Iterates over the key/values of the table at the given index.
+     *
+     * This function pops a key from the stack, and replaces it with the next
+     * key & value of the table, if any.
+     *
+     * @param stackIndex Index of the table.
+     * @return True if a new pair awas pushed, false if the end of the table was reached.
+     */
+    bool next(int stackIndex);
 
     /**
      * Creates a new empty table and pushes it onto the stack.

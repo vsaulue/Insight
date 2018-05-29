@@ -19,10 +19,13 @@
 #ifndef LUATABLE_HPP
 #define LUATABLE_HPP
 
+#include <unordered_map>
+
 #include "lua/LuaBinding.hpp"
 #include "lua/LuaException.hpp"
 #include "lua/LuaIsStackAlias.hpp"
 #include "lua/LuaStateView.hpp"
+#include "lua/types/LuaNil.hpp"
 
 /**
  * Pointer to a native Lua table in a Lua stack.
@@ -132,6 +135,28 @@ public:
         state.push<KeyType>(key);
         state.push<ValueType>(std::forward<ConstructorArgs>(cArgs)...);
         state.setField(stackIndex);
+    }
+
+    /**
+     * Convertex the content of the Lua table into a C++ unordered_map.
+     *
+     * @return A map containing a copy of the elements in the table.
+     * @tparam KeyType type of the keys of the Lua table.
+     * @tparam ValueType type of the values of the Lua table.
+     */
+    template<typename KeyType, typename ValueType>
+    std::unordered_map<KeyType,ValueType> asMap() {
+        static_assert(!LuaIsStackAlias<KeyType>::value, "Can't build a map containing stack aliases.");
+        static_assert(!LuaIsStackAlias<ValueType>::value, "Can't build a map containing stack aliases.");
+        std::unordered_map<KeyType,ValueType> result;
+        state.push<LuaNil>();
+        while (state.next(stackIndex)) {
+            KeyType key = state.get<KeyType>(-2);
+            ValueType value = state.get<ValueType>(-1);
+            result.insert(std::make_pair(key, value));
+            state.pop(1);
+        }
+        return result;
     }
 
     /**
