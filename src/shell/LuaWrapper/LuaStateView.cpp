@@ -175,6 +175,10 @@ const char* LuaStateView::getString(int stackIndex) {
     return luaL_checkstring(state, stackIndex);
 }
 
+bool LuaStateView::isString(int stackIndex) {
+    return lua_isstring(state, stackIndex);
+}
+
 void LuaStateView::pushDouble(double value) {
     lua_pushnumber(state, value);
 }

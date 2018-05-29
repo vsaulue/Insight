@@ -158,6 +158,13 @@ protected:
     const char* getString(int StackIndex);
 
     /**
+     * Tests if the value at the specified index is a native string.
+     * @param stackIndex Index of the item to check in the stack.
+     * @return True if the value at the given index is a native string.
+     */
+    bool isString(int stackIndex);
+
+    /**
      * Pushes a floating point value on the Lua stack.
      *
      * @param[in] value Value pushed on the stack.
