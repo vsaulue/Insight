@@ -21,6 +21,7 @@
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
+#include "lua/types/LuaFunction.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/LuaStateView.hpp"
 #include "SphereShape.hpp"
@@ -61,8 +62,8 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
             return 1;
         });
     } else if (memberName=="newShape") {
-        state.push<Method>([](World& object, LuaStateView& state) -> int {
-            std::shared_ptr<Shape> newShape = state.get<std::shared_ptr<Shape>>(2);
+        state.push<LuaFunction>([](LuaStateView& state) -> int {
+            std::shared_ptr<Shape> newShape = state.get<std::shared_ptr<Shape>>(1);
             state.push<std::shared_ptr<Shape>>(std::move(newShape));
             return 1;
         });
