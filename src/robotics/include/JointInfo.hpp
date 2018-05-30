@@ -26,9 +26,11 @@
 #include "Body.hpp"
 #include "CompoundShape.hpp"
 #include "Joint.hpp"
+#include "lua/types/LuaTable.hpp"
+#include "lua/types/LuaVirtualClass.hpp"
 
 /** Joint configuration info. */
-struct JointInfo {
+struct JointInfo : public LuaVirtualClass {
 public:
     /** No initialisation constructor. */
     JointInfo() = default;
@@ -65,6 +67,8 @@ public:
      */
     virtual std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const = 0;
 
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+
     /** Density of the generated parts (kg/m^3). */
     btScalar jointDensity;
     /** Relative position of the convex joint part to the CompoundBody containing it. */
@@ -77,6 +81,13 @@ public:
      * The socket position/origin is the center of the associated convex part.
      */
     btTransform concaveTransform;
+
+    /**
+     * Creates a JointInfo object from the content of a Lua table.
+     * @param table Lua table from which the object will be constructed.
+     * @return The new JointInfo object.
+     */
+    static std::unique_ptr<JointInfo> luaGetFromTable(LuaTable& table);
 };
 
 #endif /* JOINTINFO_HPP */

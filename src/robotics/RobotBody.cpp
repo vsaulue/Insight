@@ -230,7 +230,7 @@ RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::stri
         throw std::invalid_argument("Cycle of joints detected.");
     }
     if (!spanningTree.isGraphConnected()) {
-        throw std::invalid_argument("All the body parts are not connectec with joints.");
+        throw std::invalid_argument("All the body parts are not connected with joints.");
     }
 
     this->joints.reserve(joints.size());

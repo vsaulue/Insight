@@ -33,4 +33,13 @@ public:
     static ConstructionInfo getFromTable(LuaTable& table);
 };
 
+template<>
+class LuaBinding<RobotBody::ConstructionInfo::JointInputData> : public LuaDefaultBinding<RobotBody::ConstructionInfo::JointInputData> {
+public:
+    using ConstructionInfo = RobotBody::ConstructionInfo;
+    using JointInputData = ConstructionInfo::JointInputData;
+
+    static JointInputData getFromTable(LuaTable& table);
+};
+
 #endif /* LUA_BINDINGS_ROBOTICS_HPP */

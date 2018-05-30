@@ -19,6 +19,9 @@
 #include "CylinderShape.hpp"
 #include "CylindricJoint.hpp"
 #include "CylindricJointInfo.hpp"
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/types/LuaNativeString.hpp"
 
 void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& info) const {
     using Density = Shape::Density;
@@ -31,4 +34,16 @@ void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& i
 
 std::unique_ptr<Joint> CylindricJointInfo::makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const {
     return std::make_unique<CylindricJoint>(convexPart, concavePart, *this, placeConvex);
+}
+
+std::unique_ptr<CylindricJointInfo> CylindricJointInfo::luaGetFromTable(LuaTable& table) {
+    return std::make_unique<CylindricJointInfo>(
+            table.get<LuaNativeString,btScalar>("density"),
+            table.get<LuaNativeString,btTransform>("convexTransform"),
+            table.get<LuaNativeString,bool>("generateConvexShape"),
+            table.get<LuaNativeString,btTransform>("concaveTransform"),
+            table.get<LuaNativeString,btScalar>("radius"),
+            table.get<LuaNativeString,btScalar>("length"),
+            table.get<LuaNativeString,btScalar>("startRotation")
+    );
 }

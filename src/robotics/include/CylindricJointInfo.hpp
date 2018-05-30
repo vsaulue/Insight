@@ -19,12 +19,14 @@
 #ifndef CYLINDRICJOINTINFO_HPP
 #define CYLINDRICJOINTINFO_HPP
 
+#include <memory>
 #include <vector>
 
 #include "btBulletDynamicsCommon.h"
 
 #include "CompoundShape.hpp"
 #include "JointInfo.hpp"
+#include "lua/types/LuaTable.hpp"
 
 /**
  * Parameters to describe & construct a cylindric joint.
@@ -63,6 +65,13 @@ struct CylindricJointInfo : public JointInfo {
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 
     std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const override;
+
+    /**
+     * Creates a CylindricJointInfo object from the content of a Lua table.
+     * @param table Lua table from which the object will be constructed.
+     * @return The new CylindricJointInfo object.
+     */
+    static std::unique_ptr<CylindricJointInfo> luaGetFromTable(LuaTable& table);
 };
 
 #endif /* CYLINDRICJOINTINFO_HPP */

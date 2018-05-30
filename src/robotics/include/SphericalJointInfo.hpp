@@ -19,6 +19,7 @@
 #ifndef SPHERICALJOINTINFO_HPP
 #define SPHERICALJOINTINFO_HPP
 
+#include <memory>
 #include <vector>
 
 #include "btBulletDynamicsCommon.h"
@@ -62,6 +63,13 @@ public:
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 
     std::unique_ptr<Joint> makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const override;
+
+    /**
+     * Creates a SphericalJointInfo object from the content of a Lua table.
+     * @param table Lua table from which the object will be constructed.
+     * @return The new SphericalJointInfo object.
+     */
+    static std::unique_ptr<SphericalJointInfo> luaGetFromTable(LuaTable& table);
 };
 
 #endif /* SPHERICALJOINTINFO_HPP */

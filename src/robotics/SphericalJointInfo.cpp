@@ -19,6 +19,9 @@
 #include "SphereShape.hpp"
 #include "SphericalJoint.hpp"
 #include "SphericalJointInfo.hpp"
+#include "lua/bindings/bullet.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/types/LuaNativeString.hpp"
 
 void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const {
     using Density = Shape::Density;
@@ -29,4 +32,15 @@ void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& s
 
 std::unique_ptr<Joint> SphericalJointInfo::makeJoint(Body& convexPart, Body& concavePart, bool placeConvex) const {
     return std::make_unique<SphericalJoint>(convexPart, concavePart, *this, placeConvex);
+}
+
+std::unique_ptr<SphericalJointInfo> SphericalJointInfo::luaGetFromTable(LuaTable& table) {
+    return std::make_unique<SphericalJointInfo>(
+            table.get<LuaNativeString,btScalar>("density"),
+            table.get<LuaNativeString,btTransform>("convexTransform"),
+            table.get<LuaNativeString,bool>("generateConvexShape"),
+            table.get<LuaNativeString,btTransform>("concaveTransform"),
+            table.get<LuaNativeString,btScalar>("radius"),
+            table.get<LuaNativeString,btQuaternion>("startRotation")
+    );
 }

@@ -16,22 +16,33 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "JointInfo.hpp"
 #include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/bindings/robotics.hpp"
 #include "lua/bindings/std/string.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "Shape.hpp"
 
+using JointInputData = RobotBody::ConstructionInfo::JointInputData;
+
 template<typename K, typename V>
 std::unordered_map<K,V> getMap(LuaTable& table, const char* fieldName) {
-    LuaTable subTable = table.get<LuaNativeString,LuaTable>("parts");
+    LuaTable subTable = table.get<LuaNativeString,LuaTable>(fieldName);
     return subTable.asMap<K,V>();
 }
 
 RobotBody::ConstructionInfo LuaBinding<RobotBody::ConstructionInfo>::getFromTable(LuaTable& table) {
     auto parts = getMap<std::string,std::shared_ptr<Shape>>(table, "parts");
     auto base = table.get<LuaNativeString,std::string>("basePart");
-    std::unordered_map<std::string, JointInputData> joints; // TODO: read joints.
+    auto joints = getMap<std::string,JointInputData>(table, "joints");
     return ConstructionInfo(parts, base, joints);
 }
 
+JointInputData LuaBinding<JointInputData>::getFromTable(LuaTable& table) {
+    JointInputData result{
+        table.get<LuaNativeString,std::shared_ptr<JointInfo>>("info"),
+        table.get<LuaNativeString,std::string>("convexPart"),
+        table.get<LuaNativeString,std::string>("concavePart"),
+    };
+    return result;
+}
