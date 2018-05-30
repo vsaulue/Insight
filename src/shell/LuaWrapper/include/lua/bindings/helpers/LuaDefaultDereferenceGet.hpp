@@ -21,22 +21,24 @@
 
 #include <string>
 
+#include "lua/helpers/LuaAutoPop.hpp"
 #include "lua/LuaBinding.hpp"
-#include "lua/types/LuaDereferenceGetter.hpp"
 #include "lua/LuaException.hpp"
 #include "lua/LuaStateView.hpp"
+#include "lua/types/LuaDereferenceGetter.hpp"
 
 /**
- * Provides a default implementation of LuaBinding
- * @param state
- * @param stackIndex
- * @return
+ * Provides a default implementation of LuaBinding dereferenceGet function.
+ * @param state Lua stack containing the value to dereference.
+ * @param stackIndex Index of the value to derefence.
+ * @return A reference to the base type of the value at the specified index.
  */
 template<typename Basetype>
 Basetype& luaDefaultDereferenceGet(LuaStateView& state, int stackIndex) {
     if(!state.pushMetafield(stackIndex, "dereferenceGetter")) {
         state.throwArgError(stackIndex, std::string("no metamethod to dereference to base type: ") + LuaBinding<Basetype>::luaClassName());
     }
+    LuaAutoPop autoPop(state, 1);
     LuaDereferenceGetter<Basetype> getter;
     try {
         getter = state.get<LuaDereferenceGetter<Basetype>>(-1);
