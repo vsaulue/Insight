@@ -453,12 +453,7 @@ public:
             });
         } else if (memberName == "newRobot") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                std::unique_ptr<RobotBody> newRobot;
-                if (state.getTop()>=2) {
-                    newRobot = std::make_unique<RobotBody>(object.world, state.get<RobotBody::ConstructionInfo>(2));
-                } else {
-                    newRobot = std::make_unique<RobotBody>(object.world);
-                }
+                std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world, state.get<RobotBody::ConstructionInfo>(2));
                 state.push<RobotBody*>(newRobot.get());
                 object.robots.insert(std::move(newRobot));
                 return 1;

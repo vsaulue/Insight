@@ -111,7 +111,7 @@ public:
      * @param world World in which the body will be created.
      * @param info Construction info for the robot.
      */
-    RobotBody(World& world, const ConstructionInfo& info = DEFAULT_INFO);
+    RobotBody(World& world, const ConstructionInfo& info);
 
     virtual ~RobotBody();
 
@@ -130,8 +130,6 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
     /** Reference body (position & rotation of the RobotBody is the one of this body). */
     Body* baseBody;
-    /** Default construction info for the RobotBody. */
-    static const ConstructionInfo DEFAULT_INFO;
 };
 
 #endif /* ROBOTBODY_HPP */
