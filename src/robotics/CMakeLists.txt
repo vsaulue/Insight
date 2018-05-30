@@ -18,6 +18,7 @@ add_library(Robotics STATIC
     CylindricJoint.cpp
     CylindricJointInfo.cpp
     RobotBody.cpp
+    robotics.cpp
     SphericalJoint.cpp
     SphericalJointInfo.cpp
 )

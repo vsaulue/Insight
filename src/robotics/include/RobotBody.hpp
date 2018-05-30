@@ -40,18 +40,28 @@ class RobotBody : public LuaVirtualClass {
 public:
     struct ConstructionInfo {
     public:
-        /** Information to build new joints. */
+        /** internal information to build new joints. */
         struct JointData {
             /** Unique name of the joint. */
             std::string jointName;
             /** Construction info about this type of joint. */
             std::shared_ptr<const JointInfo> jointInfo;
-            /** Name of the body part holding the convex part of th joint. */
+            /** Name of the body part holding the convex part of the joint. */
             std::string convexPartName;
             /** Name of the body part holding the concave part of the joint. */
             std::string concavePartName;
             /** Flag set when the convex part should be moved to match the position of the concave part. */
             bool placeConvex;
+        };
+
+        /** Input data of a given joint. */
+        struct JointInputData {
+            /** Construction info about this type of joint. */
+            std::shared_ptr<const JointInfo> info;
+            /** Name of the body part holding the convex part of the joint. */
+            std::string convexPartName;
+            /** Name of the body part holding the concave part of the joint. */
+            std::string concavePartName;
         };
 
         /**
@@ -62,10 +72,10 @@ public:
          */
         ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
                          const std::string& basePartName,
-                         const std::unordered_map<std::string, std::tuple<std::shared_ptr<const JointInfo>, std::string, std::string>>& joints);
+                         const std::unordered_map<std::string, JointInputData>& joints);
 
         /**
-         * Gets the set of body aprts names and their shapes.
+         * Gets the set of body parts names and their shapes.
          * @return The map of body part shapes, indexed bi their names.
          */
         const std::unordered_map<std::string, std::shared_ptr<Shape>> getParts() const;

@@ -16,6 +16,7 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -25,8 +26,13 @@
 #include "CylindricJointInfo.hpp"
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/LuaDefaultBinding.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
+#include "lua/bindings/std/string.hpp"
+#include "lua/LuaBinding.hpp"
 #include "lua/types/LuaMethod.hpp"
+#include "lua/types/LuaNativeString.hpp"
 #include "MinimumSpanningTree.hpp"
 #include "RobotBody.hpp"
 #include "SphereShape.hpp"
@@ -188,7 +194,7 @@ static const std::unordered_map<std::string, std::shared_ptr<Shape>> SHAPES = {
 
 RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
                                               const std::string& basePartName,
-                                              const std::unordered_map<std::string, std::tuple<std::shared_ptr<const JointInfo>, std::string, std::string>>& joints) :
+                                              const std::unordered_map<std::string, JointInputData>& joints) :
     basePartName(basePartName)
 {
     UndirectedGraph<std::string,std::string> graph;
@@ -212,11 +218,11 @@ RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::stri
     };
 
     for (const auto& pair : joints) {
-        const JointInfo& jointInfo = *std::get<0>(pair.second);
-        checkPart(std::get<1>(pair.second));
-        checkPart(std::get<2>(pair.second));
-        jointInfo.addConvexShape(shapeInfos[std::get<1>(pair.second)]);
-        graph.addEdge(pair.first, std::get<1>(pair.second), std::get<2>(pair.second));
+        const JointInfo& jointInfo = *pair.second.info;
+        checkPart(pair.second.convexPartName);
+        checkPart(pair.second.concavePartName);
+        jointInfo.addConvexShape(shapeInfos[pair.second.convexPartName]);
+        graph.addEdge(pair.first, pair.second.convexPartName, pair.second.concavePartName);
     }
 
     MinimumSpanningTree<std::string,std::string> spanningTree(graph, basePartName);
@@ -230,13 +236,13 @@ RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::stri
     this->joints.reserve(joints.size());
     spanningTree.depthFirstForEach([&joints,this](const auto& pair) {
         if (pair.second != nullptr) {
-            const auto& jointTuple = joints.at(*pair.second);
+            const JointInputData& joint = joints.at(*pair.second);
             JointData data = {
-                *pair.second,                           // jointName
-                std::get<0>(jointTuple),                // jointInfo
-                std::get<1>(jointTuple),                // convexPartName
-                std::get<2>(jointTuple),                // concavePartName
-                std::get<1>(jointTuple) == *pair.first, // placeConvex
+                *pair.second,                        // jointName
+                joint.info,                          // jointInfo
+                joint.convexPartName,                // convexPartName
+                joint.concavePartName,               // concavePartName
+                joint.convexPartName == *pair.first, // placeConvex
             };
             this->joints.push_back(data);
         }

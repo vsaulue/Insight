@@ -27,6 +27,8 @@
 
 #include "GraphicEngine.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
+#include "lua/bindings/robotics.hpp"
+#include "lua/types/LuaFunction.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "RobotBody.hpp"
@@ -441,40 +443,47 @@ public:
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override {
         using Method = LuaMethod<Insight>;
+        int result = 1;
         if (memberName == "world") {
             state.push<World*>(&world);
-            return 1;
+        } else if (memberName == "newRobotInfo") {
+            state.push<LuaFunction>([](LuaStateView& state) -> int {
+                state.push<RobotBody::ConstructionInfo>(state.get<RobotBody::ConstructionInfo>(1));
+                return 1;
+            });
         } else if (memberName == "newRobot") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world);
+                std::unique_ptr<RobotBody> newRobot;
+                if (state.getTop()>=2) {
+                    newRobot = std::make_unique<RobotBody>(object.world, state.get<RobotBody::ConstructionInfo>(2));
+                } else {
+                    newRobot = std::make_unique<RobotBody>(object.world);
+                }
                 state.push<RobotBody*>(newRobot.get());
                 object.robots.insert(std::move(newRobot));
                 return 1;
             });
-            return 1;
         } else if (memberName == "graphicEngine") {
             state.push<GraphicEngine*>(&graphicEngine);
-            return 1;
         } else if (memberName == "quit") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.quit();
                 return 0;
             });
-            return 1;
         } else if (memberName == "pause") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.pause(false);
                 return 0;
             });
-            return 1;
         } else if (memberName == "resume") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
                 object.resume();
                 return 0;
             });
-            return 1;
+        } else {
+            result = 0;
         }
-        return 0;
+        return result;
     }
 
 };
