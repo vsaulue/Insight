@@ -122,6 +122,8 @@ int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
             object.setRotation(newRot);
             return 0;
         });
+    } else if (memberName=="shape") {
+        state.push<std::shared_ptr<Shape>>(shape);
     } else {
         result = 0;
     }
