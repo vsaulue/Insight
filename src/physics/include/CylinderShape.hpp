@@ -53,7 +53,7 @@ public:
      * Gets the half extents of this cylinder.
      * @return The half extents of this cylinder.
      */
-    const btVector3& getHalfExtents() const;
+    btVector3 getHalfExtents() const;
 
     btCollisionShape& getBulletShape() override;
 

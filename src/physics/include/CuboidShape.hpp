@@ -49,7 +49,7 @@ public:
      * Gets the half extents of this cuboid.
      * @return The half extents of this cuboid.
      */
-    const btVector3& getHalfExtents() const;
+    btVector3 getHalfExtents() const;
 
     btCollisionShape& getBulletShape() override;
 

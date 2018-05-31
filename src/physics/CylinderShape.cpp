@@ -45,8 +45,8 @@ CylinderShape::CylinderShape(Density density, const btVector3& halfExtents) :
 
 CylinderShape::~CylinderShape() = default;
 
-const btVector3& CylinderShape::getHalfExtents() const {
-    return shape.getHalfExtentsWithoutMargin();
+btVector3 CylinderShape::getHalfExtents() const {
+    return shape.getHalfExtentsWithMargin();
 }
 
 btCollisionShape& CylinderShape::getBulletShape() {
@@ -58,7 +58,8 @@ const btCollisionShape& CylinderShape::getBulletShape() const {
 }
 
 void CylinderShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
-    drawer.drawCylinder(transform, shape.getHalfExtentsWithoutMargin());
+    btVector3 halfExtents = getHalfExtents();
+    drawer.drawCylinder(transform, halfExtents);
 }
 
 int CylinderShape::luaIndex(const std::string& memberName, LuaStateView& state) {

@@ -45,8 +45,8 @@ CuboidShape::CuboidShape(Density density, const btVector3& halfExtents) :
 
 CuboidShape::~CuboidShape() = default;
 
-const btVector3& CuboidShape::getHalfExtents() const {
-    return shape.getHalfExtentsWithoutMargin();
+btVector3 CuboidShape::getHalfExtents() const {
+    return shape.getHalfExtentsWithMargin();
 }
 
 btCollisionShape& CuboidShape::getBulletShape() {
@@ -58,7 +58,8 @@ const btCollisionShape& CuboidShape::getBulletShape() const {
 }
 
 void CuboidShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
-    drawer.drawCuboid(transform, shape.getHalfExtentsWithoutMargin());
+    btVector3 halfExtents = getHalfExtents();
+    drawer.drawCuboid(transform, halfExtents);
 }
 
 int CuboidShape::luaIndex(const std::string& memberName, LuaStateView& state) {
