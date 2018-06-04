@@ -4,12 +4,14 @@
 -- - mass : kg
 -- - density : kg/m^3
 
+-- List of object added into the world by this script.
+objects= {}
 
 local world = insight.world
 
 -- Currently 4 different basic shapes can be inserted via Lua.
 -- 1) StaticPlane shape (cannot move)
-terrain = world:newBody({
+objects.terrain = world:newBody({
     shape= {
         type= "StaticPlane",
         params= {
@@ -20,7 +22,7 @@ terrain = world:newBody({
 })
 
 -- 2) Sphere shape
-sphere = world:newBody({
+objects.sphere = world:newBody({
     shape= {
         type= "Sphere",
         params= {
@@ -30,11 +32,11 @@ sphere = world:newBody({
         },
     },
 })
-sphere:setPosition({0.3, 2, 0.1})
+objects.sphere:setPosition({0.3, 2, 0.1})
 
 -- 3) Cylinder shape
 -- In default orientations, the cylinder is Y-axis aligned.
-cylinder = world:newBody({
+objects.cylinder = world:newBody({
     shape= {
         type="Cylinder",
         params= {
@@ -44,10 +46,10 @@ cylinder = world:newBody({
         },
     },
 })
-cylinder:setPosition({-1, 0, 2})
+objects.cylinder:setPosition({-1, 0, 2})
 
 -- 4) Cuboid shape
-cuboid = world:newBody({
+objects.cuboid = world:newBody({
     shape= {
         type= "Cuboid",
         params= {
@@ -57,10 +59,10 @@ cuboid = world:newBody({
         },
     },
 })
-cuboid:setPosition({-1,3,2})
+objects.cuboid:setPosition({-1,3,2})
 
 -- It is possible to combine the 4 basic shapes into a compound shape:
-table = world:newBody({
+objects.table = world:newBody({
     shape= {
         type= "Compound",
         params= {
@@ -79,4 +81,4 @@ table = world:newBody({
         },
     },
 })
-table:setPosition({2,-0.90,5})
+objects.table:setPosition({2,-0.90,5})
