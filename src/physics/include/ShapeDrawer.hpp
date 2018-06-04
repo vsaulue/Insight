@@ -20,6 +20,7 @@
 #define SHAPEDRAWER_HPP
 
 #include "btBulletDynamicsCommon.h"
+#include "BulletCollision/CollisionShapes/btConvexPolyhedron.h"
 
 /** 
  * Interface for reading the geometry of a Body outside the Physics engine.
@@ -62,6 +63,15 @@ public:
      * @param[in] halfExtents Half extents (scale coefficients on each axis).
      */
     virtual void drawCuboid(const btTransform& transform, const btVector3& halfExtents) = 0;
+
+    /**
+     * Draws a convex mesh.
+     *
+     * @param transform Position & orientation of the convex mesh.
+     * @param vertices
+     * @param faces
+     */
+    virtual void drawMesh(const btTransform& transform, const btAlignedObjectArray<btVector3>& vertices, const btAlignedObjectArray<btFace>& faces) = 0;
 
     virtual ~ShapeDrawer() = default;
 };

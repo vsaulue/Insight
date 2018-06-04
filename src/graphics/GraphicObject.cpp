@@ -96,6 +96,13 @@ public:
         scene.addMeshSceneNode(cuboid.get(), &rootNode, -1, pos, rotation, scale);
     }
 
+    void drawMesh(const btTransform& transform, const btAlignedObjectArray<btVector3>& vertices, const btAlignedObjectArray<btFace>& faces) override {
+        irr::scene::ISceneManager& scene = *rootNode.getSceneManager();
+        irrlicht_ptr<irr::scene::IMesh> mesh(makeMesh(vertices, faces));
+        irr::core::vector3df pos = btToIrrVector(transform.getOrigin());
+        irr::core::vector3df rotation = btQuaternionToEulerAngles(transform.getRotation());
+        scene.addMeshSceneNode(mesh.get(), &rootNode, -1, pos, rotation);
+    }
 
     IrrlichtDrawer(irr::scene::ISceneNode& rootNode) : rootNode(rootNode) {
 
@@ -258,6 +265,41 @@ private:
                 vertex.TCoords = irr::core::vector2df(arrayX, arrayY);
             }
         }
+    }
+
+    /**
+     * Generates an Irrlicht mesh from the mesh representation of the physics engine.
+     *
+     * @param vertices List of vertices of the mesh.
+     * @param faces List of faces of the mesh.
+     * @return An irrlicht shape built from the arguments.
+     */
+    static irrlicht_ptr<irr::scene::IMesh> makeMesh(const btAlignedObjectArray<btVector3>& vertices, const btAlignedObjectArray<btFace>& faces) {
+        using namespace irr::scene;
+        irrlicht_ptr<SMesh> result(new SMesh());
+        irrlicht_ptr<SMeshBuffer> meshBuffer(new SMeshBuffer());
+        result->addMeshBuffer(meshBuffer.get());
+
+        for (int faceId = 0; faceId < faces.size(); faceId++) {
+            const btFace& face = faces[faceId];
+            if (face.m_indices.size() > 2) {
+                int baseIndex = meshBuffer->getVertexCount();
+                btVector3 v1 = vertices[face.m_indices[1]] - vertices[face.m_indices[0]];
+                btVector3 v2 = vertices[face.m_indices[2]] - vertices[face.m_indices[1]];
+                irr::core::vector3df normal = btToIrrVector(v1.cross(v2).normalize());
+                irr::video::S3DVertex vertex({0,0,0}, normal, irr::video::SColor(255,255,255,255), {0,0});
+                for (int verticeId = 0; verticeId < face.m_indices.size(); verticeId++) {
+                    vertex.Pos = btToIrrVector(vertices[face.m_indices[verticeId]]);
+                    meshBuffer->Vertices.push_back(vertex);
+                }
+                for (int verticeId = 0; verticeId < face.m_indices.size()-2; verticeId++) {
+                    meshBuffer->Indices.push_back(baseIndex);
+                    meshBuffer->Indices.push_back(baseIndex+verticeId+1);
+                    meshBuffer->Indices.push_back(baseIndex+verticeId+2);
+                }
+            }
+        }
+        return result;
     }
 };
 
