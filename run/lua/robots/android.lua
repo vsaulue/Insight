@@ -7,8 +7,10 @@ local JOINT_DENSITY = 1200
 -- Distance between the surface of the convex & concave parts of a joint (m).
 local MARGIN = 0.005
 
--- Head radius (m).
-local HEAD_RADIUS = 0.5
+-- Radius of the half sphere of the head (m).
+local HEAD_RADIUS = 0.625
+-- Length of the neck (concave part attached to the head).
+local NECK_LENGTH = 0.1
 -- Dimensions of the cylindric part of the arm.
 local ARM_HALF_EXTENTS = {0.1, 0.5, 0.1}
 -- Dimensions of the longest cylindric part of the forearm.
@@ -42,8 +44,78 @@ local ANKLE_BALL_RADIUS = 0.2
 local WRIST_BALL_RADIUS = 0.125
 
 local newShape = insight.world.newShape
+
+-- Generates a half sphere (cut on the XZ plane, Y+ part kept).
+local function halfSphere(radius)
+    local vertices = {{0,radius,0}}
+    local loop = {}
+    for i=0,15 do
+        local angle = i/8 * math.pi
+        table.insert(loop, {radius*math.cos(angle), radius*math.sin(angle)})
+    end
+    for j=0,3 do
+        local angle = j/8 * math.pi
+        local loopRadius = math.cos(angle)
+        local y = radius*math.sin(angle)
+        for i,point in ipairs(loop) do
+            table.insert(vertices, {loopRadius*point[1], y, loopRadius*point[2]})
+        end
+    end
+    return vertices
+end
+
+-- Generates the "neck" part of the head (concave part of the joint).
+local function neckSocketParts(parts, headRadius, neckRadius, neckLength)
+    local partWidth = 0.1*headRadius
+    local BULLET_MARGIN = 0.04
+    local halfExtents = {
+        partWidth/2,
+        0.5*(neckLength + neckRadius*(1-math.sqrt(1-math.pow((headRadius-partWidth/2)/neckRadius,2))) - MARGIN - BULLET_MARGIN),
+        0.5*(headRadius+BULLET_MARGIN)*math.sqrt(2*(1-math.cos(math.pi/8))),
+    }
+    shape=newShape({type="Cuboid", params={density= SHAPE_DENSITY, halfExtents= halfExtents}})
+    for i=0,15 do
+        local angle= (2*i+1)/16*math.pi
+        local radius= headRadius*math.sqrt((math.cos(math.pi/8)+1)/2)-halfExtents[1]+BULLET_MARGIN
+        table.insert(parts, {
+            transform= {
+                rotation= {axis= {0,1,0}, angle= angle},
+                position= {radius*math.cos(angle), -3/8*headRadius-halfExtents[2]-BULLET_MARGIN, -radius*math.sin(angle)}
+            },
+            shape= shape,
+        })
+    end
+end
+
+-- Generates the shape of the head.
+local function head_shape()
+    local shapes = {}
+    table.insert(shapes,{
+        transform= {rotation= {0,0,0,1}, position= {0, -3/8*HEAD_RADIUS, 0}},
+        shape= {
+            type= "ConvexHull",
+            params= {
+                mass= math.pow(HEAD_RADIUS, 3) *2/3*math.pi * SHAPE_DENSITY,
+                vertices= halfSphere(HEAD_RADIUS),
+            }
+        }
+    })
+    table.insert(shapes,{
+        transform= {rotation= {axis={1,0,0}, angle= math.pi/2}, position= {0, 0, HEAD_RADIUS-0.125}},
+        shape= {
+            type= "Cylinder",
+            params= {
+                density= SHAPE_DENSITY,
+                halfExtents= {0.15, 0.15, 0.15},
+            }
+        }
+    })
+    neckSocketParts(shapes, HEAD_RADIUS, NECK_BALL_RADIUS, NECK_LENGTH)
+    return newShape({type="Compound", params= {children= shapes}})
+end
+
 local SHAPES= {
-    Head= newShape{type= "Sphere", params= {density= SHAPE_DENSITY, radius= HEAD_RADIUS}},
+    Head= newShape(head_shape()),
     Torso= newShape{type= "Cylinder", params= {density= SHAPE_DENSITY, halfExtents= TORSO_HALF_EXTENTS}},
     Arm= newShape{type= "Cylinder", params= {density= SHAPE_DENSITY, halfExtents= ARM_HALF_EXTENTS}},
     Forearm= newShape{type= "Cylinder", params= {density= SHAPE_DENSITY, halfExtents= FOREARM_HALF_EXTENTS}},
@@ -61,7 +133,7 @@ local JOINTS_INFO = {
             density= JOINT_DENSITY,
             convexTransform={rotation={1,0,0,0}, position={0, 1, 0}},
             generateConvexShape= true,
-            concaveTransform={rotation={1,0,0,0}, position={0, -NECK_BALL_RADIUS-HEAD_RADIUS-MARGIN, 0}},
+            concaveTransform={rotation={1,0,0,0}, position={0, -NECK_BALL_RADIUS-(3/8)*HEAD_RADIUS-NECK_LENGTH-MARGIN, 0}},
             radius= NECK_BALL_RADIUS,
             startRotation= {0,0,0,1},
         },
