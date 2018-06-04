@@ -15,6 +15,8 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <unordered_map>
+
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
@@ -105,8 +107,24 @@ void LuaStateView::pop(int n) {
     lua_pop(state, n);
 }
 
-void LuaStateView::open_base() {
-    luaopen_base(state);
+void LuaStateView::openLib(Lib lib) {
+    static const std::unordered_map<Lib,std::pair<int(*)(lua_State*),const char*>> openFunctions = {
+        {Lib::base, {luaopen_base, ""}},
+        {Lib::coroutine, {luaopen_coroutine, LUA_COLIBNAME}},
+        {Lib::table, {luaopen_table, LUA_TABLIBNAME}},
+        {Lib::io, {luaopen_io, LUA_IOLIBNAME}},
+        {Lib::os, {luaopen_os, LUA_OSLIBNAME}},
+        {Lib::string, {luaopen_string, LUA_STRLIBNAME}},
+        {Lib::utf8, {luaopen_utf8, LUA_UTF8LIBNAME}},
+        {Lib::bit32, {luaopen_bit32, LUA_BITLIBNAME}},
+        {Lib::math, {luaopen_math, LUA_MATHLIBNAME}},
+        {Lib::debug, {luaopen_debug, LUA_DBLIBNAME}},
+        {Lib::package, {luaopen_package, LUA_LOADLIBNAME}},
+    };
+
+    const auto& pair = openFunctions.at(lib);
+    luaL_requiref(state, pair.second, pair.first, true);
+    pop(1);
 }
 
 int LuaStateView::getTop() {

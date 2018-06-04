@@ -294,6 +294,11 @@ private:
         }
 
         void init(LuaStateView& state) override {
+            using Lib = LuaStateView::Lib;
+            state.openLib(Lib::base);
+            state.openLib(Lib::math);
+            state.openLib(Lib::table);
+
             state.push<Insight*>(&insight);
             state.setGlobal("insight");
             for (const auto& script : initScripts) {

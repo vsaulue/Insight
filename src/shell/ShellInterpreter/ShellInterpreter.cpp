@@ -31,7 +31,6 @@ void ShellInterpreter::run() {
     LuaState luaState;
     running = true;
 
-    luaState.open_base();
     config.init(luaState);
 
     std::string line;

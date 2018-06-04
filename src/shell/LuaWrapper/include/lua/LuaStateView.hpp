@@ -409,12 +409,27 @@ public:
      */
     void pop(int n);
 
+    /** List of standard Lua libraries. */
+    enum class Lib {
+        base,      /**< basic library. */
+        coroutine, /**< coroutine library. */
+        table,     /**< table manipulation. */
+        io,        /**< input and output. */
+        os,        /**< operating system facilities. */
+        string,    /**< string manipulation. */
+        utf8,      /**< basic UTF-8 support. */
+        bit32,     /**< bitwise operations library. */
+        math,      /**< mathematical functions. */
+        debug,     /**< debug facilities. */
+        package,   /**< package library. */
+    };
+
     /**
-     * Open the base Lua library.
+     * Open a standard Lua library.
      *
-     * This can push new elements on the stack.
+     * @param lib Identifier of the lib to open.
      */
-    void open_base();
+    void openLib(Lib lib);
 
     /**
      * Get the index of the highest element in the Lua stack.
