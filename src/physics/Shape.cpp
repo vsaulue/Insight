@@ -21,6 +21,7 @@
 
 #include "Shape.hpp"
 #include "CompoundShape.hpp"
+#include "ConvexHullShape.hpp"
 #include "CuboidShape.hpp"
 #include "CylinderShape.hpp"
 #include "SphereShape.hpp"
@@ -58,6 +59,8 @@ std::unique_ptr<Shape> Shape::luaGetFromTable(LuaTable& table) {
     LuaTable params = table.get<LuaNativeString, LuaTable>("params");
     if (type=="Compound") {
         return CompoundShape::luaGetFromTable(params);
+    } else if (type=="ConvexHull") {
+        return ConvexHullShape::luaGetFromTable(params);
     } else if (type=="Cuboid") {
         return CuboidShape::luaGetFromTable(params);
     } else if (type=="Cylinder") {
