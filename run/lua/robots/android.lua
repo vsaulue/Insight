@@ -1,7 +1,5 @@
 -- Example of script defining construction info for an android (IN PROGRESS).
 
-local PI = 3.14159
-
 -- Density of the body parts (kg/m^3).
 local SHAPE_DENSITY = 1500
 -- Density of the generated joint parts (kg/m^3).
@@ -94,9 +92,9 @@ local JOINTS_INFO = {
         type= "Cylindric",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,1,0}, angle=PI/2}, position={0, -ARM_HALF_EXTENTS[2], 0}},
+            convexTransform={rotation={axis={0,1,0}, angle=math.pi/2}, position={0, -ARM_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,1,0}, angle=PI/2}, position={0, FOREARM_HALF_EXTENTS[2]+ELBOW_CYLINDER_RADIUS+MARGIN, 0}},
+            concaveTransform={rotation={axis={0,1,0}, angle=math.pi/2}, position={0, FOREARM_HALF_EXTENTS[2]+ELBOW_CYLINDER_RADIUS+MARGIN, 0}},
             radius= ELBOW_CYLINDER_RADIUS,
             length= ARM_HALF_EXTENTS[1]*2,
             startRotation= 0,
@@ -106,9 +104,9 @@ local JOINTS_INFO = {
         type= "Cylindric",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,1,0}, angle=-PI/2}, position={0, -ARM_HALF_EXTENTS[2], 0}},
+            convexTransform={rotation={axis={0,1,0}, angle=-math.pi/2}, position={0, -ARM_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,1,0}, angle=-PI/2}, position={0, FOREARM_HALF_EXTENTS[2]+ELBOW_CYLINDER_RADIUS+MARGIN, 0}},
+            concaveTransform={rotation={axis={0,1,0}, angle=-math.pi/2}, position={0, FOREARM_HALF_EXTENTS[2]+ELBOW_CYLINDER_RADIUS+MARGIN, 0}},
             radius= ELBOW_CYLINDER_RADIUS,
             length= ARM_HALF_EXTENTS[1]*2,
             startRotation= 0,
@@ -118,9 +116,9 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,0,1}, angle=PI}, position={0, HAND_HALF_EXTENTS[2], 0}},
+            convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, HAND_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,0,1}, angle=PI}, position={0, -ARM_HALF_EXTENTS[2]-WRIST_BALL_RADIUS-MARGIN, 0}},
+            concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -ARM_HALF_EXTENTS[2]-WRIST_BALL_RADIUS-MARGIN, 0}},
             radius= WRIST_BALL_RADIUS,
             startRotation= {0,0,0,1},
         },
@@ -163,9 +161,9 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,0,1}, angle=PI}, position={0, 0.125, -0.2}},
+            convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, 0.125, -0.2}},
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,0,1}, angle=PI}, position={0, -ANKLE_BALL_RADIUS-LEG_HALF_EXTENTS[2]-MARGIN, 0}},
+            concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -ANKLE_BALL_RADIUS-LEG_HALF_EXTENTS[2]-MARGIN, 0}},
             radius= ANKLE_BALL_RADIUS,
             startRotation= {0,0,0,1},
         },
@@ -174,9 +172,9 @@ local JOINTS_INFO = {
         type= "Cylindric",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={1,0,0}, angle=-PI/2}, position={0, 0, FOOT_HALF_EXTENTS[3]}},
+            convexTransform={rotation={axis={1,0,0}, angle=-math.pi/2}, position={0, 0, FOOT_HALF_EXTENTS[3]}},
             generateConvexShape= true,
-            concaveTransform={rotation={axis={1,0,0}, angle=-PI/2}, position={0, 0, -TOES_HALF_EXTENTS[3]-FOOT_HALF_EXTENTS[2]-MARGIN}},
+            concaveTransform={rotation={axis={1,0,0}, angle=-math.pi/2}, position={0, 0, -TOES_HALF_EXTENTS[3]-FOOT_HALF_EXTENTS[2]-MARGIN}},
             radius= FOOT_HALF_EXTENTS[2],
             length= FOOT_HALF_EXTENTS[1]*2-0.01,
             startRotation= 0,
