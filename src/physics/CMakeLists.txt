@@ -19,6 +19,7 @@ add_library(PhysicEngine STATIC
     bullet.cpp
     CompoundShape.cpp
     ConvexHullShape.cpp
+    ConvexMesh.cpp
     CuboidShape.cpp
     CylinderShape.cpp
     Shape.cpp
