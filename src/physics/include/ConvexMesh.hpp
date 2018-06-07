@@ -44,6 +44,15 @@ public:
     ConvexMesh(std::vector<btVector3>&& vertices);
 
     /**
+     * Extrude all faces along their normals on the given distance.
+     *
+     * Only positive margins are supported.
+     *
+     * @param margin Extrusion distance.
+     */
+    void addMargin(btScalar margin);
+
+    /**
      * Gets the set of triangles of this mesh.
      *
      * <ul>

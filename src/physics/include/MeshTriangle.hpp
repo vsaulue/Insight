@@ -69,6 +69,21 @@ public:
     }
 
     /**
+     * Tests if this triangle has the given point as a vertex.
+     *
+     * This is a test by address, not by value.
+     *
+     * @param point Point to check.
+     * @return True if one of the 3 vertices of this triangle is the argument.
+     */
+    bool hasVertex(const btVector3& point) const {
+        auto it = std::find_if(vertices.begin(), vertices.end(), [&](const btVector3& value) -> bool {
+            return &point == &value;
+        });
+        return it != vertices.end();
+    }
+
+    /**
      * Gets a normal vector of this plane (normalized: length==1).
      * @return A normal vector of this plane.
      */

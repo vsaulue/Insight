@@ -18,6 +18,7 @@
 
 #include <array>
 #include <limits>
+#include <vector>
 
 #include "ConvexMesh.hpp"
 
@@ -45,6 +46,106 @@ Iterator maximize_element(Iterator first, Iterator last, Operation function) {
         }
     }
     return result;
+}
+
+/**
+ * Gets the next vertex in a triangle, in counter clockwise order (seen from the outside).
+ *
+ * This function assumes that vertices are stored in the same order in the triangle.
+ *
+ * @param face Triangle containing the vertices in CCW order.
+ * @param vertex A vertex of the given triangle.
+ * @return The next vertex in CCW order, seen from outside the mesh.
+ */
+static const btVector3& getNextVertexCCW(const MeshTriangle& face, const btVector3& vertex) {
+    const auto& vertices = face.getVertices();
+    auto it = std::find_if(vertices.begin(), vertices.end(), [&](const btVector3& value) -> bool {
+        return &vertex == &value;
+    });
+    unsigned index = std::distance(vertices.begin(), it);
+    return vertices[(index+1)%vertices.size()];
+}
+
+/**
+ * Sorts the faces containing the given vertex in clockwise order (seen from the outside).
+ *
+ * This must be the full set of faces containing this vertex: for a given triangle in the set,
+ * there must be exactly 2 adjacent triangles.
+ *
+ * @param vertex Vertex shared by all the faces
+ * @param faces Set of faces.
+ * @return The list of faces, sorted in clockwise order.
+ */
+static std::vector<const MeshTriangle*> sortFacesCW(const btVector3& vertex, const std::unordered_set<const MeshTriangle*>& faces) {
+    std::vector<const MeshTriangle*> result;
+    // generate the circular list.
+    result.reserve(faces.size());
+    auto current = faces.begin();
+    do {
+        const MeshTriangle& face = **current;
+        const btVector3& nextVertex = getNextVertexCCW(face, vertex);
+        result.emplace_back(*current);
+        current = std::find_if(faces.begin(), faces.end(), [&](const MeshTriangle* value) -> bool {
+            return (value != &face) && value->hasVertex(nextVertex);
+        });
+    } while (*current != result[0]);
+    return result;
+}
+
+/**
+ * Returns the angle of a vertex in a triangle.
+ *
+ * @param triangle Triangle containing the specified vertex.
+ * @param vertex Vertex in the given triangle.
+ * @return The angle defined by the 2 edges of the given vertex in the triangle.
+ */
+static btScalar angleInTriangle(const MeshTriangle& triangle, const btVector3* vertex) {
+    const auto& vertices = triangle.getVertices();
+    auto it = std::find_if(vertices.begin(), vertices.end(), [vertex](const btVector3& value) -> bool {
+        return vertex == &value;
+    });
+    auto index = std::distance(vertices.begin(), it);
+    return btAngle(vertices[(index+1)%3] - *it, vertices[(index+2)%3] - *it);
+}
+
+/**
+ * Partition an ordered set of faces according to the angle with their neighbours.
+ *
+ * Two adjacent faces will be placed in the same partition if the angle between
+ * their normal vectors is inferior to maxAngle.
+ *
+ * The ordered set is circular: the last item in the vector can be placed in the same
+ * partition as the first item.
+ *
+ * @param sortedFaces Circular vector of faces.
+ * @param maxAngle Maximum angles between the normals of adjacent triangles.
+ * @return A vector of the partitions.
+ */
+static std::vector<std::unordered_set<const MeshTriangle*>>
+partitionFacesByAngle(const std::vector<const MeshTriangle*>& sortedFaces, btScalar maxAngle) {
+    btScalar minCos = btCos(maxAngle);
+    auto shouldMerge = [minCos](const MeshTriangle* a, const MeshTriangle* b) -> bool {
+        return a->getNormal().dot(b->getNormal()) > minCos;
+    };
+    unsigned i = 0;
+    std::vector<std::unordered_set<const MeshTriangle*>> partitions;
+    while (i < sortedFaces.size()) {
+        const MeshTriangle* current = sortedFaces[i];
+        auto& partition = partitions.emplace_back();
+        partition.insert(current);
+        i++;
+        while ((i < sortedFaces.size()) && shouldMerge(current, sortedFaces[i])) {
+            current = sortedFaces[i];
+            partition.insert(current);
+            i++;
+        }
+    }
+    if (partitions.size() > 2 && shouldMerge(sortedFaces[0], sortedFaces[sortedFaces.size()-1])) {
+        auto& lastPart = partitions[partitions.size()-1];
+        partitions[0].insert(lastPart.begin(), lastPart.end());
+        partitions.pop_back();
+    }
+    return partitions;
 }
 
 /** Edge of a ConvexMesh. */
@@ -168,6 +269,42 @@ ConvexMesh::ConvexMesh(const std::vector<btVector3>& vertices) :
     ConvexMesh(std::vector(vertices))
 {
 
+}
+
+void ConvexMesh::addMargin(btScalar margin) {
+    if (margin < 0) {
+        throw std::invalid_argument("Can't add a negative margin");
+    }
+    std::unordered_map<const btVector3*, std::unordered_set<const MeshTriangle*>> vertexToTriangles;
+    for (const auto& face : triangles) {
+        for (const btVector3& vertex : face->getVertices()) {
+            auto it = vertexToTriangles.emplace(std::piecewise_construct, std::forward_as_tuple(&vertex), std::forward_as_tuple());
+            it.first->second.emplace(face.get());
+        }
+    }
+    std::vector<btVector3> newConvexHull;
+    newConvexHull.reserve(vertices.size());
+    for (auto& pair : vertexToTriangles) {
+        std::vector<const MeshTriangle*> circularList = sortFacesCW(*pair.first, pair.second);
+        std::vector<std::unordered_set<const MeshTriangle*>> partitions = partitionFacesByAngle(circularList, btScalar(SIMD_PI/7));
+        // extrude 1 vertex per partition.
+        for (const auto& partition : partitions) {
+            // direction = sum of the normals of each face in the partition, weighted
+            // by the angle of the 2 edges of this face. The goal is to extrude independently of
+            // how polygons were decomposed into triangles.
+            btVector3 extrudeDirection(0,0,0);
+            btScalar weightSum = 0;
+            for (auto face : partition) {
+                btScalar angle = angleInTriangle(*face, pair.first);
+                extrudeDirection+= angle * face->getNormal();
+                weightSum+= angle;
+            }
+            extrudeDirection = extrudeDirection / weightSum;
+            extrudeDirection.normalize();
+            newConvexHull.push_back(*pair.first + margin*extrudeDirection);
+        }
+    }
+    *this = std::move(ConvexMesh(std::move(newConvexHull)));
 }
 
 void ConvexMesh::addVertex(const btVector3& vertex) {
