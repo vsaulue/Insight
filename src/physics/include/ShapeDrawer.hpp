@@ -20,7 +20,8 @@
 #define SHAPEDRAWER_HPP
 
 #include "btBulletDynamicsCommon.h"
-#include "BulletCollision/CollisionShapes/btConvexPolyhedron.h"
+
+#include "ConvexMesh.hpp"
 
 /** 
  * Interface for reading the geometry of a Body outside the Physics engine.
@@ -71,7 +72,7 @@ public:
      * @param vertices
      * @param faces
      */
-    virtual void drawMesh(const btTransform& transform, const btAlignedObjectArray<btVector3>& vertices, const btAlignedObjectArray<btFace>& faces) = 0;
+    virtual void drawMesh(const btTransform& transform, const ConvexMesh& mesh) = 0;
 
     virtual ~ShapeDrawer() = default;
 };

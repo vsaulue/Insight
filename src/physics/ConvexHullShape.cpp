@@ -17,6 +17,7 @@
  */
 
 #include "ConvexHullShape.hpp"
+#include "ConvexMesh.hpp"
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/types/LuaNativeString.hpp"
@@ -27,7 +28,6 @@ ConvexHullShape::ConvexHullShape(btScalar mass, const std::vector<btVector3>& ve
 {
     // TODO: proper center of mass & inertia matrix computation.
     shape.optimizeConvexHull();
-    shape.initializePolyhedralFeatures(true);
 }
 
 ConvexHullShape::~ConvexHullShape() = default;
@@ -41,8 +41,13 @@ const btCollisionShape& ConvexHullShape::getBulletShape() const {
 }
 
 void ConvexHullShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
-    const btConvexPolyhedron& polyhedron = *shape.getConvexPolyhedron();
-    drawer.drawMesh(transform, polyhedron.m_vertices, polyhedron.m_faces);
+    std::vector<btVector3> vertices(shape.getNumVertices());
+    for (int index = 0; index < shape.getNumVertices(); index++) {
+        shape.getVertex(index, vertices[index]);
+    }
+    ConvexMesh mesh(std::move(vertices));
+    mesh.addMargin(shape.getMargin());
+    drawer.drawMesh(transform, mesh);
 }
 
 std::unique_ptr<ConvexHullShape> ConvexHullShape::luaGetFromTable(LuaTable& table) {
