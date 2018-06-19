@@ -18,6 +18,7 @@ add_executable(testUnits
     UnitsTestCommon.cpp
     UnitsTestDimensions.cpp
     UnitsTestUnits.cpp
+    UnitsTestUnitWrapper.cpp
 )
 
 target_link_libraries(testUnits Catch Units)
