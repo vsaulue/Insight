@@ -14,22 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(graphics)
-add_subdirectory(graphs)
-add_subdirectory(physics)
-add_subdirectory(robotics)
-add_subdirectory(shell)
-add_subdirectory(units)
+add_library(Units INTERFACE)
 
-add_executable(Insight
-    main.cpp
-)
+target_include_directories(Units INTERFACE include)
 
-target_link_libraries(Insight PRIVATE
-    Boost::program_options
-    GraphicEngine
-    LuaWrapper
-    PhysicEngine
-    Robotics
-    ShellInterpreter
-)
+add_subdirectory(tests)
