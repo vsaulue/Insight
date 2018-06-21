@@ -25,6 +25,7 @@
 namespace Units {
     /** Identifier of meter unit (distance). */
     struct Meter : UnitIdentifier<D::Length> {
+        static constexpr char symbol[] = "m";
         static constexpr double ratio = 1;
     };
     /** Instance of the type representing values in meters. */
@@ -32,6 +33,7 @@ namespace Units {
 
     /** Identifier of second unit (time). */
     struct Second : UnitIdentifier<D::Time> {
+        static constexpr char symbol[] = "s";
         static constexpr double ratio = 1;
     };
     /** Instance of the type representing values in seconds. */
@@ -39,6 +41,7 @@ namespace Units {
 
     /** Identifier of kilogram unit (mass). */
     struct Kilogram : UnitIdentifier<D::Mass> {
+        static constexpr char symbol[] = "kg";
         static constexpr double ratio = 1;
     };
     /** Instance of the type representing values in kilograms. */
@@ -46,6 +49,7 @@ namespace Units {
 
     /** Identifier of radian unit (angle). */
     struct Radian : UnitIdentifier<D::Angle> {
+        static constexpr char symbol[] = "rad";
         static constexpr double ratio = 1;
     };
     /** Instance of the type representing values in radians. */
@@ -53,6 +57,7 @@ namespace Units {
 
     /** Identifier of degree unit (angle). */
     struct Degree : UnitIdentifier<D::Angle> {
+        static constexpr char symbol[] = "deg";
         static constexpr double ratio = Radian::ratio * 180.0 / 3.14159265359;
     };
     /** Instance of the type representing values in degrees (angle). */
