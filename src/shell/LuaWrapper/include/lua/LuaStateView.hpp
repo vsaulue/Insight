@@ -396,6 +396,13 @@ public:
     double checkNumber(int stackIndex);
 
     /**
+     * Tests if the value at the specified index is a number.
+     * @param stackIndex Index of the item to check in the stack.
+     * @return True if the value at the given index is a number.
+     */
+    bool isNumber(int stackIndex);
+
+    /**
      * Tests if the value at the specified index is nil.
      * @param stackIndex Index of the item to check in the stack.
      * @return True if the value at the given index is nil.

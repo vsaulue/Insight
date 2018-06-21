@@ -17,5 +17,6 @@
 add_library(Units INTERFACE)
 
 target_include_directories(Units INTERFACE include)
+target_link_libraries(Units INTERFACE LuaWrapper)
 
 add_subdirectory(tests)

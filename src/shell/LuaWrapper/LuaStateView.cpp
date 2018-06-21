@@ -30,6 +30,10 @@ double LuaStateView::checkNumber(int stackIndex) {
     return luaL_checknumber(state, stackIndex);
 }
 
+bool LuaStateView::isNumber(int stackIndex) {
+    return lua_isnumber(state, stackIndex) != 0;
+}
+
 bool LuaStateView::isNil(int stackIndex) {
     return lua_isnil(state, stackIndex) != 0;
 }
