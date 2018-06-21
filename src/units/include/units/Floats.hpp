@@ -29,10 +29,7 @@ namespace Units {
     template<typename DataType, typename Unit>
     struct UnitWrapper<DataType,Unit,typename std::enable_if<std::is_floating_point<DataType>::value>::type> : public BasicUnitWrapper<DataType,Unit> {
     public:
-        template<typename... ArgTypes>
-        UnitWrapper(ArgTypes&&... args) : BasicUnitWrapper<DataType,Unit>(std::forward<ArgTypes>(args)...) {
-
-        }
+        using BasicUnitWrapper<DataType,Unit>::BasicUnitWrapper;
     };
 
     /** Float value with a unit type. */

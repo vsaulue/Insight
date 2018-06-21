@@ -58,6 +58,13 @@ namespace Units {
 
     template<typename DataType, typename _Unit>
     struct BasicUnitWrapper {
+    protected:
+        /**
+         * Tests if the unit of this object has the same dimention as another unit.
+         * @tparam OtherUnit Unit to compare to the one of this object.
+         */
+        template<typename OtherUnit>
+        struct has_same_dim_as : std::integral_constant<bool, (typename OtherUnit::Dim){} == (typename _Unit::Dim){}> {};
     public:
         /** Unit of the value of this object. */
         using Unit = _Unit;
@@ -85,9 +92,9 @@ namespace Units {
          * Requires the argument to be of the same dimension as this object. The value
          * will be converted to the unit of this object.
          *
-         * @param value
+         * @param value Copied value
          */
-        template<typename OtherDataType, typename OtherUnit>
+        template<typename OtherDataType, typename OtherUnit, typename std::enable_if<has_same_dim_as<OtherUnit>::value,int>::type=0>
         BasicUnitWrapper(const BasicUnitWrapper<OtherDataType,OtherUnit>& value)
             : value(details::convert<Unit>(value))
         {
@@ -100,10 +107,10 @@ namespace Units {
          * Requires the argument to be of the same dimension as this object. The value
          * will be converted to the unit of this object.
          *
-         * @param other
-         * @return
+         * @param other Copied value.
+         * @return A reference to this object.
          */
-        template<typename OtherDataType, typename OtherUnit>
+        template<typename OtherDataType, typename OtherUnit, typename std::enable_if<has_same_dim_as<OtherUnit>::value,int>::type=0>
         BasicUnitWrapper& operator=(const BasicUnitWrapper<OtherDataType,OtherUnit>& other) {
             value = details::convert<Unit>(other);
             return *this;
