@@ -17,6 +17,7 @@
 add_executable(testUnits
     UnitsTestCommon.cpp
     UnitsTestDimensions.cpp
+    UnitsTestSystems.cpp
     UnitsTestUnits.cpp
     UnitsTestUnitWrapper.cpp
 )
