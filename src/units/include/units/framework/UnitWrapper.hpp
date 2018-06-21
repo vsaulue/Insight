@@ -61,6 +61,16 @@ namespace Units {
         using can_div_eq = std::is_same<void,std::void_t<decltype(std::declval<T1&>() /= std::declval<T2&>())>>;
     }
 
+    /**
+     * -UnitWrapper operator.
+     * @param val Unique operand.
+     * @return A UnitWrapper object equals to -UnitWrapper.
+     */
+    template<typename DataType, typename Unit>
+    auto operator-(const UnitWrapper<DataType,Unit>& val) {
+        return UnitWrapper<DataType,Unit>(-val.value);
+    }
+
     /** UnitWrapper + UnitWrapper operator.
      *
      * The two operands must have the same unit.

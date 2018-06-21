@@ -65,6 +65,11 @@ TEST_CASE("UnitWrapper<float,*>") {
             }
         }
 
+        SECTION("Unary operator-") {
+            U::Float<decltype(U::degree)> deg2 = -deg;
+            REQUIRE(deg2.value == -deg.value);
+        }
+
         SECTION("operator+=") {
             SECTION("Same unit") {
                 U::Float<decltype(U::degree)> deg2(45);
