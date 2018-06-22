@@ -28,6 +28,8 @@
 #include "lua/types/LuaVirtualClass.hpp"
 #include "Shape.hpp"
 #include "ShapeDrawer.hpp"
+#include "units/SI.hpp"
+#include "units/Vector3.hpp"
 
 /** Object of the world (physics engine). */
 class Body : public LuaVirtualClass {
@@ -39,7 +41,17 @@ public:
      */
     Body(std::shared_ptr<Shape> shape);
 
-    void setPosition(const btVector3& newPos);
+    /**
+     * Gets the position of this object.
+     * @return The position of this object.
+     */
+    Vector3<SI::Length> getPosition() const;
+
+    /**
+     * Sets the position of this object.
+     * @param newPos The new position of this object.
+     */
+    void setPosition(const Vector3<SI::Length>& newPos);
 
     /**
      * Sets the orientation of this object.
@@ -58,6 +70,18 @@ public:
      * @return The current position & orientation of this object.
      */
     const btTransform& getTransform() const;
+
+    /**
+     * Gets the linear velocity of this object.
+     * @return The linear velocity of this object.
+     */
+    Vector3<SI::Speed> getLinearVelocity() const;
+
+    /**
+     * Sets the linear velocity of this object.
+     * @param velocity The new linear velocity of this object.
+     */
+    void setLinearVelocity(const Vector3<SI::Speed>& velocity);
 
     /**
      * Gets a reference to the Bullet representation of this Body.

@@ -27,6 +27,16 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/types/LuaNativeString.hpp"
 
+template<>
+class LuaBinding<btVector3> : public LuaDefaultBinding<btVector3> {
+public:
+    static btVector3 getFromTable(LuaTable& table);
+
+    static int luaIndexImpl(btVector3& object, const std::string& memberName, LuaStateView& state);
+
+    static std::string luaToStringImpl(btVector3& object);
+};
+
 btVector3 LuaBinding<btVector3>::getFromTable(LuaTable& table) {
     using Str = LuaNativeString;
     if (table.has<Str>("x")) {
@@ -137,4 +147,18 @@ std::string LuaBinding<btTransform>::luaToStringImpl(btTransform& object) {
     std::string rotation = LuaBinding<btQuaternion>::luaToStringImpl(quat);
     result << "{position=" << position << ", rotation=" << rotation << "}";
     return result.str();
+}
+
+namespace details {
+    btVector3 LuaVector3Binding::getFromTable(LuaTable& table) {
+        return LuaBinding<btVector3>::getFromTable(table);
+    }
+
+    int LuaVector3Binding::luaIndexImpl(btVector3& object, const std::string& memberName, LuaStateView& state) {
+        return LuaBinding<btVector3>::luaIndexImpl(object, memberName, state);
+    }
+
+    std::string LuaVector3Binding::luaToStringImpl(btVector3& object) {
+        return LuaBinding<btVector3>::luaToStringImpl(object);
+    }
 }

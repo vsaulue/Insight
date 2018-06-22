@@ -23,19 +23,13 @@
 
 #include "btBulletDynamicsCommon.h"
 
+#include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/LuaDefaultBinding.hpp"
+#include "lua/bindings/units/Floats.hpp"
 #include "lua/LuaBinding.hpp"
 #include "lua/types/LuaTable.hpp"
-
-template<>
-class LuaBinding<btVector3> : public LuaDefaultBinding<btVector3> {
-public:
-    static btVector3 getFromTable(LuaTable& table);
-
-    static int luaIndexImpl(btVector3& object, const std::string& memberName, LuaStateView& state);
-
-    static std::string luaToStringImpl(btVector3& object);
-};
+#include "units/framework/UnitSymbols.hpp"
+#include "units/Vector3.hpp"
 
 template<>
 class LuaBinding<btQuaternion> : public LuaDefaultBinding<btQuaternion> {
@@ -55,6 +49,37 @@ public:
     static int luaIndexImpl(btTransform& object, const std::string& memberName, LuaStateView& state);
 
     static std::string luaToStringImpl(btTransform& object);
+};
+
+namespace details {
+    struct LuaVector3Binding {
+        static btVector3 getFromTable(LuaTable& table);
+
+        static int luaIndexImpl(btVector3& object, const std::string& memberName, LuaStateView& state);
+
+        static std::string luaToStringImpl(btVector3& object);
+    };
+}
+
+template<typename Unit>
+class LuaBinding<Vector3<Unit>> : public LuaDefaultBinding<Vector3<Unit>> {
+public:
+    static const std::string& luaClassName() {
+        static const std::string className(std::string("Vector3<") + Units::unitSymbol<Unit>() + ">");
+        return className;
+    }
+
+    static Vector3<Unit> getFromTable(LuaTable& table) {
+        return Vector3<Unit>(details::LuaVector3Binding::getFromTable(table));
+    }
+
+    static int luaIndexImpl(Vector3<Unit>& object, const std::string& memberName, LuaStateView& state) {
+        return details::LuaVector3Binding::luaIndexImpl(object.value, memberName, state);
+    }
+
+    static std::string luaToStringImpl(Vector3<Unit>& object) {
+        return details::LuaVector3Binding::luaToStringImpl(object.value);
+    }
 };
 
 #endif /* LUA_BINDINGS_BULLET_HPP */

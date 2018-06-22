@@ -26,28 +26,34 @@
 #include "CylinderShape.hpp"
 #include "SphereShape.hpp"
 #include "StaticPlaneShape.hpp"
+#include "units/BulletUnits.hpp"
 
 
-Shape::Shape(btScalar mass) : mass(mass) {
+Shape::Shape(Scalar<SI::Mass> mass) : mass(mass) {
 
 }
 
-btVector3 Shape::getInertia() const {
+btVector3 Shape::getEngineInertia() const {
     btVector3 inertia;
-    if (mass > 0) {
-        getBulletShape().calculateLocalInertia(mass, inertia);
+    btScalar bulletMass = toBulletUnits(mass);
+    if (bulletMass > 0) {
+        getBulletShape().calculateLocalInertia(bulletMass, inertia);
     } else {
         inertia={0,0,0};
     }
     return inertia;
 }
 
+Vector3<SI::AngularMass> Shape::getInertia() const {
+    return fromBulletValue<SI::AngularMass>(getEngineInertia());
+}
+
 int Shape::luaIndex(const std::string& memberName, LuaStateView& state) {
     int result = 1;
     if (memberName=="mass") {
-        state.push<btScalar>(mass);
+        state.push<Scalar<SI::Mass>>(mass);
     } else if (memberName=="inertia") {
-        state.push<btVector3>(getInertia());
+        state.push<Vector3<SI::AngularMass>>(getInertia());
     } else {
         result = 0;
     }

@@ -149,14 +149,14 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<RobotBody>;
     int result = 1;
     if (memberName=="position") {
-        state.push<btVector3>(baseBody->getTransform().getOrigin());
+        state.push<Vector3<SI::Length>>(baseBody->getPosition());
     } else if (memberName=="setPosition") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
             Body& base = *object.baseBody;
-            btVector3 newPos = state.get<btVector3>(2);
-            btVector3 translation = newPos - base.getTransform().getOrigin();
+            auto newPos = state.get<Vector3<SI::Length>>(2);
+            auto translation = newPos - base.getPosition();
             for (auto& part : object.parts) {
-                part.second->setPosition(part.second->getTransform().getOrigin() + translation);
+                part.second->setPosition(part.second->getPosition() + translation);
             }
             return 0;
         });

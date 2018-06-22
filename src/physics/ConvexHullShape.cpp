@@ -21,11 +21,15 @@
 #include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/types/LuaNativeString.hpp"
+#include "units/BulletUnits.hpp"
 
-ConvexHullShape::ConvexHullShape(btScalar mass, const std::vector<btVector3>& vertices) :
-    Shape(mass),
-    shape(reinterpret_cast<const btScalar*>(vertices.data()), vertices.size())
+ConvexHullShape::ConvexHullShape(Scalar<SI::Mass> mass, const std::vector<Vector3<SI::Length>>& vertices) :
+    Shape(mass)
 {
+    for (auto& vertex : vertices) {
+        shape.addPoint(toBulletUnits(vertex), false);
+    }
+    shape.recalcLocalAabb();
     // TODO: proper center of mass & inertia matrix computation.
     shape.optimizeConvexHull();
 }
@@ -51,11 +55,11 @@ void ConvexHullShape::draw(ShapeDrawer& drawer, const btTransform& transform) co
 }
 
 std::unique_ptr<ConvexHullShape> ConvexHullShape::luaGetFromTable(LuaTable& table) {
-    btScalar mass = table.get<LuaNativeString,btScalar>("mass");
+    auto mass = table.get<LuaNativeString,Scalar<SI::Mass>>("mass");
     LuaTable verticesTable = table.get<LuaNativeString,LuaTable>("vertices");
-    std::vector<btVector3> vertices;
+    std::vector<Vector3<SI::Length>> vertices;
     for (unsigned i = 1; verticesTable.has<float>(i); i++) {
-        vertices.push_back(verticesTable.get<float,btVector3>(i));
+        vertices.push_back(verticesTable.get<float,Vector3<SI::Length>>(i));
     }
     return std::make_unique<ConvexHullShape>(mass, vertices);
 }

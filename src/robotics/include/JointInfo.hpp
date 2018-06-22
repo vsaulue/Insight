@@ -28,6 +28,8 @@
 #include "Joint.hpp"
 #include "lua/types/LuaTable.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
 
 /** Joint configuration info. */
 struct JointInfo : public LuaVirtualClass {
@@ -42,7 +44,7 @@ public:
      * @param generateConvex True if the convex shape should be added to the shape of its body.
      * @param concaveTransform Relative transform of the concave joint component in its body part.
      */
-    JointInfo(btScalar density, const btTransform& convexTransform, bool generateConvex, const btTransform& concaveTransform) :
+    JointInfo(Scalar<SI::Density> density, const btTransform& convexTransform, bool generateConvex, const btTransform& concaveTransform) :
         jointDensity(density),
         convexTransform(convexTransform),
         generateConvexShape(generateConvex),
@@ -70,7 +72,7 @@ public:
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
     /** Density of the generated parts (kg/m^3). */
-    btScalar jointDensity;
+    Scalar<SI::Density> jointDensity;
     /** Relative position of the convex joint part to the CompoundBody containing it. */
     btTransform convexTransform;
     /** Generates the collision shape of the convex part. */

@@ -16,14 +16,15 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/bindings/bullet.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "lua/types/LuaTable.hpp"
 #include "SphereShape.hpp"
+#include "units/BulletUnits.hpp"
 
-SphereShape::SphereShape(btScalar mass, btScalar radius) :
+SphereShape::SphereShape(Scalar<SI::Mass> mass, Scalar<SI::Length> radius) :
     Shape(mass),
-    shape(radius)
+    shape(toBulletUnits(radius))
 {
 
 }
@@ -33,20 +34,20 @@ SphereShape::SphereShape(btScalar mass, btScalar radius) :
  * @param[in] radius Radius of the sphere.
  * @return The volume of the sphere.
  */
-static btScalar sphereVolume(btScalar radius) {
+static Scalar<SI::Volume> sphereVolume(Scalar<SI::Length> radius) {
     return SIMD_PI*btScalar(4)/btScalar(3)*radius*radius*radius;
 }
 
-SphereShape::SphereShape(Density density, btScalar radius) :
-    SphereShape(sphereVolume(radius)*density.value, radius)
+SphereShape::SphereShape(Scalar<SI::Density> density, Scalar<SI::Length> radius) :
+    SphereShape(sphereVolume(radius)*density, radius)
 {
 
 }
 
 SphereShape::~SphereShape() = default;
 
-btScalar SphereShape::getRadius() const {
-    return shape.getRadius();
+Scalar<SI::Length> SphereShape::getRadius() const {
+    return fromBulletValue<SI::Length>(shape.getRadius());
 }
 
 
@@ -65,7 +66,7 @@ void SphereShape::draw(ShapeDrawer& drawer, const btTransform& transform) const 
 int SphereShape::luaIndex(const std::string& memberName, LuaStateView& state) {
     int result = 1;
     if (memberName=="radius") {
-        state.push<btScalar>(getRadius());
+        state.push<Scalar<SI::Length>>(getRadius());
     } else {
         result = Shape::luaIndex(memberName, state);
     }
@@ -73,12 +74,12 @@ int SphereShape::luaIndex(const std::string& memberName, LuaStateView& state) {
 }
 
 std::unique_ptr<SphereShape> SphereShape::luaGetFromTable(LuaTable& table) {
-    btScalar radius = table.get<LuaNativeString,btScalar>("radius");
-    btScalar mass;
+    auto radius = table.get<LuaNativeString,Scalar<SI::Length>>("radius");
+    Scalar<SI::Mass> mass;
     if (table.has<LuaNativeString>("mass")) {
-        mass = table.get<LuaNativeString,btScalar>("mass");
+        mass = table.get<LuaNativeString,Scalar<SI::Mass>>("mass");
     } else {
-        btScalar density = table.get<LuaNativeString,btScalar>("density");
+        auto density = table.get<LuaNativeString,Scalar<SI::Density>>("density");
         mass = density * sphereVolume(radius);
     }
     return std::make_unique<SphereShape>(mass, radius);

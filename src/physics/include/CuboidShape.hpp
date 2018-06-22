@@ -25,6 +25,9 @@
 
 #include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
+#include "units/Vector3.hpp"
 
 /** Cuboid shape. */
 class CuboidShape : public Shape {
@@ -34,14 +37,14 @@ public:
      * @param[in] mass Mass of this shape.
      * @param[in] halfExtents Half extents (scale coefficients on each axis) of this new shape.
      */
-    CuboidShape(btScalar mass, const btVector3& halfExtents);
+    CuboidShape(Scalar<SI::Mass> mass, const Vector3<SI::Length>& halfExtents);
 
     /**
      * Creates a new cuboid shape.
      * @param[in] density Density of this shape.
      * @param[in] halfExtents Half extents (scale coefficients on each axis) of this new shape.
      */
-    CuboidShape(Density density, const btVector3& halfExtents);
+    CuboidShape(Scalar<SI::Density> density, const Vector3<SI::Length>& halfExtents);
 
     virtual ~CuboidShape();
 
@@ -49,7 +52,7 @@ public:
      * Gets the half extents of this cuboid.
      * @return The half extents of this cuboid.
      */
-    btVector3 getHalfExtents() const;
+    Vector3<SI::Length> getHalfExtents() const;
 
     btCollisionShape& getBulletShape() override;
 

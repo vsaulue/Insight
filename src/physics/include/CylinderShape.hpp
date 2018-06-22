@@ -25,6 +25,9 @@
 
 #include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
+#include "units/Vector3.hpp"
 
 /**
  * Cylinder Shape.
@@ -38,14 +41,14 @@ public:
      * @param mass Mass of this shape.
      * @param halfExtents Half extents (scale coefficients on each axis) of this new shape.
      */
-    CylinderShape(btScalar mass, const btVector3& halfExtents);
+    CylinderShape(Scalar<SI::Mass> mass, const Vector3<SI::Length>& halfExtents);
 
     /**
      * Creates a new cylinder shape.
-     * @param mass Density if this shape.
+     * @param density Density if this shape.
      * @param halfExtents Half extents (scale coefficients on each axis) of this new shape.
      */
-    CylinderShape(Density density, const btVector3& halfExtents);
+    CylinderShape(Scalar<SI::Density> density, const Vector3<SI::Length>& halfExtents);
 
     virtual ~CylinderShape();
 
@@ -53,7 +56,7 @@ public:
      * Gets the half extents of this cylinder.
      * @return The half extents of this cylinder.
      */
-    btVector3 getHalfExtents() const;
+    Vector3<SI::Length> getHalfExtents() const;
 
     btCollisionShape& getBulletShape() override;
 

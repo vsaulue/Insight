@@ -20,22 +20,23 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "StaticPlaneShape.hpp"
+#include "units/BulletUnits.hpp"
 
-StaticPlaneShape::StaticPlaneShape(const btVector3& normal, btScalar offset) :
-    Shape(0),
-    shape(normal, offset)
+StaticPlaneShape::StaticPlaneShape(const Vector3<SI::NoUnit>& normal, Scalar<SI::Length> offset) :
+    Shape(Scalar<SI::Mass>(0)),
+    shape(toBulletUnits(normal), toBulletUnits(offset))
 {
 
 }
 
 StaticPlaneShape::~StaticPlaneShape() = default;
 
-const btVector3& StaticPlaneShape::getNormal() const {
-    return shape.getPlaneNormal();
+Vector3<SI::NoUnit> StaticPlaneShape::getNormal() const {
+    return fromBulletValue<SI::NoUnit>(shape.getPlaneNormal());
 }
 
-btScalar StaticPlaneShape::getOffset() const {
-    return shape.getPlaneConstant();
+Scalar<SI::Length> StaticPlaneShape::getOffset() const {
+    return fromBulletValue<SI::Length>(shape.getPlaneConstant());
 }
 
 btCollisionShape& StaticPlaneShape::getBulletShape() {
@@ -55,9 +56,9 @@ void StaticPlaneShape::draw(ShapeDrawer& drawer, const btTransform& transform) c
 int StaticPlaneShape::luaIndex(const std::string& memberName, LuaStateView& state) {
     int result = 1;
     if (memberName=="normal") {
-        state.push<btVector3>(getNormal());
+        state.push<Vector3<SI::NoUnit>>(getNormal());
     } else if (memberName=="offset") {
-        state.push<btScalar>(getOffset());
+        state.push<Scalar<SI::Length>>(getOffset());
     } else {
         result = Shape::luaIndex(memberName, state);
     }
@@ -65,7 +66,7 @@ int StaticPlaneShape::luaIndex(const std::string& memberName, LuaStateView& stat
 }
 
 std::unique_ptr<StaticPlaneShape> StaticPlaneShape::luaGetFromTable(LuaTable& table) {
-    btVector3 normal = table.get<LuaNativeString,btVector3>("normal");
-    btScalar offset = table.get<LuaNativeString,btScalar>("offset");
+    auto normal = table.get<LuaNativeString,Vector3<SI::NoUnit>>("normal");
+    auto offset = table.get<LuaNativeString,Scalar<SI::Length>>("offset");
     return std::make_unique<StaticPlaneShape>(normal, offset);
 }

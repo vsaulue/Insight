@@ -26,6 +26,7 @@
 
 #include "CompoundShape.hpp"
 #include "JointInfo.hpp"
+#include "units/Scalar.hpp"
 
 /**
  * Parameters to describe & construct a spherical joint.
@@ -44,8 +45,8 @@ public:
      * @param radius Radius of the ball.
      * @param startRotation Relative orientation of the ball body part to the socket part.
      */
-    SphericalJointInfo(btScalar density, const btTransform& ballTransform, bool generateBall, const btTransform& socketTransform,
-                   btScalar radius, const btQuaternion& startRotation) :
+    SphericalJointInfo(Scalar<SI::Density> density, const btTransform& ballTransform, bool generateBall, const btTransform& socketTransform,
+                   Scalar<SI::Length> radius, const btQuaternion& startRotation) :
         JointInfo(density, ballTransform, generateBall, socketTransform),
         ballRadius(radius),
         startRotation(startRotation)
@@ -56,7 +57,7 @@ public:
     virtual ~SphericalJointInfo() = default;
 
     /** Radius of the ball (m).*/
-    btScalar ballRadius;
+    Scalar<SI::Length> ballRadius;
     /** Relative orientation of the ball body part to the socket part. */
     btQuaternion startRotation;
 

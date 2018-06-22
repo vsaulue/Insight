@@ -23,6 +23,7 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/types/LuaMethod.hpp"
+#include "units/BulletUnits.hpp"
 
 /** Custom implementation of btMotionState. */
 class Body::MotionState : public btMotionState {
@@ -62,7 +63,7 @@ public:
 Body::Body(std::shared_ptr<Shape> shape) :
     shape(std::move(shape)),
     motionState(std::make_unique<MotionState>()),
-    body(this->shape->getMass(), motionState.get(), &this->shape->getBulletShape(), this->shape->getInertia())
+    body(toBulletUnits(this->shape->getMass()), motionState.get(), &this->shape->getBulletShape(), this->shape->getEngineInertia())
 {
 
 }
@@ -71,10 +72,13 @@ const btTransform& Body::getTransform() const {
     return body.getWorldTransform();
 }
 
+Vector3<SI::Length> Body::getPosition() const {
+    return fromBulletValue<SI::Length>(body.getWorldTransform().getOrigin());
+}
 
-void Body::setPosition(const btVector3& newPos) {
+void Body::setPosition(const Vector3<SI::Length>& newPos) {
     btTransform newTransform = getTransform();
-    newTransform.setOrigin(newPos);
+    newTransform.setOrigin(toBulletUnits(newPos));
     setTransform(newTransform);
 }
 
@@ -90,6 +94,13 @@ void Body::setTransform(const btTransform& transform) {
     motionState->setWorldTransform(transform);
 }
 
+Vector3<SI::Speed> Body::getLinearVelocity() const {
+    return fromBulletValue<SI::Speed>(body.getLinearVelocity());
+}
+
+void Body::setLinearVelocity(const Vector3<SI::Speed>& velocity) {
+    body.setLinearVelocity(toBulletUnits(velocity));
+}
 
 btRigidBody& Body::getBulletBody() {
     return body;
@@ -99,19 +110,19 @@ int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<Body>;
     int result = 1;
     if (memberName=="position") {
-        state.push<btVector3>(getTransform().getOrigin());
+        state.push<Vector3<SI::Length>>(getPosition());
     } else if (memberName=="setPosition") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
-            btVector3 newPos = state.get<btVector3>(2);
+            auto newPos = state.get<Vector3<SI::Length>>(2);
             object.setPosition(newPos);
             return 0;
         });
     } else if (memberName=="velocity") {
-        state.push<btVector3>(body.getLinearVelocity());
+        state.push<Vector3<SI::Speed>>(getLinearVelocity());
     } else if (memberName=="setVelocity") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
-            btVector3 vel = state.get<btVector3>(2);
-            object.body.setLinearVelocity(vel);
+            auto vel = state.get<Vector3<SI::Speed>>(2);
+            object.setLinearVelocity(vel);
             return 0;
         });
     } else if (memberName=="rotation") {

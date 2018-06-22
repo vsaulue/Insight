@@ -24,9 +24,8 @@
 #include "lua/types/LuaNativeString.hpp"
 
 void SphericalJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const {
-    using Density = Shape::Density;
     if (generateConvexShape) {
-        shapeInfo.push_back({std::make_shared<SphereShape>(Density(jointDensity), ballRadius), convexTransform});
+        shapeInfo.push_back({std::make_shared<SphereShape>(jointDensity, ballRadius), convexTransform});
     }
 }
 
@@ -36,11 +35,11 @@ std::unique_ptr<Joint> SphericalJointInfo::makeJoint(Body& convexPart, Body& con
 
 std::unique_ptr<SphericalJointInfo> SphericalJointInfo::luaGetFromTable(LuaTable& table) {
     return std::make_unique<SphericalJointInfo>(
-            table.get<LuaNativeString,btScalar>("density"),
+            table.get<LuaNativeString,Scalar<SI::Density>>("density"),
             table.get<LuaNativeString,btTransform>("convexTransform"),
             table.get<LuaNativeString,bool>("generateConvexShape"),
             table.get<LuaNativeString,btTransform>("concaveTransform"),
-            table.get<LuaNativeString,btScalar>("radius"),
+            table.get<LuaNativeString,Scalar<SI::Length>>("radius"),
             table.get<LuaNativeString,btQuaternion>("startRotation")
     );
 }

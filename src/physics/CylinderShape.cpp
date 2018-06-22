@@ -20,10 +20,11 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "CylinderShape.hpp"
+#include "units/BulletUnits.hpp"
 
-CylinderShape::CylinderShape(btScalar mass, const btVector3& halfExtents) :
+CylinderShape::CylinderShape(Scalar<SI::Mass> mass, const Vector3<SI::Length>& halfExtents) :
     Shape(mass),
-    shape(halfExtents)
+    shape(toBulletUnits(halfExtents))
 {
 
 }
@@ -33,20 +34,20 @@ CylinderShape::CylinderShape(btScalar mass, const btVector3& halfExtents) :
  * @param[in] halfExtents Half extents of the cylinder.
  * @return The volume of the cylinder.
  */
-static btScalar cylinderVolume(const btVector3& halfExtents) {
+static Scalar<SI::Volume> cylinderVolume(const Vector3<SI::Length>& halfExtents) {
     return SIMD_PI*halfExtents.x()*halfExtents.z() * 2*halfExtents.y();
 }
 
-CylinderShape::CylinderShape(Density density, const btVector3& halfExtents) :
-    CylinderShape(cylinderVolume(halfExtents)*density.value, halfExtents)
+CylinderShape::CylinderShape(Scalar<SI::Density> density, const Vector3<SI::Length>& halfExtents) :
+    CylinderShape(cylinderVolume(halfExtents)*density, halfExtents)
 {
 
 }
 
 CylinderShape::~CylinderShape() = default;
 
-btVector3 CylinderShape::getHalfExtents() const {
-    return shape.getHalfExtentsWithMargin();
+Vector3<SI::Length> CylinderShape::getHalfExtents() const {
+    return fromBulletValue<SI::Length>(shape.getHalfExtentsWithMargin());
 }
 
 btCollisionShape& CylinderShape::getBulletShape() {
@@ -58,14 +59,14 @@ const btCollisionShape& CylinderShape::getBulletShape() const {
 }
 
 void CylinderShape::draw(ShapeDrawer& drawer, const btTransform& transform) const {
-    btVector3 halfExtents = getHalfExtents();
+    btVector3 halfExtents = shape.getHalfExtentsWithMargin();
     drawer.drawCylinder(transform, halfExtents);
 }
 
 int CylinderShape::luaIndex(const std::string& memberName, LuaStateView& state) {
     int result = 1;
     if (memberName=="halfExtents") {
-        state.push<btVector3>(getHalfExtents());
+        state.push<Vector3<SI::Length>>(getHalfExtents());
     } else {
         result = Shape::luaIndex(memberName, state);
     }
@@ -73,12 +74,12 @@ int CylinderShape::luaIndex(const std::string& memberName, LuaStateView& state) 
 }
 
 std::unique_ptr<CylinderShape> CylinderShape::luaGetFromTable(LuaTable& table) {
-    btVector3 halfExtents = table.get<LuaNativeString,btVector3>("halfExtents");
-    btScalar mass;
+    auto halfExtents = table.get<LuaNativeString,Vector3<SI::Length>>("halfExtents");
+    Scalar<SI::Mass> mass;
     if (table.has<LuaNativeString>("mass")) {
-        mass = table.get<LuaNativeString,btScalar>("mass");
+        mass = table.get<LuaNativeString,Scalar<SI::Mass>>("mass");
     } else {
-        btScalar density = table.get<LuaNativeString,btScalar>("density");
+        auto density = table.get<LuaNativeString,Scalar<SI::Density>>("density");
         mass = density * cylinderVolume(halfExtents);
     }
     return std::make_unique<CylinderShape>(mass, halfExtents);

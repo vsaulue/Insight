@@ -25,6 +25,8 @@
 
 #include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
+#include "units/Scalar.hpp"
+#include "units/Vector3.hpp"
 
 /** Static plane shape. */
 class StaticPlaneShape : public Shape {
@@ -33,7 +35,7 @@ public:
      * @param normal Normal vector of the plane.
      * @param offset Offset of the plane (the point origin+Offset*Normal belongs to the plane).
      */
-    StaticPlaneShape(const btVector3& normal, btScalar offset);
+    StaticPlaneShape(const Vector3<SI::NoUnit>& normal, Scalar<SI::Length> offset);
 
     virtual ~StaticPlaneShape();
 
@@ -41,7 +43,7 @@ public:
      * Gets a normal vector of the plane.
      * @return A normal vector of the plane.
      */
-    const btVector3& getNormal() const;
+    Vector3<SI::NoUnit> getNormal() const;
 
     /**
      * Gets the offset parameter of the plane.
@@ -50,7 +52,7 @@ public:
      *
      * @return The offset parameter of the plane.
      */
-    btScalar getOffset() const;
+    Scalar<SI::Length> getOffset() const;
 
     btCollisionShape& getBulletShape() override;
 

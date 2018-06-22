@@ -26,6 +26,9 @@
 
 #include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
+#include "units/Vector3.hpp"
 
 /** Generic shape for convex meshes. */
 class ConvexHullShape : public Shape {
@@ -35,7 +38,7 @@ public:
      * @param mass Mass of the shape.
      * @param vertices Vertices of the convex mesh.
      */
-    ConvexHullShape(btScalar mass, const std::vector<btVector3>& vertices);
+    ConvexHullShape(Scalar<SI::Mass> mass, const std::vector<Vector3<SI::Length>>& vertices);
 
     virtual ~ConvexHullShape();
 

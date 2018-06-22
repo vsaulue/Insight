@@ -25,6 +25,8 @@
 
 #include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
 
 /** Sphere shape. */
 class SphereShape : public Shape {
@@ -34,14 +36,14 @@ public:
      * @param mass Mass of this shape.
      * @param radius Radius of this sphere.
      */
-    SphereShape(btScalar mass, btScalar radius);
+    SphereShape(Scalar<SI::Mass> mass, Scalar<SI::Length> radius);
 
     /**
      * Creates a new sphere shape.
      * @param density Density of this shape.
      * @param radius Radius of this sphere.
      */
-    SphereShape(Density density, btScalar radius);
+    SphereShape(Scalar<SI::Density> density, Scalar<SI::Length> radius);
 
     virtual ~SphereShape();
 
@@ -49,7 +51,7 @@ public:
      * Gets the radius of this sphere.
      * @return The radius of this sphere.
      */
-    btScalar getRadius() const;
+    Scalar<SI::Length> getRadius() const;
 
     btCollisionShape& getBulletShape() override;
 

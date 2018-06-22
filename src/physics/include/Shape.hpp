@@ -26,6 +26,9 @@
 #include "lua/types/LuaTable.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "ShapeDrawer.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
+#include "units/Vector3.hpp"
 
 /**
  * Abstract class holding a shape in the physics engine.
@@ -36,22 +39,10 @@
 class Shape : public LuaVirtualClass {
 public:
     /**
-     * Floating point type holding a density (in kg/m^3).
-     *
-     * This type can be used in the constructor of some derived classes in order
-     * to specify a density instead of a mass.
-     */
-    struct Density {
-        Density(btScalar value) : value(value) {}
-        /** Density value (kg/m^3). */
-        btScalar value;
-    };
-
-    /**
      * Creates a new shape.
      * @param[in] mass Mass of this object.
      */
-    Shape(btScalar mass);
+    Shape(Scalar<SI::Mass> mass);
 
     virtual ~Shape() = default;
 
@@ -78,15 +69,21 @@ public:
      * Gets the mass of this shape.
      * @return The mass of this shape.
      */
-    btScalar getMass() const {
+    Scalar<SI::Mass> getMass() const {
         return mass;
     }
+
+    /**
+     * Gets the moments of inertia of this shape, in engine units.
+     * @return The inertia vector of this shape.
+     */
+    btVector3 getEngineInertia() const;
 
     /**
      * Gets the moments of inertia of this shape.
      * @return The inertia vector of this shape.
      */
-    btVector3 getInertia() const;
+    Vector3<SI::AngularMass> getInertia() const;
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
@@ -97,7 +94,7 @@ public:
     static std::unique_ptr<Shape> luaGetFromTable(LuaTable& table);
 protected:
     /** Mass of this shape. */
-    btScalar mass;
+    Scalar<SI::Mass> mass;
     /**
      * Non-initializing constructor.
      *

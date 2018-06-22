@@ -45,8 +45,8 @@ struct CylindricJointInfo : public JointInfo {
      * @param length Length of the cylinder.
      * @param startRotation Relative orientation of the cylinder body part to the socket part (radian).
      */
-    CylindricJointInfo(btScalar density, const btTransform& cylinderTransform, bool generateCylinder, const btTransform& socketTransform,
-                       btScalar radius, btScalar length, btScalar startRotation) :
+    CylindricJointInfo(Scalar<SI::Density> density, const btTransform& cylinderTransform, bool generateCylinder, const btTransform& socketTransform,
+                       Scalar<SI::Length> radius, Scalar<SI::Length> length, Scalar<SI::Angle> startRotation) :
         JointInfo(density, cylinderTransform, generateCylinder, socketTransform),
         cylinderRadius(radius),
         cylinderLength(length),
@@ -56,11 +56,11 @@ struct CylindricJointInfo : public JointInfo {
     }
 
     /** Radius of the cylinder (m). */
-    btScalar cylinderRadius;
+    Scalar<SI::Length> cylinderRadius;
     /** Length of the cylinder (m). */
-    btScalar cylinderLength;
+    Scalar<SI::Length> cylinderLength;
     /** Relative orientation of the cylinder body part to the socket part (radian). */
-    btScalar startRotation;
+    Scalar<SI::Angle> startRotation;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 

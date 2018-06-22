@@ -25,11 +25,11 @@
 CompoundShape::CompoundShape(const std::vector<ChildInfo>& constructionInfo) {
     // TODO: compute center of mass & principal axis, and transform all children in order to be
     // in the center of inertia frame in the btCompoundShape.
-    mass = 0;
+    mass = Scalar<SI::Mass>(0);
     for (const ChildInfo& child : constructionInfo) {
         children.push_back(child.shape);
         shape.addChildShape(child.transform, &child.shape->getBulletShape());
-        mass+=child.shape->getMass();
+        mass+= child.shape->getMass();
     }
 }
 

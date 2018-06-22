@@ -27,10 +27,10 @@
  * @param[in] movingJoint Relative transform of the joint in movingBody.
  * @param[in] initialAngle Initial angle of the bodies at the joint.
  */
-static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, Body& movingBody, const btTransform& movingJoint, btScalar initialAngle) {
+static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, Body& movingBody, const btTransform& movingJoint, Scalar<SI::Angle> initialAngle) {
     btTransform joint;
     joint.setIdentity();
-    joint.getBasis().setEulerZYX(0, 0, initialAngle);
+    joint.getBasis().setEulerZYX(0, 0, initialAngle.value);
     btTransform newTransform = fixedBody.getTransform() * fixedJoint * joint * movingJoint.inverse();
     movingBody.setTransform(newTransform);
 }
