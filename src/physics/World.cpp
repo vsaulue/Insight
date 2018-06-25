@@ -51,6 +51,10 @@ void World::addConstraint(std::shared_ptr<btTypedConstraint> constraint) {
     constraints.insert(std::move(constraint));
 }
 
+Scalar<SI::Length> World::getDefaultMargin() {
+    return fromBulletValue<SI::Length>(CONVEX_DISTANCE_MARGIN);
+}
+
 int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<World>;
     int result = 1;
@@ -67,6 +71,8 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
             state.push<std::shared_ptr<Shape>>(std::move(newShape));
             return 1;
         });
+    } else if (memberName=="defaultMargin") {
+        state.push<Scalar<SI::Length>>(getDefaultMargin());
     } else {
         result = 0;
     }

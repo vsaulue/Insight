@@ -27,6 +27,8 @@
 #include "Body.hpp"
 #include "BodyCreationListener.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
 
 /**
  * Physics engine
@@ -63,6 +65,12 @@ public:
      * @param constraint The new constraint.
      */
     void addConstraint(std::shared_ptr<btTypedConstraint> constraint);
+
+    /**
+     * Gets the default margin added to collision shapes.
+     * @return THe default margin of collision shapes.
+     */
+    static Scalar<SI::Length> getDefaultMargin();
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
