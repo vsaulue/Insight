@@ -63,16 +63,16 @@ public:
      * Sets the position & orientation of this object.
      * @param[in] transform The new position & orientation of this object.
      */
-    void setTransform(const btTransform& transform);
+    void setEngineTransform(const btTransform& transform);
 
     /**
-     * Gets the position & orientation of this object.
+     * Gets the position & orientation of this object in engine units.
      * @return The current position & orientation of this object.
      */
-    const btTransform& getTransform() const;
+    const btTransform& getEngineTransform() const;
 
     /**
-     * Gets the linear velocity of this object.
+     * Gets the linear velocity of this object in engine units.
      * @return The linear velocity of this object.
      */
     Vector3<SI::Speed> getLinearVelocity() const;

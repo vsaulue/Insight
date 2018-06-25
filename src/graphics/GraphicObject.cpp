@@ -301,7 +301,7 @@ GraphicObject::GraphicObject(const Body& body, irr::scene::ISceneManager& scene)
 {
     IrrlichtDrawer drawer(*node);
     body.drawShape(drawer);
-    updateTransform(body.getTransform());
+    updateTransform(body.getEngineTransform());
     body.addMoveListener(*this);
 }
 

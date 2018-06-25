@@ -26,6 +26,8 @@
 
 #include "lua/types/LuaTable.hpp"
 #include "Shape.hpp"
+#include "units/SI.hpp"
+#include "units/Transform.hpp"
 
 /** Shape made of multiple child shapes. */
 class CompoundShape : public Shape {
@@ -33,7 +35,7 @@ public:
     /** Data to insert a child shape into a Compound shape. */
     struct ChildInfo {
         std::shared_ptr<Shape> shape; /** Shape to insert. */
-        btTransform transform; /** Relative position & orientation of this child shape. */
+        Transform<SI::Length> transform; /** Relative position & orientation of this child shape. */
     };
 
     /**

@@ -18,14 +18,18 @@
 
 #include "SphericalJoint.hpp"
 
-static void initPosition(const Body& fixedBody, const btTransform& fixedJoint, Body& movingBody, const btTransform& movingJoint, const btQuaternion& rotation) {
+static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fixedJoint, Body& movingBody,
+                         const Transform<SI::Length>& movingJoint, const btQuaternion& rotation)
+{
     btTransform joint(rotation, btVector3(0,0,0));
-    btTransform newTransform = fixedBody.getTransform() * fixedJoint * joint * movingJoint.inverse();
-    movingBody.setTransform(newTransform);
+    btTransform newTransform = fixedBody.getEngineTransform() * toBulletUnits(fixedJoint) * joint * toBulletUnits(movingJoint).inverse();
+    movingBody.setEngineTransform(newTransform);
 }
 
 static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& socket, const SphericalJointInfo& info) {
-    return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), info.convexTransform, info.concaveTransform);
+    btTransform convexTr = toBulletUnits(info.convexTransform);
+    btTransform concaveTr = toBulletUnits(info.concaveTransform);
+    return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), convexTr, concaveTr);
 }
 
 SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info, bool placeBall) :

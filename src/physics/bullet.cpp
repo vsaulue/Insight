@@ -121,6 +121,16 @@ std::string LuaBinding<btQuaternion>::luaToStringImpl(btQuaternion& object) {
     return result.str();
 }
 
+template<>
+class LuaBinding<btTransform> : public LuaDefaultBinding<btTransform> {
+public:
+    static btTransform getFromTable(LuaTable& table);
+
+    static int luaIndexImpl(btTransform& object, const std::string& memberName, LuaStateView& state);
+
+    static std::string luaToStringImpl(btTransform& object);
+};
+
 btTransform LuaBinding<btTransform>::getFromTable(LuaTable& table) {
     using Str = LuaNativeString;
     btVector3 position = table.get<Str,btVector3>("position");
@@ -150,6 +160,18 @@ std::string LuaBinding<btTransform>::luaToStringImpl(btTransform& object) {
 }
 
 namespace details {
+    btTransform LuaTransformBinding::getFromTable(LuaTable& table) {
+        return LuaBinding<btTransform>::getFromTable(table);
+    }
+
+    int LuaTransformBinding::luaIndexImpl(btTransform& object, const std::string& memberName, LuaStateView& state) {
+        return LuaBinding<btTransform>::luaIndexImpl(object, memberName, state);
+    }
+
+    std::string LuaTransformBinding::luaToStringImpl(btTransform& object) {
+        return LuaBinding<btTransform>::luaToStringImpl(object);
+    }
+
     btVector3 LuaVector3Binding::getFromTable(LuaTable& table) {
         return LuaBinding<btVector3>::getFromTable(table);
     }

@@ -36,9 +36,9 @@ std::unique_ptr<Joint> SphericalJointInfo::makeJoint(Body& convexPart, Body& con
 std::unique_ptr<SphericalJointInfo> SphericalJointInfo::luaGetFromTable(LuaTable& table) {
     return std::make_unique<SphericalJointInfo>(
             table.get<LuaNativeString,Scalar<SI::Density>>("density"),
-            table.get<LuaNativeString,btTransform>("convexTransform"),
+            table.get<LuaNativeString,Transform<SI::Length>>("convexTransform"),
             table.get<LuaNativeString,bool>("generateConvexShape"),
-            table.get<LuaNativeString,btTransform>("concaveTransform"),
+            table.get<LuaNativeString,Transform<SI::Length>>("concaveTransform"),
             table.get<LuaNativeString,Scalar<SI::Length>>("radius"),
             table.get<LuaNativeString,btQuaternion>("startRotation")
     );

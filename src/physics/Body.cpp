@@ -68,7 +68,7 @@ Body::Body(std::shared_ptr<Shape> shape) :
 
 }
 
-const btTransform& Body::getTransform() const {
+const btTransform& Body::getEngineTransform() const {
     return body.getWorldTransform();
 }
 
@@ -77,18 +77,18 @@ Vector3<SI::Length> Body::getPosition() const {
 }
 
 void Body::setPosition(const Vector3<SI::Length>& newPos) {
-    btTransform newTransform = getTransform();
+    btTransform newTransform = getEngineTransform();
     newTransform.setOrigin(toBulletUnits(newPos));
-    setTransform(newTransform);
+    setEngineTransform(newTransform);
 }
 
 void Body::setRotation(const btQuaternion& newRotation) {
-    btTransform newTransform = getTransform();
+    btTransform newTransform = getEngineTransform();
     newTransform.setRotation(newRotation);
-    setTransform(newTransform);
+    setEngineTransform(newTransform);
 }
 
-void Body::setTransform(const btTransform& transform) {
+void Body::setEngineTransform(const btTransform& transform) {
     body.setWorldTransform(transform);
     body.setInterpolationWorldTransform(transform);
     motionState->setWorldTransform(transform);
@@ -126,7 +126,7 @@ int Body::luaIndex(const std::string& memberName, LuaStateView& state) {
             return 0;
         });
     } else if (memberName=="rotation") {
-        state.push<btQuaternion>(getTransform().getRotation());
+        state.push<btQuaternion>(getEngineTransform().getRotation());
     } else if (memberName=="setRotation") {
         state.push<Method>([](Body& object, LuaStateView& state) -> int {
             btQuaternion newRot = state.get<btQuaternion>(2);

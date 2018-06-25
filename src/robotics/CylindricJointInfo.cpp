@@ -26,7 +26,7 @@
 void CylindricJointInfo::addConvexShape(std::vector<CompoundShape::ChildInfo>& info) const {
     if (generateConvexShape) {
         Vector3<SI::Length> halfExtents(cylinderRadius, cylinderLength/2, cylinderRadius);
-        btTransform transform = convexTransform * btTransform(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
+        Transform<SI::Length> transform = convexTransform * Transform<SI::Length>(btQuaternion(btVector3(0,0,1), SIMD_HALF_PI));
         info.push_back({std::make_shared<CylinderShape>(jointDensity, halfExtents), transform});
     }
 }
@@ -38,9 +38,9 @@ std::unique_ptr<Joint> CylindricJointInfo::makeJoint(Body& convexPart, Body& con
 std::unique_ptr<CylindricJointInfo> CylindricJointInfo::luaGetFromTable(LuaTable& table) {
     return std::make_unique<CylindricJointInfo>(
             table.get<LuaNativeString,Scalar<SI::Density>>("density"),
-            table.get<LuaNativeString,btTransform>("convexTransform"),
+            table.get<LuaNativeString,Transform<SI::Length>>("convexTransform"),
             table.get<LuaNativeString,bool>("generateConvexShape"),
-            table.get<LuaNativeString,btTransform>("concaveTransform"),
+            table.get<LuaNativeString,Transform<SI::Length>>("concaveTransform"),
             table.get<LuaNativeString,Scalar<SI::Length>>("radius"),
             table.get<LuaNativeString,Scalar<SI::Length>>("length"),
             table.get<LuaNativeString,Scalar<SI::Angle>>("startRotation")

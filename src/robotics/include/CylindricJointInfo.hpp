@@ -45,8 +45,9 @@ struct CylindricJointInfo : public JointInfo {
      * @param length Length of the cylinder.
      * @param startRotation Relative orientation of the cylinder body part to the socket part (radian).
      */
-    CylindricJointInfo(Scalar<SI::Density> density, const btTransform& cylinderTransform, bool generateCylinder, const btTransform& socketTransform,
-                       Scalar<SI::Length> radius, Scalar<SI::Length> length, Scalar<SI::Angle> startRotation) :
+    CylindricJointInfo(Scalar<SI::Density> density, const Transform<SI::Length>& cylinderTransform, bool generateCylinder,
+                       const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius, Scalar<SI::Length> length,
+                       Scalar<SI::Angle> startRotation) :
         JointInfo(density, cylinderTransform, generateCylinder, socketTransform),
         cylinderRadius(radius),
         cylinderLength(length),

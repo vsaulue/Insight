@@ -29,6 +29,7 @@
 #include "lua/LuaBinding.hpp"
 #include "lua/types/LuaTable.hpp"
 #include "units/framework/UnitSymbols.hpp"
+#include "units/Transform.hpp"
 #include "units/Vector3.hpp"
 
 template<>
@@ -41,14 +42,35 @@ public:
     static std::string luaToStringImpl(btQuaternion& object);
 };
 
-template<>
-class LuaBinding<btTransform> : public LuaDefaultBinding<btTransform> {
+namespace details {
+    struct LuaTransformBinding {
+        static btTransform getFromTable(LuaTable& table);
+
+        static int luaIndexImpl(btTransform& object, const std::string& memberName, LuaStateView& state);
+
+        static std::string luaToStringImpl(btTransform& object);
+    };
+}
+
+template<typename Unit>
+class LuaBinding<Transform<Unit>> : public LuaDefaultBinding<Transform<Unit>> {
 public:
-    static btTransform getFromTable(LuaTable& table);
+    static const std::string& luaClassName() {
+        static const std::string className(std::string("Transform<") + Units::unitSymbol<Unit>() + ">");
+        return className;
+    }
 
-    static int luaIndexImpl(btTransform& object, const std::string& memberName, LuaStateView& state);
+    static Transform<Unit> getFromTable(LuaTable& table) {
+        return Transform<Unit>(details::LuaTransformBinding::getFromTable(table));
+    }
 
-    static std::string luaToStringImpl(btTransform& object);
+    static int luaIndexImpl(Transform<Unit>& object, const std::string& memberName, LuaStateView& state) {
+        return details::LuaTransformBinding::luaIndexImpl(object.value, memberName, state);
+    }
+
+    static std::string luaToStringImpl(Transform<Unit>& object) {
+        return details::LuaTransformBinding::luaToStringImpl(object.value);
+    }
 };
 
 namespace details {

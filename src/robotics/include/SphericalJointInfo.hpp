@@ -45,8 +45,8 @@ public:
      * @param radius Radius of the ball.
      * @param startRotation Relative orientation of the ball body part to the socket part.
      */
-    SphericalJointInfo(Scalar<SI::Density> density, const btTransform& ballTransform, bool generateBall, const btTransform& socketTransform,
-                   Scalar<SI::Length> radius, const btQuaternion& startRotation) :
+    SphericalJointInfo(Scalar<SI::Density> density, const Transform<SI::Length>& ballTransform, bool generateBall,
+                       const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius, const btQuaternion& startRotation) :
         JointInfo(density, ballTransform, generateBall, socketTransform),
         ballRadius(radius),
         startRotation(startRotation)

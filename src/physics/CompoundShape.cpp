@@ -21,6 +21,7 @@
 #include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/types/LuaNativeString.hpp"
 #include "CompoundShape.hpp"
+#include "units/Scalar.hpp"
 
 CompoundShape::CompoundShape(const std::vector<ChildInfo>& constructionInfo) {
     // TODO: compute center of mass & principal axis, and transform all children in order to be
@@ -28,7 +29,7 @@ CompoundShape::CompoundShape(const std::vector<ChildInfo>& constructionInfo) {
     mass = Scalar<SI::Mass>(0);
     for (const ChildInfo& child : constructionInfo) {
         children.push_back(child.shape);
-        shape.addChildShape(child.transform, &child.shape->getBulletShape());
+        shape.addChildShape(toBulletUnits(child.transform), &child.shape->getBulletShape());
         mass+= child.shape->getMass();
     }
 }
@@ -58,7 +59,7 @@ std::unique_ptr<CompoundShape> CompoundShape::luaGetFromTable(LuaTable& table) {
         LuaTable childTable = childrenTable.get<float,LuaTable>(index);
         ChildInfo child = {
             childTable.get<Str, std::shared_ptr<Shape>>("shape"),
-            childTable.get<Str, btTransform>("transform"),
+            childTable.get<Str, Transform<SI::Length>>("transform"),
         };
         children.push_back(child);
     }

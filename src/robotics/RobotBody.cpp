@@ -39,6 +39,7 @@
 #include "SphericalJoint.hpp"
 #include "SphericalJointInfo.hpp"
 #include "UndirectedGraph.hpp"
+#include "Units/Transform.hpp"
 
 RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::string, std::shared_ptr<Shape>>& parts,
                                               const std::string& basePartName,
@@ -102,7 +103,7 @@ RobotBody::ConstructionInfo::ConstructionInfo(const std::unordered_map<std::stri
             this->parts[pair.first] = pair.second;
         } else {
             auto& childInfos = it->second;
-            childInfos.push_back({pair.second, btTransform::getIdentity()});
+            childInfos.push_back({pair.second, Transform<SI::Length>::getIdentity()});
             this->parts[pair.first] = std::make_shared<CompoundShape>(childInfos);
         }
     }
@@ -161,14 +162,14 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
             return 0;
         });
     } else if (memberName=="rotation") {
-        state.push<btQuaternion>(baseBody->getTransform().getRotation());
+        state.push<btQuaternion>(baseBody->getEngineTransform().getRotation());
     } else if (memberName=="setRotation") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
             Body& base = *object.baseBody;
-            const btQuaternion curRotation = base.getTransform().getRotation();
+            const btQuaternion curRotation = base.getEngineTransform().getRotation();
             btTransform relTransform(state.get<btQuaternion>(2)*curRotation.inverse());
             for (auto& part : object.parts) {
-                part.second->setTransform(relTransform*part.second->getTransform());
+                part.second->setEngineTransform(relTransform*part.second->getEngineTransform());
             }
             return 0;
         });
