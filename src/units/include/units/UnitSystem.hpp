@@ -47,6 +47,8 @@ namespace Units {
         /** Time unit. */
         using Time = FundamentalUnit<typename UnitTags::Time>;
 
+        /** Linear acceleration unit. */
+        using Acceleration = decltype(Length() / Time()[n2]);
         /** Angular mass unit. */
         using AngularMass = decltype(Mass() * Length()[n2]);
         /** Density unit. */

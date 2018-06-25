@@ -27,14 +27,14 @@
 #include "SphereShape.hpp"
 #include "StaticPlaneShape.hpp"
 
-World::World() :
+World::World(const Vector3<SI::Acceleration>& gravity) :
     broadPhase(std::make_unique<btDbvtBroadphase>()),
     collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
     dispatcher(std::make_unique<btCollisionDispatcher>(collisionConfig.get())),
     solver(std::make_unique<btSequentialImpulseConstraintSolver>()),
     world(std::make_unique<btDiscreteDynamicsWorld>(dispatcher.get(), broadPhase.get(), solver.get(), collisionConfig.get()))
 {
-
+    world->setGravity(toBulletUnits(gravity));
 }
 
 void World::addObject(std::shared_ptr<Body> object) {
@@ -58,7 +58,9 @@ Scalar<SI::Length> World::getDefaultMargin() {
 int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<World>;
     int result = 1;
-    if (memberName=="newBody") {
+    if (memberName == "gravity") {
+        state.push<Vector3<SI::Acceleration>>(fromBulletValue<SI::Acceleration>(world->getGravity()));
+    } else if (memberName=="newBody") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
             std::shared_ptr<Body> newBody = state.get<std::shared_ptr<Body>>(2);
             state.push<std::shared_ptr<Body>>(newBody);

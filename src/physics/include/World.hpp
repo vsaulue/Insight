@@ -29,6 +29,7 @@
 #include "lua/types/LuaVirtualClass.hpp"
 #include "units/Scalar.hpp"
 #include "units/SI.hpp"
+#include "units/Vector3.hpp"
 
 /**
  * Physics engine
@@ -40,8 +41,11 @@ public:
     /** Constant iterator over all the bodies of this engine. */
     using const_iterator = std::unordered_set<std::shared_ptr<Body>>::const_iterator;
 
-    /** Creates a new empty world with default settings.*/
-    World();
+    /**
+     * Creates a new empty world with default settings.
+     * @param gravity Acceleration vector produced by gravity.
+     */
+    World(const Vector3<SI::Acceleration>& gravity = Vector3<SI::Acceleration>(0,-9.8,0));
 
     /** Iterates over all the objects in this World. */
     const_iterator begin() const {
