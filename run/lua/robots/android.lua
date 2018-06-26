@@ -5,43 +5,45 @@ local SHAPE_DENSITY = 1500
 -- Density of the generated joint parts (kg/m^3).
 local JOINT_DENSITY = 1200
 -- Distance between the surface of the convex & concave parts of a joint (m).
-local MARGIN = 0.005
+local MARGIN = 0.01
 
 -- Radius of the half sphere of the head (m).
-local HEAD_RADIUS = 0.625
+local HEAD_RADIUS = 0.1
 -- Length of the neck (concave part attached to the head).
-local NECK_LENGTH = 0.1
+local NECK_LENGTH = 0
 -- Dimensions of the cylindric part of the arm.
-local ARM_HALF_EXTENTS = {0.1, 0.5, 0.1}
+local ARM_HALF_EXTENTS = {0.028, 0.10, 0.028}
 -- Dimensions of the longest cylindric part of the forearm.
-local FOREARM_HALF_EXTENTS = {0.1, 0.55, 0.1}
+local FOREARM_HALF_EXTENTS = {0.028, 0.11, 0.028}
 -- Dimensions of the cylindric part of the thigh.
-local THIGH_HALF_EXTENTS = {0.15, 0.6, 0.15}
+local THIGH_HALF_EXTENTS = {0.035, 0.175, 0.035}
 -- Dimensions of the cylindric part of the leg.
-local LEG_HALF_EXTENTS = {0.15, 0.85, 0.15}
+local LEG_HALF_EXTENTS = {0.035, 0.16, 0.035}
 -- Dimensions of the cuboid of the foot.
-local FOOT_HALF_EXTENTS = {0.225, 0.1, 0.55}
+local FOOT_HALF_EXTENTS = {0.06, 0.03, 0.09}
 -- Dimension of the cuboid of the toes.
-local TOES_HALF_EXTENTS = {0.225, 0.1, 0.15}
+local TOES_HALF_EXTENTS = {0.06, 0.03, 0.04}
 -- Dimensions of the cuboid of the hand.
-local HAND_HALF_EXTENTS = {0.05, 0.18, 0.15}
+local HAND_HALF_EXTENTS = {0.02, 0.06, 0.04}
 -- Dimensions of the cylinder of the torso.
-local TORSO_HALF_EXTENTS = {1,1,1}
+local TORSO_HALF_EXTENTS = {0.15, 0.15, 0.15}
 
 -- Shoulder ball radius (m).
-local SHOULDER_BALL_RADIUS = 0.3
+local SHOULDER_BALL_RADIUS = 0.065
 -- Radius of the cylindric part of the elbow (m).
-local ELBOW_CYLINDER_RADIUS = 0.12
+local ELBOW_CYLINDER_RADIUS = 0.03
 -- Hip joint ball radius (m).
-local HIP_BALL_RADIUS = 0.4
+local HIP_BALL_RADIUS = 0.05
 -- Neck joint ball radius (m).
-local NECK_BALL_RADIUS = 1.0
+local NECK_BALL_RADIUS = 0.15
 -- Radius of the cylindric part of the knee (m).
-local KNEE_CYLINDER_RADIUS = 0.20
+local KNEE_CYLINDER_RADIUS = 0.05
 -- Ankle ball radius (m).
-local ANKLE_BALL_RADIUS = 0.2
+local ANKLE_BALL_RADIUS = 0.05
 -- Wrist joint ball radius (m).
-local WRIST_BALL_RADIUS = 0.125
+local WRIST_BALL_RADIUS = 0.03
+
+local BULLET_MARGIN = insight.world.defaultMargin.value
 
 local newShape = insight.world.newShape
 
@@ -51,11 +53,11 @@ local function halfSphere(radius)
     local loop = {}
     for i=0,15 do
         local angle = i/8 * math.pi
-        table.insert(loop, {radius*math.cos(angle), radius*math.sin(angle)})
+        table.insert(loop, {math.cos(angle), math.sin(angle)})
     end
     for j=0,3 do
         local angle = j/8 * math.pi
-        local loopRadius = math.cos(angle)
+        local loopRadius = radius*math.cos(angle)
         local y = radius*math.sin(angle)
         for i,point in ipairs(loop) do
             table.insert(vertices, {loopRadius*point[1], y, loopRadius*point[2]})
@@ -67,7 +69,6 @@ end
 -- Generates the "neck" part of the head (concave part of the joint).
 local function neckSocketParts(parts, headRadius, neckRadius, neckLength)
     local partWidth = 0.1*headRadius
-    local BULLET_MARGIN = 0.04
     local halfExtents = {
         partWidth/2,
         0.5*(neckLength + neckRadius*(1-math.sqrt(1-math.pow((headRadius-partWidth/2)/neckRadius,2))) - MARGIN - BULLET_MARGIN),
@@ -80,7 +81,7 @@ local function neckSocketParts(parts, headRadius, neckRadius, neckLength)
         table.insert(parts, {
             transform= {
                 rotation= {axis= {0,1,0}, angle= angle},
-                position= {radius*math.cos(angle), -3/8*headRadius-halfExtents[2]-BULLET_MARGIN, -radius*math.sin(angle)}
+                position= {radius*math.cos(angle), -3/8*headRadius-halfExtents[2], -radius*math.sin(angle)}
             },
             shape= shape,
         })
@@ -88,7 +89,7 @@ local function neckSocketParts(parts, headRadius, neckRadius, neckLength)
 end
 
 -- Generates the shape of the head.
-local function head_shape()
+function head_shape()
     local shapes = {}
     table.insert(shapes,{
         transform= {rotation= {0,0,0,1}, position= {0, -3/8*HEAD_RADIUS, 0}},
@@ -101,12 +102,12 @@ local function head_shape()
         }
     })
     table.insert(shapes,{
-        transform= {rotation= {axis={1,0,0}, angle= math.pi/2}, position= {0, 0, HEAD_RADIUS-0.125}},
+        transform= {rotation= {axis={1,0,0}, angle= math.pi/2}, position= {0, 0, HEAD_RADIUS/2+0.01}},
         shape= {
             type= "Cylinder",
             params= {
                 density= SHAPE_DENSITY,
-                halfExtents= {0.15, 0.15, 0.15},
+                halfExtents= {0.025, HEAD_RADIUS/2, 0.025},
             }
         }
     })
@@ -131,7 +132,7 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={1,0,0,0}, position={0, 1, 0}},
+            convexTransform={rotation={1,0,0,0}, position={0, TORSO_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
             concaveTransform={rotation={1,0,0,0}, position={0, -NECK_BALL_RADIUS-(3/8)*HEAD_RADIUS-NECK_LENGTH-MARGIN, 0}},
             radius= NECK_BALL_RADIUS,
@@ -142,7 +143,7 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={-1.125, 0.7, 0}},
+            convexTransform={rotation={0,0,0,1}, position={-TORSO_HALF_EXTENTS[1]-0.75*SHOULDER_BALL_RADIUS, 0.9*TORSO_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
             concaveTransform={rotation={0,0,0,1}, position={0, ARM_HALF_EXTENTS[2]+SHOULDER_BALL_RADIUS+MARGIN, 0}},
             radius= SHOULDER_BALL_RADIUS,
@@ -153,7 +154,7 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={1.125, 0.7, 0}},
+            convexTransform={rotation={0,0,0,1}, position={TORSO_HALF_EXTENTS[1]+0.75*SHOULDER_BALL_RADIUS, 0.9*TORSO_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
             concaveTransform={rotation={0,0,0,1}, position={0, ARM_HALF_EXTENTS[2]+SHOULDER_BALL_RADIUS+MARGIN, 0}},
             radius= SHOULDER_BALL_RADIUS,
@@ -199,7 +200,7 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={-0.6, -1, 0}},
+            convexTransform={rotation={0,0,0,1}, position={-0.08, -TORSO_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
             concaveTransform={rotation={0,0,0,1}, position={0, THIGH_HALF_EXTENTS[2]+HIP_BALL_RADIUS+MARGIN, 0}},
             radius= HIP_BALL_RADIUS,
@@ -210,7 +211,7 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={0.6, -1, 0}},
+            convexTransform={rotation={0,0,0,1}, position={0.08, -TORSO_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
             concaveTransform={rotation={0,0,0,1}, position={0, THIGH_HALF_EXTENTS[2]+HIP_BALL_RADIUS+MARGIN, 0}},
             radius= HIP_BALL_RADIUS,
@@ -233,7 +234,7 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, 0.125, -0.2}},
+            convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, FOOT_HALF_EXTENTS[2]+ANKLE_BALL_RADIUS/2, -FOOT_HALF_EXTENTS[3]+ANKLE_BALL_RADIUS}},
             generateConvexShape= true,
             concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -ANKLE_BALL_RADIUS-LEG_HALF_EXTENTS[2]-MARGIN, 0}},
             radius= ANKLE_BALL_RADIUS,
