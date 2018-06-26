@@ -51,6 +51,8 @@ namespace Units {
         using Acceleration = decltype(Length() / Time()[n2]);
         /** Angular mass unit. */
         using AngularMass = decltype(Mass() * Length()[n2]);
+        /** Angular (rotational) speed. */
+        using AngularVelocity = decltype(Angle() / Time());
         /** Density unit. */
         using Density = decltype(Mass() / Length()[n3]);
         /** Force unit. */
