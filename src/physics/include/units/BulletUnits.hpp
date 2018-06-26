@@ -25,10 +25,15 @@
 #include "units/UnitSystem.hpp"
 
 namespace details {
+    /** Bullet length unit identifier. */
+    struct BulletLength : Units::UnitIdentifier<Dimensions::Length> {
+        static constexpr char symbol[] = "btL";
+        static constexpr double ratio = 16;
+    };
     /** Tag map of the BulletUnits system. */
     struct BulletUnitsTags {
         using Angle = Units::Radian;
-        using Length = Units::Meter;
+        using Length = BulletLength;
         using Mass = Units::Kilogram;
         using Time = Units::Second;
     };
