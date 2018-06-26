@@ -84,7 +84,7 @@ public:
      * @param[in] timeStep Duration of the step.
      */
     void stepSimulation(double timeStep) {
-        world->stepSimulation(timeStep);
+        world->stepSimulation(timeStep,4,btScalar(1/240.0));
     }
 
     /**
