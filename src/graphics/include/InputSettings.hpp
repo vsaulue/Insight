@@ -23,38 +23,21 @@
 #include <unordered_map>
 
 #include "lua/types/LuaVirtualClass.hpp"
+#include "units/Floats.hpp"
+#include "units/SI.hpp"
 
 /** Class holdings all settings related to user inputs in the GUI. */
 class InputSettings : public LuaVirtualClass {
 public:
-    /** Set of possible settings. */
-    enum class SettingsType {
-        CameraTranslationSpeed, /**< Camera translation speed on each axis. */
-        CameraRotationSpeed, /**< Camera rotation speed around each axis. */
-    };
-
     /** Creates a new InputSettings with default values. */
     InputSettings();
 
-    /**
-     * Gets the value of a settings.
-     *
-     * @param settings Settings type.
-     * @return The value of settings.
-     */
-    float get(SettingsType settings) const;
-
-    /**
-     * Gets a map of all settings, and their names.
-     *
-     * @return A map of settings name, indexed by their enum value.
-     */
-    static const std::map<SettingsType, std::string>& list();
+    /** Camera rotation speed around each axis. */
+    Units::Float<SI::AngularVelocity> cameraRotationSpeed;
+    /** Camera translation speed on each axis. */
+    Units::Float<SI::Speed> cameraTranslationSpeed;
 
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
-private:
-    /** Map of all settings values indexed by their type. */
-    std::unordered_map<SettingsType, float> values;
 };
 
 #endif /* INPUTSETTINGS_HPP */

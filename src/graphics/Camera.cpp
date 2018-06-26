@@ -26,6 +26,7 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
+#include "units/IrrUnits.hpp"
 
 class CameraAnimator : public irr::scene::ISceneNodeAnimator {
 public:
@@ -68,7 +69,7 @@ private:
      * @return True if the camera was moved.
      */
     bool move(irr::scene::ICameraSceneNode& camera, float deltaTime) {
-        float translationSpeed = inputs.getSettings().get(InputSettings::SettingsType::CameraTranslationSpeed);
+        float translationSpeed = toIrrUnits(inputs.getSettings().cameraTranslationSpeed);
 
         irr::core::vector3df translation = {0,0,0};
         float translationOffset = translationSpeed * deltaTime;
@@ -110,7 +111,7 @@ private:
         bool result = false;
         float yawSpeed = 0;
         float pitchSpeed = 0;
-        float rotationSpeed = inputs.getSettings().get(InputSettings::SettingsType::CameraRotationSpeed);
+        float rotationSpeed = toIrrUnits(inputs.getSettings().cameraRotationSpeed);
 
         EventReport event;
         event = inputs.actionReport(Action::CameraTurnRight);
