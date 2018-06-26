@@ -34,4 +34,5 @@ target_link_libraries(GraphicEngine PUBLIC
     Irrlicht
     LuaWrapper
     PhysicEngine
+    Units
 )
