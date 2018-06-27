@@ -27,14 +27,23 @@
 #include "SphereShape.hpp"
 #include "StaticPlaneShape.hpp"
 
-World::World(const Vector3<SI::Acceleration>& gravity) :
+World::World() :
     broadPhase(std::make_unique<btDbvtBroadphase>()),
     collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
     dispatcher(std::make_unique<btCollisionDispatcher>(collisionConfig.get())),
     solver(std::make_unique<btSequentialImpulseConstraintSolver>()),
     world(std::make_unique<btDiscreteDynamicsWorld>(dispatcher.get(), broadPhase.get(), solver.get(), collisionConfig.get()))
 {
-    world->setGravity(toBulletUnits(gravity));
+    static const Vector3<SI::Acceleration> DEFAULT_GRAVITY(0, -9.8, 0);
+    world->setGravity(toBulletUnits(DEFAULT_GRAVITY));
+}
+
+Vector3<SI::Acceleration> World::getGravity() const {
+    return fromBulletValue<SI::Acceleration>(world->getGravity());
+}
+
+void World::setGravity(const Vector3<SI::Acceleration>& value) {
+    world->setGravity(toBulletUnits(value));
 }
 
 void World::addObject(std::shared_ptr<Body> object) {
@@ -59,7 +68,13 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<World>;
     int result = 1;
     if (memberName == "gravity") {
-        state.push<Vector3<SI::Acceleration>>(fromBulletValue<SI::Acceleration>(world->getGravity()));
+        state.push<Vector3<SI::Acceleration>>(getGravity());
+    } else if (memberName == "setGravity") {
+        state.push<Method>([](World& object, LuaStateView& state) -> int {
+            auto value = state.get<Vector3<SI::Acceleration>>(2);
+            object.setGravity(value);
+            return 0;
+        });
     } else if (memberName=="newBody") {
         state.push<Method>([](World& object, LuaStateView& state) -> int {
             std::shared_ptr<Body> newBody = state.get<std::shared_ptr<Body>>(2);
