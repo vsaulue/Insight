@@ -5,7 +5,7 @@ local SHAPE_DENSITY = 1500
 -- Density of the generated joint parts (kg/m^3).
 local JOINT_DENSITY = 1200
 -- Distance between the surface of the convex & concave parts of a joint (m).
-local MARGIN = 0.01
+local MARGIN = 0.005
 
 -- Radius of the half sphere of the head (m).
 local HEAD_RADIUS = 0.1
