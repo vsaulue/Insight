@@ -173,6 +173,26 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
             }
             return 0;
         });
+    } else if (memberName=="getPart") {
+        state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
+            std::string name = state.get<LuaNativeString>(2);
+            auto it = object.parts.find(name);
+            if (it == object.parts.end()) {
+                std::string msg("Unkown part name: '");
+                msg+= name + '\'';
+                throw LuaException(msg.c_str());
+            }
+            state.push<std::shared_ptr<Body>>(it->second);
+            return 1;
+        });
+    } else if (memberName=="listParts") {
+        state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
+            state.checkStack(object.parts.size());
+            for (auto pair : object.parts) {
+                state.push<LuaNativeString>(pair.first.c_str());
+            }
+            return object.parts.size();
+        });
     } else {
         result = 0;
     }
