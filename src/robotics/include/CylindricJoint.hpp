@@ -24,6 +24,8 @@
 #include "Body.hpp"
 #include "CylindricJointInfo.hpp"
 #include "Joint.hpp"
+#include "units/Scalar.hpp"
+#include "units/SI.hpp"
 
 /**
  * Single degree of freedom joint in a RobotBody.

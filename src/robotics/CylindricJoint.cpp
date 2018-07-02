@@ -52,7 +52,9 @@ static std::shared_ptr<btHingeConstraint> makeConstraint(Body& cylinder, Body& s
     btVector3 pivotB = toBulletUnits(info.concaveTransform.getOrigin());
     const btVector3 axisA = info.convexTransform.getBasis() * btVector3(1,0,0);
     const btVector3 axisB = info.concaveTransform.getBasis() * btVector3(1,0,0);
-    return std::make_shared<btHingeConstraint>(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
+    std::shared_ptr<btHingeConstraint> result = std::make_shared<btHingeConstraint>(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
+    result->setLimit(toBulletUnits(info.minAngle), toBulletUnits(info.maxAngle));
+    return result;
 }
 
 CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info, bool placeCylinder) :

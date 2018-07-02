@@ -171,6 +171,8 @@ local JOINTS_INFO = {
             radius= ELBOW_CYLINDER_RADIUS,
             length= ARM_HALF_EXTENTS[1]*2,
             startRotation= 0,
+            minAngle= -0.1,
+            maxAngle= math.pi,
         },
     },
     RightElbow= {
@@ -183,6 +185,8 @@ local JOINTS_INFO = {
             radius= ELBOW_CYLINDER_RADIUS,
             length= ARM_HALF_EXTENTS[1]*2,
             startRotation= 0,
+            minAngle= -0.1,
+            maxAngle= math.pi,
         },
     },
     Wrist= {
@@ -228,6 +232,8 @@ local JOINTS_INFO = {
             radius= KNEE_CYLINDER_RADIUS,
             length= THIGH_HALF_EXTENTS[1]*2,
             startRotation= 0,
+            minAngle= -math.pi,
+            maxAngle= 0.1,
         },
     },
     Ankle= {
@@ -249,8 +255,10 @@ local JOINTS_INFO = {
             generateConvexShape= true,
             concaveTransform={rotation={axis={1,0,0}, angle=-math.pi/2}, position={0, 0, -TOES_HALF_EXTENTS[3]-FOOT_HALF_EXTENTS[2]-MARGIN}},
             radius= FOOT_HALF_EXTENTS[2],
-            length= FOOT_HALF_EXTENTS[1]*2-0.01,
+            length= FOOT_HALF_EXTENTS[1]*2,
             startRotation= 0,
+            minAngle= -math.pi/2,
+            maxAngle=  math.pi/2,
         },
     },
 }
