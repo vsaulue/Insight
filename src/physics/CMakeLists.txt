@@ -26,6 +26,7 @@ add_library(PhysicEngine STATIC
     SphereShape.cpp
     StaticPlaneShape.cpp
     World.cpp
+    WorldUpdater.cpp
 )
 
 target_include_directories(PhysicEngine PUBLIC include)

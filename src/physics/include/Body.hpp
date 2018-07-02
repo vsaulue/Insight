@@ -30,6 +30,7 @@
 #include "ShapeDrawer.hpp"
 #include "units/SI.hpp"
 #include "units/Vector3.hpp"
+#include "WorldUpdater.hpp"
 
 /** Object of the world (physics engine). */
 class Body : public LuaVirtualClass {
@@ -90,6 +91,13 @@ public:
      */
     btRigidBody& getBulletBody();
 
+    /**
+     * Sets the world udpater of this object.
+     *
+     * @param newValue
+     */
+    void setWorldUpdater(WorldUpdater* newValue);
+
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
     static std::unique_ptr<Body> luaGetFromTable(LuaTable& table);
@@ -134,6 +142,8 @@ private:
     mutable std::unique_ptr<MotionState> motionState;
     /** Bullet body. */
     btRigidBody body;
+    /** World callbacks to produce specific events when this object is in a world (can be null). */
+    WorldUpdater* worldUpdater;
 };
 
 #endif /* BODY_HPP */

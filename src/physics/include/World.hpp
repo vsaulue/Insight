@@ -30,6 +30,7 @@
 #include "units/Scalar.hpp"
 #include "units/SI.hpp"
 #include "units/Vector3.hpp"
+#include "WorldUpdater.hpp"
 
 /**
  * Physics engine
@@ -92,9 +93,7 @@ public:
      *
      * @param[in] timeStep Duration of the step.
      */
-    void stepSimulation(double timeStep) {
-        world->stepSimulation(timeStep,4,btScalar(1/240.0));
-    }
+    void stepSimulation(double timeStep);
 
     /**
      * Adds a new listener for "new Body" events.
@@ -121,6 +120,8 @@ private:
     std::unique_ptr<btConstraintSolver> solver;
     /** Bullet world. */
     std::unique_ptr<btDiscreteDynamicsWorld> world;
+    /** Objects providing callbacks for the bodies in this world.*/
+    WorldUpdater worldUpdater;
 
     /** List of objects in the world. */
     std::unordered_set<std::shared_ptr<Body>> objects;

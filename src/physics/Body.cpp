@@ -63,7 +63,8 @@ public:
 Body::Body(std::shared_ptr<Shape> shape) :
     shape(std::move(shape)),
     motionState(std::make_unique<MotionState>()),
-    body(toBulletUnits(this->shape->getMass()), motionState.get(), &this->shape->getBulletShape(), this->shape->getEngineInertia())
+    body(toBulletUnits(this->shape->getMass()), motionState.get(), &this->shape->getBulletShape(), this->shape->getEngineInertia()),
+    worldUpdater(nullptr)
 {
 
 }
@@ -89,8 +90,12 @@ void Body::setRotation(const btQuaternion& newRotation) {
 }
 
 void Body::setEngineTransform(const btTransform& transform) {
-    body.setWorldTransform(transform);
-    body.setInterpolationWorldTransform(transform);
+    if (worldUpdater != nullptr) {
+        worldUpdater->updateTransform(body, transform);
+    } else {
+        body.setWorldTransform(transform);
+        body.setInterpolationWorldTransform(transform);
+    }
     motionState->setWorldTransform(transform);
 }
 
@@ -99,11 +104,18 @@ Vector3<SI::Speed> Body::getLinearVelocity() const {
 }
 
 void Body::setLinearVelocity(const Vector3<SI::Speed>& velocity) {
-    body.setLinearVelocity(toBulletUnits(velocity));
+    btVector3 engineVelocity = toBulletUnits(velocity);
+    body.setLinearVelocity(engineVelocity);
+    body.setInterpolationLinearVelocity(engineVelocity);
+    body.activate();
 }
 
 btRigidBody& Body::getBulletBody() {
     return body;
+}
+
+void Body::setWorldUpdater(WorldUpdater* newValue) {
+    worldUpdater = newValue;
 }
 
 int Body::luaIndex(const std::string& memberName, LuaStateView& state) {

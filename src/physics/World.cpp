@@ -32,7 +32,8 @@ World::World() :
     collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
     dispatcher(std::make_unique<btCollisionDispatcher>(collisionConfig.get())),
     solver(std::make_unique<btSequentialImpulseConstraintSolver>()),
-    world(std::make_unique<btDiscreteDynamicsWorld>(dispatcher.get(), broadPhase.get(), solver.get(), collisionConfig.get()))
+    world(std::make_unique<btDiscreteDynamicsWorld>(dispatcher.get(), broadPhase.get(), solver.get(), collisionConfig.get())),
+    worldUpdater(*world)
 {
     static const Vector3<SI::Acceleration> DEFAULT_GRAVITY(0, -9.8, 0);
     world->setGravity(toBulletUnits(DEFAULT_GRAVITY));
@@ -49,6 +50,7 @@ void World::setGravity(const Vector3<SI::Acceleration>& value) {
 void World::addObject(std::shared_ptr<Body> object) {
     Body& body = *object.get();
     world->addRigidBody(&body.getBulletBody());
+    object->setWorldUpdater(&worldUpdater);
     objects.insert(std::move(object));
     for (auto listener : createListener) {
         listener->onBodyCreation(body);
@@ -96,6 +98,11 @@ int World::luaIndex(const std::string& memberName, LuaStateView& state) {
     return result;
 }
 
+void World::stepSimulation(double timeStep) {
+    worldUpdater.newFrame();
+    world->stepSimulation(timeStep,4,btScalar(1/240.0));
+}
+
 void World::addCreationListener(BodyCreationListener& listener) const {
     createListener.insert(&listener);
 }
@@ -107,6 +114,7 @@ void World::removeCreationListener(BodyCreationListener& listener) const {
 
 World::~World() {
     for (auto& object : objects) {
+        object->setWorldUpdater(nullptr);
         world->removeRigidBody(&object->getBulletBody());
     }
 }
