@@ -29,7 +29,10 @@ static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fix
 static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& socket, const SphericalJointInfo& info) {
     btTransform convexTr = toBulletUnits(info.convexTransform);
     btTransform concaveTr = toBulletUnits(info.concaveTransform);
-    return std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), convexTr, concaveTr);
+    auto result = std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), convexTr, concaveTr);
+    btVector3 limits = toBulletUnits(info.limits);
+    result->setLimit(limits.z(), limits.y(), limits.x(), 1, 0.01);
+    return result;
 }
 
 SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info, bool placeBall) :

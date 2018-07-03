@@ -27,6 +27,7 @@
 #include "CompoundShape.hpp"
 #include "JointInfo.hpp"
 #include "units/Scalar.hpp"
+#include "units/Vector3.hpp"
 
 /**
  * Parameters to describe & construct a spherical joint.
@@ -44,12 +45,15 @@ public:
      * @param socketTransform Relative transform of the socket in its body part.
      * @param radius Radius of the ball.
      * @param startRotation Relative orientation of the ball body part to the socket part.
+     * @param limits Maximum movement amplitude around each axis.
      */
     SphericalJointInfo(Scalar<SI::Density> density, const Transform<SI::Length>& ballTransform, bool generateBall,
-                       const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius, const btQuaternion& startRotation) :
+                       const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius,
+                       const btQuaternion& startRotation, const Vector3<SI::Angle>& limits) :
         JointInfo(density, ballTransform, generateBall, socketTransform),
         ballRadius(radius),
-        startRotation(startRotation)
+        startRotation(startRotation),
+        limits(limits)
     {
 
     }
@@ -60,6 +64,8 @@ public:
     Scalar<SI::Length> ballRadius;
     /** Relative orientation of the ball body part to the socket part. */
     btQuaternion startRotation;
+    /** Maximum movement amplitude around each axis. */
+    Vector3<SI::Angle> limits;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 

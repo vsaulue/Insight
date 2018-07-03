@@ -132,33 +132,54 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={1,0,0,0}, position={0, TORSO_HALF_EXTENTS[2], 0}},
+            convexTransform= {
+                rotation= {axis= {0,0,1}, angle= math.pi/2},
+                position= {0, TORSO_HALF_EXTENTS[2], 0},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={1,0,0,0}, position={0, -NECK_BALL_RADIUS-(3/8)*HEAD_RADIUS-NECK_LENGTH-MARGIN, 0}},
+            concaveTransform= {
+                rotation= {axis={0,0,1}, angle= math.pi/2},
+                position= {0, -NECK_BALL_RADIUS-(3/8)*HEAD_RADIUS-NECK_LENGTH-MARGIN, 0},
+            },
             radius= NECK_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits= {math.pi/2, math.pi/3, math.pi/3},
         },
     },
     LeftShoulder= {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={-TORSO_HALF_EXTENTS[1]-0.75*SHOULDER_BALL_RADIUS, 0.9*TORSO_HALF_EXTENTS[2], 0}},
+            convexTransform= {
+                rotation= {axis= {0,1,0}, angle= -3*math.pi/4},
+                position= {-TORSO_HALF_EXTENTS[1]-0.75*SHOULDER_BALL_RADIUS, 0.9*TORSO_HALF_EXTENTS[2], 0},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={0,0,0,1}, position={0, ARM_HALF_EXTENTS[2]+SHOULDER_BALL_RADIUS+MARGIN, 0}},
+            concaveTransform= {
+                rotation= {0.5,-0.5,-0.5,0.5},
+                position= {0, ARM_HALF_EXTENTS[2]+SHOULDER_BALL_RADIUS+MARGIN, 0},
+            },
             radius= SHOULDER_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits= {math.pi/3, math.pi/2, math.pi/2},
         },
     },
     RightShoulder= {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={TORSO_HALF_EXTENTS[1]+0.75*SHOULDER_BALL_RADIUS, 0.9*TORSO_HALF_EXTENTS[2], 0}},
+            convexTransform= {
+                rotation= {axis= {0,1,0}, angle= -math.pi/4},
+                position= {TORSO_HALF_EXTENTS[1]+0.75*SHOULDER_BALL_RADIUS, 0.9*TORSO_HALF_EXTENTS[2], 0},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={0,0,0,1}, position={0, ARM_HALF_EXTENTS[2]+SHOULDER_BALL_RADIUS+MARGIN, 0}},
+            concaveTransform= {
+                rotation= {0.5,-0.5,-0.5,0.5},
+                position= {0, ARM_HALF_EXTENTS[2]+SHOULDER_BALL_RADIUS+MARGIN, 0},
+            },
             radius= SHOULDER_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits= {math.pi/3, math.pi/2, math.pi/2},
         },
     },
     LeftElbow= {
@@ -193,33 +214,54 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, HAND_HALF_EXTENTS[2], 0}},
+            convexTransform= {
+                rotation= {axis= {0,0,1}, angle= -math.pi/2},
+                position= {0, HAND_HALF_EXTENTS[2], 0},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -FOREARM_HALF_EXTENTS[2]-WRIST_BALL_RADIUS-MARGIN, 0}},
+            concaveTransform= {
+                rotation= {axis= {0,0,1}, angle= -math.pi/2},
+                position= {0, -FOREARM_HALF_EXTENTS[2]-WRIST_BALL_RADIUS-MARGIN, 0},
+            },
             radius= WRIST_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits= {math.pi/4, 0, math.pi/2},
         },
     },
     LeftHip= {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={-0.08, -TORSO_HALF_EXTENTS[2], 0}},
+            convexTransform= {
+                rotation= {axis= {0,0,1}, angle= math.pi/2},
+                position= {-0.08, -TORSO_HALF_EXTENTS[2]-0.5*HIP_BALL_RADIUS, 0},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={0,0,0,1}, position={0, THIGH_HALF_EXTENTS[2]+HIP_BALL_RADIUS+MARGIN, 0}},
+            concaveTransform= {
+                rotation= {axis= {0,0,1}, angle= math.pi/2},
+                position= {0, THIGH_HALF_EXTENTS[2]+HIP_BALL_RADIUS+MARGIN, 0},
+            },
             radius= HIP_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits= {math.pi/6, math.pi/2, math.pi/4},
         },
     },
     RightHip= {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={0,0,0,1}, position={0.08, -TORSO_HALF_EXTENTS[2], 0}},
+            convexTransform= {
+                rotation= {axis= {0,0,1}, angle= math.pi/2},
+                position= {0.08, -TORSO_HALF_EXTENTS[2]-0.5*HIP_BALL_RADIUS, 0},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={0,0,0,1}, position={0, THIGH_HALF_EXTENTS[2]+HIP_BALL_RADIUS+MARGIN, 0}},
+            concaveTransform= {
+                rotation= {axis= {0,0,1}, angle= math.pi/2},
+                position= {0, THIGH_HALF_EXTENTS[2]+HIP_BALL_RADIUS+MARGIN, 0},
+            },
             radius= HIP_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits= {math.pi/6, math.pi/2, math.pi/4},
         },
     },
     Knee= {
@@ -240,11 +282,18 @@ local JOINTS_INFO = {
         type= "Spherical",
         params= {
             density= JOINT_DENSITY,
-            convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, FOOT_HALF_EXTENTS[2]+ANKLE_BALL_RADIUS/2, -FOOT_HALF_EXTENTS[3]+ANKLE_BALL_RADIUS}},
+            convexTransform= {
+                rotation= {axis= {0,0,1}, angle= -math.pi/2},
+                position= {0, FOOT_HALF_EXTENTS[2]+ANKLE_BALL_RADIUS/2, -FOOT_HALF_EXTENTS[3]+ANKLE_BALL_RADIUS},
+            },
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -ANKLE_BALL_RADIUS-LEG_HALF_EXTENTS[2]-MARGIN, 0}},
+            concaveTransform= {
+                rotation= {axis= {0,0,1}, angle= -math.pi/2},
+                position= {0, -ANKLE_BALL_RADIUS-LEG_HALF_EXTENTS[2]-MARGIN, 0},
+            },
             radius= ANKLE_BALL_RADIUS,
             startRotation= {0,0,0,1},
+            limits={math.pi/6, math.pi/3, math.pi/4},
         },
     },
     Toes= {
