@@ -191,7 +191,7 @@ local JOINTS_INFO = {
             density= JOINT_DENSITY,
             convexTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, HAND_HALF_EXTENTS[2], 0}},
             generateConvexShape= true,
-            concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -ARM_HALF_EXTENTS[2]-WRIST_BALL_RADIUS-MARGIN, 0}},
+            concaveTransform={rotation={axis={0,0,1}, angle=math.pi}, position={0, -FOREARM_HALF_EXTENTS[2]-WRIST_BALL_RADIUS-MARGIN, 0}},
             radius= WRIST_BALL_RADIUS,
             startRotation= {0,0,0,1},
         },
