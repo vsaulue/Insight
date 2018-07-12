@@ -1,5 +1,5 @@
 # This file is part of Insight.
-# Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+# Copyright (C) 2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
 #
 # Insight is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,23 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with Insight.  If not, see <http://www.gnu.org/licenses/>.
 
-add_subdirectory(AI-Interface)
-add_subdirectory(graphics)
-add_subdirectory(graphs)
-add_subdirectory(physics)
-add_subdirectory(robotics)
-add_subdirectory(shell)
-add_subdirectory(units)
-
-add_executable(Insight
-    main.cpp
+add_library(AI-interface STATIC
+    AIInterface.cpp
+    Sense.cpp
 )
 
-target_link_libraries(Insight PRIVATE
-    Boost::program_options
-    GraphicEngine
+target_include_directories(AI-interface PUBLIC include)
+
+target_link_libraries(AI-interface
     LuaWrapper
     PhysicEngine
-    Robotics
-    ShellInterpreter
 )
