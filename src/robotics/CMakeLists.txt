@@ -26,6 +26,7 @@ add_library(Robotics STATIC
 
 target_include_directories(Robotics PUBLIC include)
 target_link_libraries(Robotics
+    AI-interface
     Graphs
     PhysicEngine
     LuaWrapper

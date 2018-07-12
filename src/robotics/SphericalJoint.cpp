@@ -38,7 +38,8 @@ static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& s
 SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInfo& info, bool placeBall) :
     Joint(ball, socket),
     jointInfo(info),
-    constraint(makeConstraint(ball, socket, info))
+    constraint(makeConstraint(ball, socket, info)),
+    rotationSense([this]() -> btQuaternion { return this->getRotation(); })
 {
     if (placeBall) {
         initPosition(socket, info.concaveTransform, ball, info.convexTransform, info.startRotation);
@@ -48,3 +49,13 @@ SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInf
 }
 
 SphericalJoint::~SphericalJoint() = default;
+
+btQuaternion SphericalJoint::getRotation() const {
+    auto absBall = constraint->getRigidBodyA().getWorldTransform().getRotation() * constraint->getFrameOffsetA().getRotation();
+    auto absSocket = constraint->getRigidBodyB().getWorldTransform().getRotation() * constraint->getFrameOffsetB().getRotation();
+    return absSocket.inverse() * absBall;
+}
+
+SenseSignal& SphericalJoint::getRotationSense() {
+    return rotationSense;
+}

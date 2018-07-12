@@ -60,7 +60,8 @@ static std::shared_ptr<btHingeConstraint> makeConstraint(Body& cylinder, Body& s
 CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info, bool placeCylinder) :
     Joint(cylinder, socket),
     jointInfo(info),
-    constraint(makeConstraint(cylinder, socket, info))
+    constraint(makeConstraint(cylinder, socket, info)),
+    rotationSense([this]() -> float { return this->getRotation().value; })
 {
     if (placeCylinder) {
         initPosition(socket, info.concaveTransform, cylinder, info.convexTransform, info.startRotation);
@@ -70,3 +71,11 @@ CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJoin
 }
 
 CylindricJoint::~CylindricJoint() = default;
+
+Scalar<SI::Angle> CylindricJoint::getRotation() const {
+    return Scalar<SI::Angle>(constraint->getHingeAngle());
+}
+
+SenseSignal& CylindricJoint::getRotationSense() {
+    return rotationSense;
+}

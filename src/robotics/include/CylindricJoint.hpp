@@ -24,6 +24,7 @@
 #include "Body.hpp"
 #include "CylindricJointInfo.hpp"
 #include "Joint.hpp"
+#include "Sense.hpp"
 #include "units/Scalar.hpp"
 #include "units/SI.hpp"
 
@@ -53,11 +54,21 @@ public:
     }
 
     virtual ~CylindricJoint();
+
+    /**
+     * Gets the relative rotation of the cylinder in the socket frame.
+     * @return The relative rotation between the two parts.
+     */
+    Scalar<SI::Angle> getRotation() const;
+
+    SenseSignal& getRotationSense() override;
 private:
     /** Joint configuration. */
     const CylindricJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/
     std::shared_ptr<btHingeConstraint> constraint;
+    /** Sense returning the relative rotation of the cylinder in the socket frame. */
+    Sense<float> rotationSense;
 };
 
 #endif /* CYLINDRICJOINT_HPP */

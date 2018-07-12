@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "AIInterface.hpp"
 #include "Body.hpp"
 #include "Joint.hpp"
 #include "JointInfo.hpp"
@@ -130,6 +131,8 @@ private:
     std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
     /** Reference body (position & rotation of the RobotBody is the one of this body). */
     Body* baseBody;
+    /** Interface (input/output signals) for an AI. */
+    AIInterface aiInterface;
 };
 
 #endif /* ROBOTBODY_HPP */

@@ -24,6 +24,7 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "Body.hpp"
+#include "SenseSignal.hpp"
 
 /** Common interface for all joint types. */
 class Joint {
@@ -39,6 +40,9 @@ public:
      * @param concavePart Body part containing the concave part of the joint.
      */
     Joint(Body& convexPart, Body& concavePart) : convexPart(convexPart), concavePart(concavePart) {}
+
+    Joint(const Joint&) = delete;
+    Joint(Joint&&) = delete;
 
     /**
      * Gets the body part containing the convex part of the joint.
@@ -63,6 +67,12 @@ public:
      * @return The constraint implementing this joint.
      */
     virtual std::shared_ptr<btTypedConstraint> getConstraint() = 0;
+
+    /**
+     * Gets the sense returning the relative rotation of the two parts (proprioception).
+     * @return A sense returning the relative transform of the convex part relative to the concave part.
+     */
+    virtual SenseSignal& getRotationSense() = 0;
 };
 
 #endif /* JOINT_HPP */

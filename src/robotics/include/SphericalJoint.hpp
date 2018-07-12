@@ -26,6 +26,7 @@
 #include "Body.hpp"
 #include "CompoundShape.hpp"
 #include "Joint.hpp"
+#include "Sense.hpp"
 #include "SphericalJointInfo.hpp"
 
 /**
@@ -53,11 +54,21 @@ public:
     std::shared_ptr<btTypedConstraint> getConstraint() override {
         return constraint;
     }
+
+    /**
+     * Gets the relative transform of the ball in the socket frame.
+     * @return The relative transform between the two parts.
+     */
+    btQuaternion getRotation() const;
+
+    SenseSignal& getRotationSense() override;
 private:
     /** Joint configuration. */
     const SphericalJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/
     std::shared_ptr<btConeTwistConstraint> constraint;
+    /** Sense returning the relative rotation of the ball in the socket frame. */
+    Sense<btQuaternion> rotationSense;
 };
 
 #endif /* JOINT_HPP */

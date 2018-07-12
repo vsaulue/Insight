@@ -28,6 +28,7 @@
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/LuaDefaultBinding.hpp"
 #include "lua/bindings/luaVirtualClass/base.hpp"
+#include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/bindings/luaVirtualClass/shared_ptr.hpp"
 #include "lua/bindings/std/string.hpp"
 #include "lua/LuaBinding.hpp"
@@ -129,11 +130,14 @@ RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
         }
         parts[pair.first] = body;
     }
+    auto& senses = aiInterface.getSenses();
     for (const auto& jointData : info.getJoints()) {
         const JointInfo& info = *jointData.jointInfo;
         Body& convexPart = *parts[jointData.convexPartName];
         Body& concavePart = *parts[jointData.concavePartName];
-        joints[jointData.jointName] = info.makeJoint(convexPart, concavePart, jointData.placeConvex);
+        std::unique_ptr<Joint> newJoint = info.makeJoint(convexPart, concavePart, jointData.placeConvex);
+        senses[jointData.jointName + ".rotation"] = &newJoint->getRotationSense();
+        joints[jointData.jointName] = std::move(newJoint);
     }
 
     for (auto& pair : parts) {
@@ -193,6 +197,8 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
             }
             return object.parts.size();
         });
+    } else if (memberName=="aiInterface") {
+        state.push<AIInterface*>(&aiInterface);
     } else {
         result = 0;
     }
