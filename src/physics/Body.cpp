@@ -66,7 +66,7 @@ Body::Body(std::shared_ptr<Shape> shape) :
     body(toBulletUnits(this->shape->getMass()), motionState.get(), &this->shape->getBulletShape(), this->shape->getEngineInertia()),
     worldUpdater(nullptr)
 {
-
+    setSleepingThresholds(Scalar<SI::Speed>(0.01), Scalar<SI::AngularVelocity>(SIMD_PI / 10.0));
 }
 
 const btTransform& Body::getEngineTransform() const {
@@ -168,3 +168,7 @@ void Body::removeMoveListener(BodyMoveListener& listener) const {
 }
 
 Body::~Body() = default;
+
+void Body::setSleepingThresholds(Scalar<SI::Speed> linear, Scalar<SI::AngularVelocity> angular) {
+    body.setSleepingThresholds(toBulletUnits(linear), toBulletUnits(angular));
+}

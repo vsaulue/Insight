@@ -144,6 +144,17 @@ private:
     btRigidBody body;
     /** World callbacks to produce specific events when this object is in a world (can be null). */
     WorldUpdater* worldUpdater;
+
+    /**
+     * Sets the deactivation thresholds of this body.
+     *
+     * A body whose angular & linear velocity remains under the given thresholds for
+     * a certain duration will be deactivated (will stop moving).
+     *
+     * @param linear Linear velocity threshold.
+     * @param angular Angular velocity threshold.
+     */
+    void setSleepingThresholds(Scalar<SI::Speed> linear, Scalar<SI::AngularVelocity> angular);
 };
 
 #endif /* BODY_HPP */
