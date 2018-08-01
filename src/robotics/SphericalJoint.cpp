@@ -39,7 +39,9 @@ SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInf
     Joint(ball, socket),
     jointInfo(info),
     constraint(makeConstraint(ball, socket, info)),
-    rotationSense([this]() -> btQuaternion { return this->getRotation(); })
+    rotationSense([this]() -> btQuaternion { return this->getRotation(); }),
+    motorTorque(0,0,0),
+    motorAction([this](const btVector3& value) { this->setMotorTorque(Vector3<SI::Torque>(value)); })
 {
     if (placeBall) {
         initPosition(socket, info.concaveTransform, ball, info.convexTransform, info.startRotation);
@@ -51,7 +53,9 @@ SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInf
 SphericalJoint::~SphericalJoint() = default;
 
 void SphericalJoint::beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) {
-
+    auto basis = convexPart.getEngineTransform().getBasis() * jointInfo.convexTransform.getBasis();
+    convexPart.getBulletBody().applyTorque(basis * toBulletUnits(motorTorque));
+    concavePart.getBulletBody().applyTorque(basis * -toBulletUnits(motorTorque));
 }
 
 btQuaternion SphericalJoint::getRotation() const {
@@ -62,4 +66,14 @@ btQuaternion SphericalJoint::getRotation() const {
 
 SenseSignal& SphericalJoint::getRotationSense() {
     return rotationSense;
+}
+
+ActionSignal& SphericalJoint::getMotorAction() {
+    return motorAction;
+}
+
+void SphericalJoint::setMotorTorque(const Vector3<SI::Torque>& value) {
+    motorTorque = value;
+    convexPart.getBulletBody().activate();
+    concavePart.getBulletBody().activate();
 }

@@ -61,7 +61,9 @@ CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJoin
     Joint(cylinder, socket),
     jointInfo(info),
     constraint(makeConstraint(cylinder, socket, info)),
-    rotationSense([this]() -> float { return this->getRotation().value; })
+    rotationSense([this]() -> float { return this->getRotation().value; }),
+    motorTorque(0),
+    motorAction([this](const float& value) { this->setMotorTorque(Scalar<SI::Torque>(value)); })
 {
     if (placeCylinder) {
         initPosition(socket, info.concaveTransform, cylinder, info.convexTransform, info.startRotation);
@@ -73,7 +75,9 @@ CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJoin
 CylindricJoint::~CylindricJoint() = default;
 
 void CylindricJoint::beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) {
-
+    btVector3 axis = convexPart.getEngineTransform().getBasis() * jointInfo.convexTransform.getBasis() * btVector3(1,0,0);
+    convexPart.getBulletBody().applyTorque(axis * toBulletUnits(motorTorque));
+    concavePart.getBulletBody().applyTorque(axis * -toBulletUnits(motorTorque));
 }
 
 Scalar<SI::Angle> CylindricJoint::getRotation() {
@@ -82,4 +86,14 @@ Scalar<SI::Angle> CylindricJoint::getRotation() {
 
 SenseSignal& CylindricJoint::getRotationSense() {
     return rotationSense;
+}
+
+ActionSignal& CylindricJoint::getMotorAction() {
+    return motorAction;
+}
+
+void CylindricJoint::setMotorTorque(Scalar<SI::Torque> value) {
+    motorTorque = value;
+    concavePart.getBulletBody().activate();
+    convexPart.getBulletBody().activate();
 }

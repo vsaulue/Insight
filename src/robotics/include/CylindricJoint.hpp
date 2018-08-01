@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "Action.hpp"
 #include "Body.hpp"
 #include "CylindricJointInfo.hpp"
 #include "Joint.hpp"
@@ -64,6 +65,8 @@ public:
     Scalar<SI::Angle> getRotation();
 
     SenseSignal& getRotationSense() override;
+
+    ActionSignal& getMotorAction() override;
 private:
     /** Joint configuration. */
     const CylindricJointInfo& jointInfo;
@@ -71,6 +74,16 @@ private:
     btHingeConstraint constraint;
     /** Sense returning the relative rotation of the cylinder in the socket frame. */
     Sense<float> rotationSense;
+    /** Motor/muscle power: torque exerced on the cylinder part by the socket part.  */
+    Scalar<SI::Torque> motorTorque;
+    /** Action controling the torque of the motor of this joint. */
+    Action<float> motorAction;
+
+    /**
+     * Sets the value of the torque exerced by this joint.
+     * @param value New value.
+     */
+    void setMotorTorque(Scalar<SI::Torque> value);
 };
 
 #endif /* CYLINDRICJOINT_HPP */

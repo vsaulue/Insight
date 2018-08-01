@@ -23,6 +23,7 @@
 
 #include "btBulletDynamicsCommon.h"
 
+#include "ActionSignal.hpp"
 #include "Body.hpp"
 #include "Constraint.hpp"
 #include "SenseSignal.hpp"
@@ -68,6 +69,12 @@ public:
      * @return A sense returning the relative transform of the convex part relative to the concave part.
      */
     virtual SenseSignal& getRotationSense() = 0;
+
+    /**
+     * Gets the action signal controling the torque of the motor of this joint.
+     * @return An action used to set the torque applied on the convex part by the concave part.
+     */
+    virtual ActionSignal& getMotorAction() = 0;
 };
 
 #endif /* JOINT_HPP */

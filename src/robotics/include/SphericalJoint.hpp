@@ -23,6 +23,7 @@
 
 #include "btBulletDynamicsCommon.h"
 
+#include "Action.hpp"
 #include "Body.hpp"
 #include "CompoundShape.hpp"
 #include "Joint.hpp"
@@ -64,6 +65,8 @@ public:
     btQuaternion getRotation() const;
 
     SenseSignal& getRotationSense() override;
+
+    ActionSignal& getMotorAction() override;
 private:
     /** Joint configuration. */
     const SphericalJointInfo& jointInfo;
@@ -71,6 +74,16 @@ private:
     btConeTwistConstraint constraint;
     /** Sense returning the relative rotation of the ball in the socket frame. */
     Sense<btQuaternion> rotationSense;
+    /** Motor/muscle power: torque exerced on the ball part by the socket part.  */
+    Vector3<SI::Torque> motorTorque;
+    /** Action controling the torque of the motor of this joint. */
+    Action<btVector3> motorAction;
+
+    /**
+     * Sets the value of the torque exerced by this joint.
+     * @param value New value.
+     */
+    void setMotorTorque(const Vector3<SI::Torque>& value);
 };
 
 #endif /* JOINT_HPP */

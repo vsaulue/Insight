@@ -131,12 +131,14 @@ RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
         parts[pair.first] = body;
     }
     auto& senses = aiInterface.getSenses();
+    auto& actions = aiInterface.getActions();
     for (const auto& jointData : info.getJoints()) {
         const JointInfo& info = *jointData.jointInfo;
         Body& convexPart = *parts[jointData.convexPartName];
         Body& concavePart = *parts[jointData.concavePartName];
         std::unique_ptr<Joint> newJoint = info.makeJoint(convexPart, concavePart, jointData.placeConvex);
         senses[jointData.jointName + ".rotation"] = &newJoint->getRotationSense();
+        actions[jointData.jointName + ".motor"] = &newJoint->getMotorAction();
         joints[jointData.jointName] = std::move(newJoint);
     }
 
