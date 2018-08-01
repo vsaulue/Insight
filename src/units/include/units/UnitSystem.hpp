@@ -59,6 +59,8 @@ namespace Units {
         using Force = decltype(Mass() * Length() / Time()[n2]);
         /** Linear speed unit. */
         using Speed = decltype(Length() / Time());
+        /** Torque unit. */
+        using Torque = decltype(Mass() * Length()[n2] / Time()[n2]);
         /** Volume unit. */
         using Volume = decltype(Length()[n3]);
     };
