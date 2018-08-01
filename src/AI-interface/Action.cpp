@@ -16,28 +16,14 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONSIGNAL_HPP
-#define ACTIONSIGNAL_HPP
+#include "Action.hpp"
+#include "ActionVisitor.hpp"
+#include "lua/bindings/bullet.hpp"
 
-#include "lua/types/LuaVirtualClass.hpp"
+void Action<float>::apply(ActionVisitor& visitor) {
+    visitor.visit(*this);
+}
 
-class ActionVisitor;
-
-/**
- * Output signal of an AI.
- *
- * Type eraser for Action<T> types. The apply(SenseVisitor&) method can be used
- * to access the derived type.
- */
-class ActionSignal : public LuaVirtualClass {
-public:
-    virtual ~ActionSignal() = default;
-
-    /** Apply some algorithm to this object (visitor pattern).
-     *
-     * @param visitor Algorithm to apply on this object.
-     */
-    virtual void apply(ActionVisitor& visitor) = 0;
-};
-
-#endif /* ACTIONSIGNAL_HPP */
+void Action<btVector3>::apply(ActionVisitor& visitor) {
+    visitor.visit(*this);
+}

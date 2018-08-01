@@ -83,6 +83,16 @@ namespace details {
     };
 }
 
+template<>
+class LuaBinding<btVector3> : public LuaDefaultBinding<btVector3> {
+public:
+    static btVector3 getFromTable(LuaTable& table);
+
+    static int luaIndexImpl(btVector3& object, const std::string& memberName, LuaStateView& state);
+
+    static std::string luaToStringImpl(btVector3& object);
+};
+
 template<typename Unit>
 class LuaBinding<Vector3<Unit>> : public LuaDefaultBinding<Vector3<Unit>> {
 public:
