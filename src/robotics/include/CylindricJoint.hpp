@@ -53,6 +53,8 @@ public:
         return constraint;
     }
 
+    void beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) override;
+
     virtual ~CylindricJoint();
 
     /**

@@ -50,6 +50,10 @@ SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInf
 
 SphericalJoint::~SphericalJoint() = default;
 
+void SphericalJoint::beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) {
+
+}
+
 btQuaternion SphericalJoint::getRotation() const {
     auto absBall = constraint.getRigidBodyA().getWorldTransform().getRotation() * constraint.getFrameOffsetA().getRotation();
     auto absSocket = constraint.getRigidBodyB().getWorldTransform().getRotation() * constraint.getFrameOffsetB().getRotation();

@@ -28,6 +28,7 @@
 #include "BodyCreationListener.hpp"
 #include "Constraint.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
+#include "units/BulletUnits.hpp"
 #include "units/Scalar.hpp"
 #include "units/SI.hpp"
 #include "units/Vector3.hpp"
@@ -130,6 +131,20 @@ private:
     std::unordered_set<std::shared_ptr<Constraint>> constraints;
     /** List of objects to inform of new Bodies. */
     mutable std::unordered_set<BodyCreationListener*> createListener;
+
+    /**
+     * Function called before each integration step.
+     * @param timeStep Duration of the integration step.
+     */
+    void beforeTick(Scalar<BulletUnits::Time> timeStep);
+
+    /**
+     * Implementation of Bullet engine callback, called before each step.
+     *
+     * @param world World calling this function.
+     * @param timeStep Duration of the integration step.
+     */
+    static void beforeTickCallback(btDynamicsWorld* world, btScalar timeStep);
 };
 
 #endif /* WORLD_HPP */

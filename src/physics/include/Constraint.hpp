@@ -36,6 +36,14 @@ public:
      * @return The constraint implementing this joint.
      */
     virtual btTypedConstraint& getConstraint() = 0;
+
+    /**
+     * Method called by the World containing this object before each integration step.
+     *
+     * @param world World containing this constraint.
+     * @param timeStep Duration of the next integration step.
+     */
+    virtual void beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) = 0;
 };
 
 #endif /* CONSTRAINT_HPP */

@@ -55,6 +55,8 @@ public:
         return constraint;
     }
 
+    void beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) override;
+
     /**
      * Gets the relative transform of the ball in the socket frame.
      * @return The relative transform between the two parts.

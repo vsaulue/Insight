@@ -72,6 +72,10 @@ CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJoin
 
 CylindricJoint::~CylindricJoint() = default;
 
+void CylindricJoint::beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) {
+
+}
+
 Scalar<SI::Angle> CylindricJoint::getRotation() {
     return Scalar<SI::Angle>(constraint.getHingeAngle());
 }

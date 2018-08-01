@@ -27,6 +27,11 @@
 #include "SphereShape.hpp"
 #include "StaticPlaneShape.hpp"
 
+void World::beforeTickCallback(btDynamicsWorld* world, btScalar timeStep) {
+    World* container = static_cast<World*>(world->getWorldUserInfo());
+    container->beforeTick(Scalar<BulletUnits::Time>(timeStep));
+}
+
 World::World() :
     broadPhase(std::make_unique<btDbvtBroadphase>()),
     collisionConfig(std::make_unique<btDefaultCollisionConfiguration>()),
@@ -37,6 +42,13 @@ World::World() :
 {
     static const Vector3<SI::Acceleration> DEFAULT_GRAVITY(0, -9.8, 0);
     world->setGravity(toBulletUnits(DEFAULT_GRAVITY));
+    world->setInternalTickCallback(beforeTickCallback, static_cast<void*>(this), true);
+}
+
+void World::beforeTick(Scalar<BulletUnits::Time> timeStep) {
+    for (auto& constraint : constraints) {
+        constraint->beforeTick(*this, timeStep);
+    }
 }
 
 Vector3<SI::Acceleration> World::getGravity() const {
