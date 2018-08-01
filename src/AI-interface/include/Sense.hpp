@@ -26,17 +26,33 @@
 #include "lua/bindings/bullet.hpp"
 #include "SenseSignal.hpp"
 
+/**
+ * Sense signal wrapping/returning a specific type of data.
+ * @tparam T Type of data returned by this sense signal.
+ */
 template<typename T>
 class Sense;
 
 namespace details {
+    /**
+     * Default implementation of some methods of Sense<T>.
+     * @tparam T Type of data returned by this sense signal.
+     */
     template<typename T>
     class DefaultSense : public SenseSignal {
     public:
+        /**
+         * DefaultSense constructor.
+         * @param getter Function used to get the value of this sense signal.
+         */
         DefaultSense(std::function<T()>&& getter) : getter(getter) {
 
         }
 
+        /**
+         * Gets the value of this sense signal.
+         * @return The value of this sense signal.
+         */
         T get() const {
             return getter();
         };
@@ -51,6 +67,7 @@ namespace details {
             return result;
         }
     private:
+        /** Function used to get the value of this sense signal. */
         std::function<T()> getter;
     };
 }
