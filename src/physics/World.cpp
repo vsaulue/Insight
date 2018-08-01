@@ -57,8 +57,8 @@ void World::addObject(std::shared_ptr<Body> object) {
     }
 }
 
-void World::addConstraint(std::shared_ptr<btTypedConstraint> constraint) {
-    world->addConstraint(constraint.get());
+void World::addConstraint(std::shared_ptr<Constraint> constraint) {
+    world->addConstraint(&constraint->getConstraint());
     constraints.insert(std::move(constraint));
 }
 

@@ -26,12 +26,12 @@ static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fix
     movingBody.setEngineTransform(newTransform);
 }
 
-static std::shared_ptr<btConeTwistConstraint> makeConstraint(Body& ball, Body& socket, const SphericalJointInfo& info) {
+static btConeTwistConstraint makeConstraint(Body& ball, Body& socket, const SphericalJointInfo& info) {
     btTransform convexTr = toBulletUnits(info.convexTransform);
     btTransform concaveTr = toBulletUnits(info.concaveTransform);
-    auto result = std::make_shared<btConeTwistConstraint>(ball.getBulletBody(), socket.getBulletBody(), convexTr, concaveTr);
+    btConeTwistConstraint result(ball.getBulletBody(), socket.getBulletBody(), convexTr, concaveTr);
     btVector3 limits = toBulletUnits(info.limits);
-    result->setLimit(limits.z(), limits.y(), limits.x(), 1, 0.01);
+    result.setLimit(limits.z(), limits.y(), limits.x(), 1, 0.01);
     return result;
 }
 
@@ -51,8 +51,8 @@ SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInf
 SphericalJoint::~SphericalJoint() = default;
 
 btQuaternion SphericalJoint::getRotation() const {
-    auto absBall = constraint->getRigidBodyA().getWorldTransform().getRotation() * constraint->getFrameOffsetA().getRotation();
-    auto absSocket = constraint->getRigidBodyB().getWorldTransform().getRotation() * constraint->getFrameOffsetB().getRotation();
+    auto absBall = constraint.getRigidBodyA().getWorldTransform().getRotation() * constraint.getFrameOffsetA().getRotation();
+    auto absSocket = constraint.getRigidBodyB().getWorldTransform().getRotation() * constraint.getFrameOffsetB().getRotation();
     return absSocket.inverse() * absBall;
 }
 

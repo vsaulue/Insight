@@ -128,7 +128,7 @@ private:
     /** Set of body parts, indexed by their names. */
     std::unordered_map<std::string, std::shared_ptr<Body>> parts;
     /** Set of joints between body parts, indexed by their names. */
-    std::unordered_map<std::string, std::unique_ptr<Joint>> joints;
+    std::unordered_map<std::string, std::shared_ptr<Joint>> joints;
     /** Reference body (position & rotation of the RobotBody is the one of this body). */
     Body* baseBody;
     /** Interface (input/output signals) for an AI. */

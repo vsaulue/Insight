@@ -51,7 +51,7 @@ public:
 
     virtual ~SphericalJoint();
 
-    std::shared_ptr<btTypedConstraint> getConstraint() override {
+    btTypedConstraint& getConstraint() override {
         return constraint;
     }
 
@@ -66,7 +66,7 @@ private:
     /** Joint configuration. */
     const SphericalJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/
-    std::shared_ptr<btConeTwistConstraint> constraint;
+    btConeTwistConstraint constraint;
     /** Sense returning the relative rotation of the ball in the socket frame. */
     Sense<btQuaternion> rotationSense;
 };

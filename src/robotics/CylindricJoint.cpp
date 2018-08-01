@@ -45,15 +45,15 @@ static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fix
  * @param info Configuration of this joint.
  * @return A Bullet constraint representing the joint.
  */
-static std::shared_ptr<btHingeConstraint> makeConstraint(Body& cylinder, Body& socket, const CylindricJointInfo& info) {
+static btHingeConstraint makeConstraint(Body& cylinder, Body& socket, const CylindricJointInfo& info) {
     btRigidBody& bodyA = cylinder.getBulletBody();
     btRigidBody& bodyB = socket.getBulletBody();
     btVector3 pivotA = toBulletUnits(info.convexTransform.getOrigin());
     btVector3 pivotB = toBulletUnits(info.concaveTransform.getOrigin());
     const btVector3 axisA = info.convexTransform.getBasis() * btVector3(1,0,0);
     const btVector3 axisB = info.concaveTransform.getBasis() * btVector3(1,0,0);
-    std::shared_ptr<btHingeConstraint> result = std::make_shared<btHingeConstraint>(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
-    result->setLimit(toBulletUnits(info.minAngle), toBulletUnits(info.maxAngle));
+    btHingeConstraint result(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
+    result.setLimit(toBulletUnits(info.minAngle), toBulletUnits(info.maxAngle));
     return result;
 }
 
@@ -72,8 +72,8 @@ CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJoin
 
 CylindricJoint::~CylindricJoint() = default;
 
-Scalar<SI::Angle> CylindricJoint::getRotation() const {
-    return Scalar<SI::Angle>(constraint->getHingeAngle());
+Scalar<SI::Angle> CylindricJoint::getRotation() {
+    return Scalar<SI::Angle>(constraint.getHingeAngle());
 }
 
 SenseSignal& CylindricJoint::getRotationSense() {

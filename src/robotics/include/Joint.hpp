@@ -24,10 +24,11 @@
 #include "btBulletDynamicsCommon.h"
 
 #include "Body.hpp"
+#include "Constraint.hpp"
 #include "SenseSignal.hpp"
 
 /** Common interface for all joint types. */
-class Joint {
+class Joint : public Constraint {
 protected:
     /** Body part holding the convex part (ex: sphere, cylinder) of the joint. */
     Body& convexPart;
@@ -61,12 +62,6 @@ public:
     }
 
     virtual ~Joint() = default;
-
-    /**
-     * Gets the Bullet constraint implementing this joint.
-     * @return The constraint implementing this joint.
-     */
-    virtual std::shared_ptr<btTypedConstraint> getConstraint() = 0;
 
     /**
      * Gets the sense returning the relative rotation of the two parts (proprioception).

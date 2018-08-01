@@ -144,7 +144,7 @@ RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
         world.addObject(pair.second);
     }
     for (auto& pair : joints) {
-        world.addConstraint(pair.second->getConstraint());
+        world.addConstraint(pair.second);
     }
 }
 

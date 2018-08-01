@@ -49,7 +49,7 @@ public:
      */
     CylindricJoint(Body& cylinder, Body& socket, const CylindricJointInfo& info, bool placeCylinder);
 
-    std::shared_ptr<btTypedConstraint> getConstraint() override {
+    btTypedConstraint& getConstraint() override {
         return constraint;
     }
 
@@ -59,14 +59,14 @@ public:
      * Gets the relative rotation of the cylinder in the socket frame.
      * @return The relative rotation between the two parts.
      */
-    Scalar<SI::Angle> getRotation() const;
+    Scalar<SI::Angle> getRotation();
 
     SenseSignal& getRotationSense() override;
 private:
     /** Joint configuration. */
     const CylindricJointInfo& jointInfo;
     /** Bullet constraint implementing this joint.*/
-    std::shared_ptr<btHingeConstraint> constraint;
+    btHingeConstraint constraint;
     /** Sense returning the relative rotation of the cylinder in the socket frame. */
     Sense<float> rotationSense;
 };

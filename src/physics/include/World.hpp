@@ -26,6 +26,7 @@
 
 #include "Body.hpp"
 #include "BodyCreationListener.hpp"
+#include "Constraint.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
 #include "units/Scalar.hpp"
 #include "units/SI.hpp"
@@ -78,7 +79,7 @@ public:
      * Adds a new constraint into the world.
      * @param constraint The new constraint.
      */
-    void addConstraint(std::shared_ptr<btTypedConstraint> constraint);
+    void addConstraint(std::shared_ptr<Constraint> constraint);
 
     /**
      * Gets the default margin added to collision shapes.
@@ -126,7 +127,7 @@ private:
     /** List of objects in the world. */
     std::unordered_set<std::shared_ptr<Body>> objects;
     /** List of constraints between objects of this world. */
-    std::unordered_set<std::shared_ptr<btTypedConstraint>> constraints;
+    std::unordered_set<std::shared_ptr<Constraint>> constraints;
     /** List of objects to inform of new Bodies. */
     mutable std::unordered_set<BodyCreationListener*> createListener;
 };
