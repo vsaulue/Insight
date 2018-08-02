@@ -112,7 +112,7 @@ public:
      * @param world World in which the body will be created.
      * @param info Construction info for the robot.
      */
-    RobotBody(World& world, const ConstructionInfo& info);
+    RobotBody(World& world, std::shared_ptr<const ConstructionInfo> cInfo);
 
     virtual ~RobotBody();
 
@@ -125,6 +125,8 @@ public:
      */
     static std::unique_ptr<RobotBody> luaGetFromTable(LuaTable& table);
 private:
+    /** Construction info of this robot body. */
+    std::shared_ptr<const ConstructionInfo> info;
     /** Set of body parts, indexed by their names. */
     std::unordered_map<std::string, std::shared_ptr<Body>> parts;
     /** Set of joints between body parts, indexed by their names. */

@@ -28,6 +28,7 @@
 #include "GraphicEngine.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/bindings/robotics.hpp"
+#include "lua/bindings/std/shared_ptr.hpp"
 #include "lua/types/LuaFunction.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
@@ -453,12 +454,15 @@ public:
             state.push<World*>(&world);
         } else if (memberName == "newRobotInfo") {
             state.push<LuaFunction>([](LuaStateView& state) -> int {
-                state.push<RobotBody::ConstructionInfo>(state.get<RobotBody::ConstructionInfo>(1));
+                using ConstructionInfo = RobotBody::ConstructionInfo;
+                auto newInfo = std::make_shared<ConstructionInfo>(state.get<RobotBody::ConstructionInfo>(1));
+                state.push<std::shared_ptr<RobotBody::ConstructionInfo>>(newInfo);
                 return 1;
             });
         } else if (memberName == "newRobot") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world, state.get<RobotBody::ConstructionInfo>(2));
+                auto info = state.get<std::shared_ptr<RobotBody::ConstructionInfo>>(2);
+                std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world, info);
                 state.push<RobotBody*>(newRobot.get());
                 object.robots.insert(std::move(newRobot));
                 return 1;

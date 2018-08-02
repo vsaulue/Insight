@@ -122,21 +122,23 @@ const std::vector<RobotBody::ConstructionInfo::JointData>& RobotBody::Constructi
     return joints;
 }
 
-RobotBody::RobotBody(World& world, const ConstructionInfo& info) {
-    for (const auto& pair : info.getParts()) {
+RobotBody::RobotBody(World& world, std::shared_ptr<const ConstructionInfo> cInfo) :
+    info(cInfo)
+{
+    for (const auto& pair : info->getParts()) {
         std::shared_ptr<Body> body = std::make_shared<Body>(pair.second);
-        if (pair.first == info.getBasePartName()) {
+        if (pair.first == info->getBasePartName()) {
             baseBody = body.get();
         }
         parts[pair.first] = body;
     }
     auto& senses = aiInterface.getSenses();
     auto& actions = aiInterface.getActions();
-    for (const auto& jointData : info.getJoints()) {
-        const JointInfo& info = *jointData.jointInfo;
+    for (const auto& jointData : info->getJoints()) {
+        const JointInfo& jointInfo = *jointData.jointInfo;
         Body& convexPart = *parts[jointData.convexPartName];
         Body& concavePart = *parts[jointData.concavePartName];
-        std::unique_ptr<Joint> newJoint = info.makeJoint(convexPart, concavePart, jointData.placeConvex);
+        std::unique_ptr<Joint> newJoint = jointInfo.makeJoint(convexPart, concavePart, jointData.placeConvex);
         senses[jointData.jointName + ".rotation"] = &newJoint->getRotationSense();
         actions[jointData.jointName + ".motor"] = &newJoint->getMotorAction();
         joints[jointData.jointName] = std::move(newJoint);
