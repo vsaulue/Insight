@@ -326,16 +326,18 @@ private:
         const std::vector<std::string>& initScripts;
     };
 
+    /** World & physics engine. */
     World world;
     /** List of robots. */
     std::unordered_set<std::unique_ptr<RobotBody>> robots;
+    /** Graphics engine. */
     GraphicEngine graphicEngine;
     /** Shell configuration. */
     ShellConfig shellConfig;
+    /** Lua shell (stdin/stdout) interpreter. */
     ShellInterpreter interpreter;
-
+    /** Time between two renders (inverse of the framerate). */
     std::chrono::duration<std::int64_t, std::nano> renderPeriod;
-
     /** Holds the state of this object, and handles worker thread control (stop & pause). */
     InsightState insightState;
     /** Holds the state of the simulation, and handles worker thread control (can skip simulation and run the GUI only). */
