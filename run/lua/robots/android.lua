@@ -197,6 +197,7 @@ local JOINTS_INFO = {
             startRotation= 0,
             minAngle= -0.1,
             maxAngle= math.pi,
+            maxMotorTorque= 50,
         },
     },
     RightElbow= {
@@ -211,6 +212,7 @@ local JOINTS_INFO = {
             startRotation= 0,
             minAngle= -0.1,
             maxAngle= math.pi,
+            maxMotorTorque= 50,
         },
     },
     Wrist= {
@@ -282,6 +284,7 @@ local JOINTS_INFO = {
             startRotation= 0,
             minAngle= -math.pi,
             maxAngle= 0.1,
+            maxMotorTorque= 80,
         },
     },
     Ankle= {
@@ -315,6 +318,7 @@ local JOINTS_INFO = {
             startRotation= 0,
             minAngle= -math.pi/2,
             maxAngle=  math.pi/2,
+            maxMotorTorque= 3,
         },
     },
 }

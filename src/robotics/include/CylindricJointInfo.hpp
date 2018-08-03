@@ -46,16 +46,19 @@ struct CylindricJointInfo : public JointInfo {
      * @param startRotation Relative orientation of the cylinder body part to the socket part (radian).
      * @param minAngle Minimum possible value for the angle between the two parts.
      * @param maxAngle Maximum possible value for the angle between the two parts.
+     * @param maxMotorTorque Maximum torque that the motor of this joint between the two bodies.
      */
     CylindricJointInfo(Scalar<SI::Density> density, const Transform<SI::Length>& cylinderTransform, bool generateCylinder,
                        const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius, Scalar<SI::Length> length,
-                       Scalar<SI::Angle> startRotation, Scalar<SI::Angle> minAngle, Scalar<SI::Angle> maxAngle) :
+                       Scalar<SI::Angle> startRotation, Scalar<SI::Angle> minAngle, Scalar<SI::Angle> maxAngle,
+                       Scalar<SI::Torque> maxMotorTorque) :
         JointInfo(density, cylinderTransform, generateCylinder, socketTransform),
         cylinderRadius(radius),
         cylinderLength(length),
         startRotation(startRotation),
         minAngle(minAngle),
-        maxAngle(maxAngle)
+        maxAngle(maxAngle),
+        maxMotorTorque(maxMotorTorque)
     {
 
     }
@@ -70,6 +73,8 @@ struct CylindricJointInfo : public JointInfo {
     Scalar<SI::Angle> minAngle;
     /** Maximum possible value for the angle. */
     Scalar<SI::Angle> maxAngle;
+    /** Maximum torque (absolute value) that the motor of this joint can apply. */
+    Scalar<SI::Torque> maxMotorTorque;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 

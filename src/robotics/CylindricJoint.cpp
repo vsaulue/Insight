@@ -16,6 +16,8 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "CylindricJoint.hpp"
 
 /**
@@ -93,7 +95,7 @@ ActionSignal& CylindricJoint::getMotorAction() {
 }
 
 void CylindricJoint::setMotorTorque(Scalar<SI::Torque> value) {
-    motorTorque = value;
+    motorTorque = std::clamp(value, -jointInfo.maxMotorTorque, jointInfo.maxMotorTorque);
     concavePart.getBulletBody().activate();
     convexPart.getBulletBody().activate();
 }
