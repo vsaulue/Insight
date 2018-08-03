@@ -41,6 +41,7 @@ std::unique_ptr<SphericalJointInfo> SphericalJointInfo::luaGetFromTable(LuaTable
             table.get<LuaNativeString,Transform<SI::Length>>("concaveTransform"),
             table.get<LuaNativeString,Scalar<SI::Length>>("radius"),
             table.get<LuaNativeString,btQuaternion>("startRotation"),
-            table.get<LuaNativeString,Vector3<SI::Angle>>("limits")
+            table.get<LuaNativeString,Vector3<SI::Angle>>("limits"),
+            table.get<LuaNativeString,Vector3<SI::Torque>>("maxMotorTorque")
     );
 }

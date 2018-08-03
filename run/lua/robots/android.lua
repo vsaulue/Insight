@@ -144,6 +144,7 @@ local JOINTS_INFO = {
             radius= NECK_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/2, math.pi/3, math.pi/3},
+            maxMotorTorque= {5, 5, 5},
         },
     },
     LeftShoulder= {
@@ -162,6 +163,7 @@ local JOINTS_INFO = {
             radius= SHOULDER_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/3, math.pi/2, math.pi/2},
+            maxMotorTorque= {10, 50, 50},
         },
     },
     RightShoulder= {
@@ -180,6 +182,7 @@ local JOINTS_INFO = {
             radius= SHOULDER_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/3, math.pi/2, math.pi/2},
+            maxMotorTorque= {10, 50, 50},
         },
     },
     LeftElbow= {
@@ -226,6 +229,7 @@ local JOINTS_INFO = {
             radius= WRIST_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/4, 0, math.pi/2},
+            maxMotorTorque= {2, 0, 8},
         },
     },
     LeftHip= {
@@ -244,6 +248,7 @@ local JOINTS_INFO = {
             radius= HIP_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/6, math.pi/2, math.pi/4},
+            maxMotorTorque= {5, 60, 10},
         },
     },
     RightHip= {
@@ -262,6 +267,7 @@ local JOINTS_INFO = {
             radius= HIP_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/6, math.pi/2, math.pi/4},
+            maxMotorTorque= {5, 60, 10},
         },
     },
     Knee= {
@@ -294,6 +300,7 @@ local JOINTS_INFO = {
             radius= ANKLE_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits={math.pi/6, math.pi/3, math.pi/4},
+            maxMotorTorque= {10, 100, 10},
         },
     },
     Toes= {

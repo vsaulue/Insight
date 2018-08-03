@@ -46,14 +46,17 @@ public:
      * @param radius Radius of the ball.
      * @param startRotation Relative orientation of the ball body part to the socket part.
      * @param limits Maximum movement amplitude around each axis.
+     * @param maxMotorTorque Maximum torque of the motor around each axis.
      */
     SphericalJointInfo(Scalar<SI::Density> density, const Transform<SI::Length>& ballTransform, bool generateBall,
                        const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius,
-                       const btQuaternion& startRotation, const Vector3<SI::Angle>& limits) :
+                       const btQuaternion& startRotation, const Vector3<SI::Angle>& limits,
+                       const Vector3<SI::Torque>& maxMotorTorque) :
         JointInfo(density, ballTransform, generateBall, socketTransform),
         ballRadius(radius),
         startRotation(startRotation),
-        limits(limits)
+        limits(limits),
+        maxMotorTorque(maxMotorTorque)
     {
 
     }
@@ -66,6 +69,8 @@ public:
     btQuaternion startRotation;
     /** Maximum movement amplitude around each axis. */
     Vector3<SI::Angle> limits;
+    /** Maximum torque of the motor around each axis. */
+    Vector3<SI::Torque> maxMotorTorque;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 

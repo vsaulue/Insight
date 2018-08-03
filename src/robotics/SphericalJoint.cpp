@@ -16,6 +16,8 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "SphericalJoint.hpp"
 
 static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fixedJoint, Body& movingBody,
@@ -73,7 +75,12 @@ ActionSignal& SphericalJoint::getMotorAction() {
 }
 
 void SphericalJoint::setMotorTorque(const Vector3<SI::Torque>& value) {
-    motorTorque = value;
+    const auto& maxTorque = jointInfo.maxMotorTorque;
+    motorTorque = {
+        std::clamp(value.x(), -maxTorque.x(), maxTorque.x()),
+        std::clamp(value.y(), -maxTorque.y(), maxTorque.y()),
+        std::clamp(value.z(), -maxTorque.z(), maxTorque.z()),
+    };
     convexPart.getBulletBody().activate();
     concavePart.getBulletBody().activate();
 }
