@@ -25,13 +25,18 @@
 
 #include <boost/program_options.hpp>
 
+#include "AI.hpp"
+#include "AIFactory.hpp"
 #include "GraphicEngine.hpp"
+#include "lua/bindings/AIs.hpp"
+#include "lua/bindings/insight.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/bindings/robotics.hpp"
 #include "lua/bindings/std/shared_ptr.hpp"
 #include "lua/types/LuaFunction.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "lua/types/LuaVirtualClass.hpp"
+#include "Robot.hpp"
 #include "RobotBody.hpp"
 #include "ShellInterpreter.hpp"
 #include "ShellInterpreterConfig.hpp"
@@ -329,7 +334,7 @@ private:
     /** World & physics engine. */
     World world;
     /** List of robots. */
-    std::unordered_set<std::unique_ptr<RobotBody>> robots;
+    std::unordered_set<std::shared_ptr<Robot>> robots;
     /** Graphics engine. */
     GraphicEngine graphicEngine;
     /** Shell configuration. */
@@ -352,9 +357,13 @@ private:
     void workerMainLoop() {
         while (insightState.waitRunningState()) {
             auto start = timer::now();
-            // physics
             if (simulationState.isRunning()) {
+                // physics
                 world.stepSimulation(std::chrono::duration<double>(renderPeriod).count());
+                // AI
+                for (auto& robot : robots) {
+                    robot->ai->stepSimulation();
+                }
             }
             // gui
             graphicEngine.run();
@@ -463,10 +472,11 @@ public:
             });
         } else if (memberName == "newRobot") {
             state.push<Method>([](Insight& object, LuaStateView& state) -> int {
-                auto info = state.get<std::shared_ptr<RobotBody::ConstructionInfo>>(2);
-                std::unique_ptr<RobotBody> newRobot = std::make_unique<RobotBody>(object.world, info);
-                state.push<RobotBody*>(newRobot.get());
-                object.robots.insert(std::move(newRobot));
+                auto bodyInfo = state.get<std::shared_ptr<RobotBody::ConstructionInfo>>(2);
+                AIFactory aiFactory = state.get<AIFactory>(3);
+                auto newRobot = std::make_shared<Robot>(object.world, bodyInfo, aiFactory);
+                state.push<std::shared_ptr<Robot>>(newRobot);
+                object.robots.insert(newRobot);
                 return 1;
             });
         } else if (memberName == "graphicEngine") {

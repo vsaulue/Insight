@@ -119,6 +119,14 @@ public:
     int luaIndex(const std::string& memberName, LuaStateView& state) override;
 
     /**
+     * Gets the interface for the AI controlling this body.
+     * @return The AI interface of this body.
+     */
+    AIInterface& getInterface() {
+        return aiInterface;
+    }
+
+    /**
      * Constructs a new RobotBody from a Lua table.
      * @param table Table containing the parameters of the new RobotBody.
      * @return The new RobotBody object.

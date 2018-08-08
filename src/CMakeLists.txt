@@ -24,10 +24,13 @@ add_subdirectory(shell)
 add_subdirectory(units)
 
 add_executable(Insight
+    insight.cpp
     main.cpp
 )
 
+target_include_directories(Insight PRIVATE include)
 target_link_libraries(Insight PRIVATE
+    AIs
     Boost::program_options
     GraphicEngine
     LuaWrapper
