@@ -16,32 +16,22 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FEEDBACKAI_HPP
-#define FEEDBACKAI_HPP
+#ifndef FEEDBACKLOOP_HPP
+#define FEEDBACKLOOP_HPP
 
-#include <string>
-#include <unordered_map>
+#include "lua/types/LuaVirtualClass.hpp"
 
-#include "AI.hpp"
-#include "FeedbackLoop.hpp"
-
-/** AI creating simple feedback loop to keep the body stationary. */
-class FeedbackAI : public AI {
+/** Single feedback loop, controlling a specific joint. */
+class FeedbackLoop : public LuaVirtualClass {
 public:
+    virtual ~FeedbackLoop() = default;
+
     /**
-     * FeedbackAI constructor.
-     * @param interface Interface of the body controlled by this AI.
+     * Updates output (motor) values from current state & input (position) values.
+     *
+     * This method is called at regular time interval by the simulation.
      */
-    FeedbackAI(AIInterface& interface);
-
-    virtual ~FeedbackAI();
-
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
-
-    void stepSimulation() override;
-private:
-    /** List of feedback loops owned by this AI. */
-    std::unordered_map<std::string, std::unique_ptr<FeedbackLoop>> loops;
+    virtual void stepSimulation() = 0;
 };
 
-#endif /* FEEDBACKAI_HPP */
+#endif /* FEEDBACKLOOP_HPP */

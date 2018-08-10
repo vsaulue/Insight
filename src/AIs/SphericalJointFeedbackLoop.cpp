@@ -16,32 +16,21 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FEEDBACKAI_HPP
-#define FEEDBACKAI_HPP
+#include "SphericalJointFeedbackLoop.hpp"
 
-#include <string>
-#include <unordered_map>
+SphericalJointFeedbackLoop::SphericalJointFeedbackLoop(const Sense<btQuaternion>& sense, Action<btVector3>& action) :
+    inputRotation(sense),
+    outputMotorTorque(action)
+{
 
-#include "AI.hpp"
-#include "FeedbackLoop.hpp"
+}
 
-/** AI creating simple feedback loop to keep the body stationary. */
-class FeedbackAI : public AI {
-public:
-    /**
-     * FeedbackAI constructor.
-     * @param interface Interface of the body controlled by this AI.
-     */
-    FeedbackAI(AIInterface& interface);
+SphericalJointFeedbackLoop::~SphericalJointFeedbackLoop() = default;
 
-    virtual ~FeedbackAI();
+void SphericalJointFeedbackLoop::stepSimulation() {
+    outputMotorTorque.set({0,0,0});
+}
 
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
-
-    void stepSimulation() override;
-private:
-    /** List of feedback loops owned by this AI. */
-    std::unordered_map<std::string, std::unique_ptr<FeedbackLoop>> loops;
-};
-
-#endif /* FEEDBACKAI_HPP */
+int SphericalJointFeedbackLoop::luaIndex(const std::string& memberName, LuaStateView& state) {
+    return 0;
+}

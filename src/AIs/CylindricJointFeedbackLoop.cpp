@@ -16,32 +16,22 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FEEDBACKAI_HPP
-#define FEEDBACKAI_HPP
+#include "CylindricJointFeedbackLoop.hpp"
 
-#include <string>
-#include <unordered_map>
+CylindricJointFeedbackLoop::CylindricJointFeedbackLoop(const Sense<float>& sense, Action<float>& action) :
+    inputRotation(sense),
+    outputMotorTorque(action)
+{
 
-#include "AI.hpp"
-#include "FeedbackLoop.hpp"
+}
 
-/** AI creating simple feedback loop to keep the body stationary. */
-class FeedbackAI : public AI {
-public:
-    /**
-     * FeedbackAI constructor.
-     * @param interface Interface of the body controlled by this AI.
-     */
-    FeedbackAI(AIInterface& interface);
+CylindricJointFeedbackLoop::~CylindricJointFeedbackLoop() = default;
 
-    virtual ~FeedbackAI();
+void CylindricJointFeedbackLoop::stepSimulation() {
+    // TODO: actual feedback.
+    outputMotorTorque.set(0);
+}
 
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
-
-    void stepSimulation() override;
-private:
-    /** List of feedback loops owned by this AI. */
-    std::unordered_map<std::string, std::unique_ptr<FeedbackLoop>> loops;
-};
-
-#endif /* FEEDBACKAI_HPP */
+int CylindricJointFeedbackLoop::luaIndex(const std::string& memberName, LuaStateView& state) {
+    return 0;
+}

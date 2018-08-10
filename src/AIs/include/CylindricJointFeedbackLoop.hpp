@@ -16,32 +16,33 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FEEDBACKAI_HPP
-#define FEEDBACKAI_HPP
+#ifndef CYLINDRICJOINTFEEDBACKLOOP_HPP
+#define CYLINDRICJOINTFEEDBACKLOOP_HPP
 
-#include <string>
-#include <unordered_map>
-
-#include "AI.hpp"
+#include "Action.hpp"
 #include "FeedbackLoop.hpp"
+#include "Sense.hpp"
 
-/** AI creating simple feedback loop to keep the body stationary. */
-class FeedbackAI : public AI {
+/** Feedback loop for a CylindricJoint. */
+class CylindricJointFeedbackLoop : public FeedbackLoop {
 public:
     /**
-     * FeedbackAI constructor.
-     * @param interface Interface of the body controlled by this AI.
+     * CylindricJointFeedbackLoop constructor.
+     * @param sense Input sense (relative rotation of the 2 bodies of the joint).
+     * @param action output action (motor torque).
      */
-    FeedbackAI(AIInterface& interface);
+    CylindricJointFeedbackLoop(const Sense<float>& sense, Action<float>& action);
 
-    virtual ~FeedbackAI();
-
-    int luaIndex(const std::string& memberName, LuaStateView& state) override;
+    virtual ~CylindricJointFeedbackLoop();
 
     void stepSimulation() override;
+
+    int luaIndex(const std::string& memberName, LuaStateView& state) override;
 private:
-    /** List of feedback loops owned by this AI. */
-    std::unordered_map<std::string, std::unique_ptr<FeedbackLoop>> loops;
+    /** Relative orientation of the two parts of the joint. */
+    const Sense<float>& inputRotation;
+    /** Torque exerced by the motor in the joint. */
+    Action<float>& outputMotorTorque;
 };
 
-#endif /* FEEDBACKAI_HPP */
+#endif /* CYLINDRICJOINTFEEDBACKLOOP_HPP */

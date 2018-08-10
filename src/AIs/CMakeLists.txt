@@ -16,7 +16,9 @@
 
 add_library(AIs STATIC
     AIs.cpp
+    CylindricJointFeedbackLoop.cpp
     FeedbackAI.cpp
+    SphericalJointFeedbackLoop.cpp
 )
 
 target_include_directories(AIs PUBLIC include)
