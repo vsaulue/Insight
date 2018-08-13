@@ -45,6 +45,10 @@ private:
     const Sense<btQuaternion>& inputRotation;
     /** Torque exerced by the motor in the joint. */
     Action<btVector3>& outputMotorTorque;
+    /** Target rotation between the two parts of the joint. */
+    btQuaternion targetRotation;
+    /** Rotation at the previous tick. */
+    btQuaternion previousRotation;
 };
 
 #endif /* SPHERICALJOINTFEEDBACKLOOP_HPP */

@@ -16,11 +16,17 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "CylindricJointFeedbackLoop.hpp"
+#include "lua/bindings/FundamentalTypes.hpp"
+#include "lua/types/LuaMethod.hpp"
 
 CylindricJointFeedbackLoop::CylindricJointFeedbackLoop(const Sense<float>& sense, Action<float>& action) :
     inputRotation(sense),
-    outputMotorTorque(action)
+    outputMotorTorque(action),
+    targetAngle(0),
+    previousAngle(inputRotation.get())
 {
 
 }
@@ -28,10 +34,26 @@ CylindricJointFeedbackLoop::CylindricJointFeedbackLoop(const Sense<float>& sense
 CylindricJointFeedbackLoop::~CylindricJointFeedbackLoop() = default;
 
 void CylindricJointFeedbackLoop::stepSimulation() {
-    // TODO: actual feedback.
-    outputMotorTorque.set(0);
+    float newAngle = inputRotation.get();
+    float delta = newAngle - targetAngle;
+    float speed = newAngle - previousAngle;
+    outputMotorTorque.set(-speed-0.2*delta);
+    previousAngle = newAngle;
 }
 
 int CylindricJointFeedbackLoop::luaIndex(const std::string& memberName, LuaStateView& state) {
-    return 0;
+    using Method = LuaMethod<CylindricJointFeedbackLoop>;
+    int result = 1;
+    if (memberName == "target") {
+        state.push<float>(targetAngle);
+    } else if (memberName == "setTarget") {
+        state.push<Method>([](CylindricJointFeedbackLoop& object, LuaStateView& state) -> int {
+            auto value = state.get<float>(2);
+            object.targetAngle = std::clamp(value, -SIMD_PI, SIMD_PI);
+            return 0;
+        });
+    } else {
+        result = 0;
+    }
+    return result;
 }

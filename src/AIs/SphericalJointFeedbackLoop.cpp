@@ -20,15 +20,37 @@
 
 SphericalJointFeedbackLoop::SphericalJointFeedbackLoop(const Sense<btQuaternion>& sense, Action<btVector3>& action) :
     inputRotation(sense),
-    outputMotorTorque(action)
+    outputMotorTorque(action),
+    targetRotation(btQuaternion::getIdentity()),
+    previousRotation(inputRotation.get())
 {
 
 }
 
 SphericalJointFeedbackLoop::~SphericalJointFeedbackLoop() = default;
 
+/**
+ * Gets the angle of a rotation in ]-PI:PI] range.
+ * @param quaternion Input rotation.
+ * @return The angle (between -PI and PI) of the rotation represented by the given quaternion
+ */
+static btScalar getAngle(const btQuaternion& quaternion) {
+    btScalar result = quaternion.getAngle();
+    if (result > SIMD_PI) {
+        result -= SIMD_2_PI;
+    }
+    return result;
+}
+
 void SphericalJointFeedbackLoop::stepSimulation() {
-    outputMotorTorque.set({0,0,0});
+    btQuaternion newRotation = inputRotation.get();
+    btQuaternion delta = newRotation * targetRotation.inverse();
+    btVector3 torque = -0.2 * getAngle(delta) * delta.getAxis();
+    btQuaternion speed = newRotation * previousRotation.inverse();
+    torque-= getAngle(speed) * speed.getAxis();
+
+    outputMotorTorque.set(torque);
+    previousRotation = newRotation;
 }
 
 int SphericalJointFeedbackLoop::luaIndex(const std::string& memberName, LuaStateView& state) {

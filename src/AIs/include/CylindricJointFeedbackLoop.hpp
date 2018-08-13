@@ -43,6 +43,10 @@ private:
     const Sense<float>& inputRotation;
     /** Torque exerced by the motor in the joint. */
     Action<float>& outputMotorTorque;
+    /** Target angle. */
+    float targetAngle;
+    /** Angle at the previous simulation step. */
+    float previousAngle;
 };
 
 #endif /* CYLINDRICJOINTFEEDBACKLOOP_HPP */
