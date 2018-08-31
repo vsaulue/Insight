@@ -47,16 +47,19 @@ public:
      * @param startRotation Relative orientation of the ball body part to the socket part.
      * @param limits Maximum movement amplitude around each axis.
      * @param maxMotorTorque Maximum torque of the motor around each axis.
+     * @param frictionCoefficients Friction factors (Torque unit / angular speed unit) around each axis.
      */
     SphericalJointInfo(Scalar<SI::Density> density, const Transform<SI::Length>& ballTransform, bool generateBall,
                        const Transform<SI::Length>& socketTransform, Scalar<SI::Length> radius,
                        const btQuaternion& startRotation, const Vector3<SI::Angle>& limits,
-                       const Vector3<SI::Torque>& maxMotorTorque) :
+                       const Vector3<SI::Torque>& maxMotorTorque,
+                       const Vector3<SI::AngularFrictionCoefficient>& frictionCoefficients) :
         JointInfo(density, ballTransform, generateBall, socketTransform),
         ballRadius(radius),
         startRotation(startRotation),
         limits(limits),
-        maxMotorTorque(maxMotorTorque)
+        maxMotorTorque(maxMotorTorque),
+        frictionCoefficients(frictionCoefficients)
     {
 
     }
@@ -71,6 +74,8 @@ public:
     Vector3<SI::Angle> limits;
     /** Maximum torque of the motor around each axis. */
     Vector3<SI::Torque> maxMotorTorque;
+    /** Friction coefficient on each axis (socket part frame). */
+    Vector3<SI::AngularFrictionCoefficient> frictionCoefficients;
 
     void addConvexShape(std::vector<CompoundShape::ChildInfo>& shapeInfo) const override;
 

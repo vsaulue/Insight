@@ -46,6 +46,7 @@ std::unique_ptr<CylindricJointInfo> CylindricJointInfo::luaGetFromTable(LuaTable
             table.get<LuaNativeString,Scalar<SI::Angle>>("startRotation"),
             table.get<LuaNativeString,Scalar<SI::Angle>>("minAngle"),
             table.get<LuaNativeString,Scalar<SI::Angle>>("maxAngle"),
-            table.get<LuaNativeString,Scalar<SI::Torque>>("maxMotorTorque")
+            table.get<LuaNativeString,Scalar<SI::Torque>>("maxMotorTorque"),
+            table.get<LuaNativeString,Scalar<SI::AngularFrictionCoefficient>>("frictionCoefficient")
     );
 }

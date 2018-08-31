@@ -19,6 +19,7 @@
 #include <algorithm>
 
 #include "SphericalJoint.hpp"
+#include "units/Matrix3x3.hpp"
 
 static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fixedJoint, Body& movingBody,
                          const Transform<SI::Length>& movingJoint, const btQuaternion& rotation)
@@ -54,10 +55,42 @@ SphericalJoint::SphericalJoint(Body& ball, Body& socket, const SphericalJointInf
 
 SphericalJoint::~SphericalJoint() = default;
 
+void SphericalJoint::applyFriction(const Scalar<BulletUnits::Time> timeStep, const btMatrix3x3& convexBasis) {
+    Vector3<SI::AngularVelocity> relativeVelocity = concavePart.getAngularVelocity() - convexPart.getAngularVelocity();
+    Vector3<SI::AngularVelocity> refVelocity = convexBasis.inverse() * relativeVelocity;
+    Vector3<SI::Torque> refFriction(
+        refVelocity.x() * jointInfo.frictionCoefficients.x(),
+        refVelocity.y() * jointInfo.frictionCoefficients.y(),
+        refVelocity.z() * jointInfo.frictionCoefficients.z()
+    );
+    auto computeImpulse = [this,timeStep](const Body& body, const Vector3<SI::Torque>& torque) -> Vector3<SI::AngularVelocity> {
+        const auto& basis = this->jointInfo.convexTransform.getBasis();
+        return Matrix3x3<SI::NoUnit>(basis.transpose()).scaled(body.getInvInertiaDiagLocal()) * (basis * torque * timeStep * Scalar<SI::Angle>(1));
+    };
+    Vector3<SI::AngularVelocity> convexImpulse = computeImpulse(convexPart, refFriction);
+    Vector3<SI::AngularVelocity> concaveImpulse = computeImpulse(concavePart, -refFriction);
+    Vector3<SI::AngularVelocity> newRelVelocity = refVelocity + concaveImpulse - convexImpulse;
+    for (int i=0; i<3; i++) {
+        auto prevVel = refVelocity.value.m_floats[i];
+        auto newVel = newRelVelocity.value.m_floats[i];
+        if (newVel * prevVel < 0) {
+            float factor = fabs(prevVel / (prevVel - newVel));
+            convexImpulse.value.m_floats[i] *= factor;
+            concaveImpulse.value.m_floats[i] *= factor;
+        }
+    }
+    convexPart.applyAngularImpulse(convexBasis * convexImpulse);
+    concavePart.applyAngularImpulse(convexBasis * concaveImpulse);
+}
+
 void SphericalJoint::beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) {
-    auto basis = convexPart.getEngineTransform().getBasis() * jointInfo.convexTransform.getBasis();
-    convexPart.getBulletBody().applyTorque(basis * toBulletUnits(motorTorque));
-    concavePart.getBulletBody().applyTorque(basis * -toBulletUnits(motorTorque));
+    btMatrix3x3 basis = convexPart.getEngineTransform().getBasis() * jointInfo.convexTransform.getBasis();
+    // Friction
+    applyFriction(timeStep, basis);
+    // Motor
+    Vector3<SI::Torque> absMotorTorque = basis * motorTorque;
+    convexPart.getBulletBody().applyTorque(toBulletUnits(absMotorTorque));
+    concavePart.getBulletBody().applyTorque(-toBulletUnits(absMotorTorque));
 }
 
 btQuaternion SphericalJoint::getRotation() const {

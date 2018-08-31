@@ -49,6 +49,8 @@ namespace Units {
 
         /** Linear acceleration unit. */
         using Acceleration = decltype(Length() / Time()[n2]);
+        /** Friction coefficient for rotations (Torque / AngularVelocity). */
+        using AngularFrictionCoefficient = decltype(Mass() * Length()[n2] / Time() / Angle());
         /** Angular mass unit. */
         using AngularMass = decltype(Mass() * Length()[n2]);
         /** Angular (rotational) speed. */

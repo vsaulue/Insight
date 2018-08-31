@@ -84,6 +84,14 @@ private:
      * @param value New value.
      */
     void setMotorTorque(const Vector3<SI::Torque>& value);
+
+    /**
+     * Apply an impulse on both body parts to simulate the friction.
+     *
+     * @param timeStep Duration of the next integration step.
+     * @param convexBasis Basis of the convex part of the joint (joint space -> absolute space).
+     */
+    void applyFriction(const Scalar<BulletUnits::Time> timeStep, const btMatrix3x3& convexBasis);
 };
 
 #endif /* JOINT_HPP */

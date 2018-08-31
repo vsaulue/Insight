@@ -19,6 +19,10 @@
 #include <algorithm>
 
 #include "CylindricJoint.hpp"
+#include "units/Matrix3x3.hpp"
+
+/** Axis of the hinge, in the joint frame. */
+static const btVector3 HINGE_AXIS(1,0,0);
 
 /**
  * Places a body part near another to align their joint parts.
@@ -52,8 +56,8 @@ static btHingeConstraint makeConstraint(Body& cylinder, Body& socket, const Cyli
     btRigidBody& bodyB = socket.getBulletBody();
     btVector3 pivotA = toBulletUnits(info.convexTransform.getOrigin());
     btVector3 pivotB = toBulletUnits(info.concaveTransform.getOrigin());
-    const btVector3 axisA = info.convexTransform.getBasis() * btVector3(1,0,0);
-    const btVector3 axisB = info.concaveTransform.getBasis() * btVector3(1,0,0);
+    const btVector3 axisA = info.convexTransform.getBasis() * HINGE_AXIS;
+    const btVector3 axisB = info.concaveTransform.getBasis() * HINGE_AXIS;
     btHingeConstraint result(bodyA, bodyB, pivotA, pivotB, axisA, axisB);
     result.setLimit(toBulletUnits(info.minAngle), toBulletUnits(info.maxAngle));
     return result;
@@ -76,10 +80,37 @@ CylindricJoint::CylindricJoint(Body& cylinder, Body& socket, const CylindricJoin
 
 CylindricJoint::~CylindricJoint() = default;
 
+void CylindricJoint::applyFriction(const Scalar<BulletUnits::Time> timeStep, const btMatrix3x3& convexBasis) {
+    Vector3<SI::AngularVelocity> relativeVelocity = concavePart.getAngularVelocity() - convexPart.getAngularVelocity();
+    Scalar<SI::AngularVelocity> refVelocity = (convexBasis.inverse() * relativeVelocity).dot(HINGE_AXIS);
+    Scalar<SI::Torque> refFriction = refVelocity * jointInfo.frictionCoefficient;
+    auto computeImpulse = [this,timeStep](const Body& body, const Scalar<SI::Torque>& torque) -> Scalar<SI::AngularVelocity> {
+        const auto& basis = this->jointInfo.convexTransform.getBasis();
+        Vector3<SI::Torque> vTorque = torque * HINGE_AXIS;
+        auto vecImpulse = Matrix3x3<SI::NoUnit>(basis.transpose()).scaled(body.getInvInertiaDiagLocal()) * (basis * vTorque * timeStep * Scalar<SI::Angle>(1));
+        return vecImpulse.dot(HINGE_AXIS);
+    };
+    Scalar<SI::AngularVelocity> convexImpulse = computeImpulse(convexPart, refFriction);
+    Scalar<SI::AngularVelocity> concaveImpulse = computeImpulse(concavePart, -refFriction);
+    Scalar<SI::AngularVelocity> newRefVelocity = refVelocity + concaveImpulse - convexImpulse;
+    if (newRefVelocity.value * refVelocity.value < 0) {
+        float factor = fabs(refVelocity.value / (refVelocity.value - newRefVelocity.value));
+        convexImpulse *= factor;
+        concaveImpulse *= factor;
+    }
+    convexPart.applyAngularImpulse(convexBasis * (convexImpulse * HINGE_AXIS));
+    concavePart.applyAngularImpulse(convexBasis * (concaveImpulse * HINGE_AXIS));
+}
+
 void CylindricJoint::beforeTick(World& world, Scalar<BulletUnits::Time> timeStep) {
-    btVector3 axis = convexPart.getEngineTransform().getBasis() * jointInfo.convexTransform.getBasis() * btVector3(1,0,0);
-    convexPart.getBulletBody().applyTorque(axis * toBulletUnits(motorTorque));
-    concavePart.getBulletBody().applyTorque(axis * -toBulletUnits(motorTorque));
+    btMatrix3x3 basis = convexPart.getEngineTransform().getBasis() * jointInfo.convexTransform.getBasis();
+    // friction
+    applyFriction(timeStep, basis);
+    // motor
+    btVector3 axis = basis * HINGE_AXIS;
+    Vector3<SI::Torque> totalTorque = motorTorque * axis;
+    convexPart.getBulletBody().applyTorque(toBulletUnits(totalTorque));
+    concavePart.getBulletBody().applyTorque(-toBulletUnits(totalTorque));
 }
 
 Scalar<SI::Angle> CylindricJoint::getRotation() {

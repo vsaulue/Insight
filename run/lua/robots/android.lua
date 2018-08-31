@@ -145,6 +145,7 @@ local JOINTS_INFO = {
             startRotation= {0,0,0,1},
             limits= {math.pi/2, math.pi/3, math.pi/3},
             maxMotorTorque= {5, 5, 5},
+            frictionCoefficients= {0.25, 0.25, 0.25},
         },
     },
     LeftShoulder= {
@@ -164,6 +165,7 @@ local JOINTS_INFO = {
             startRotation= {0,0,0,1},
             limits= {math.pi/3, math.pi/2, math.pi/2},
             maxMotorTorque= {10, 50, 50},
+            frictionCoefficients= {0.5, 1, 1},
         },
     },
     RightShoulder= {
@@ -183,6 +185,7 @@ local JOINTS_INFO = {
             startRotation= {0,0,0,1},
             limits= {math.pi/3, math.pi/2, math.pi/2},
             maxMotorTorque= {10, 50, 50},
+            frictionCoefficients= {0.5, 1, 1},
         },
     },
     LeftElbow= {
@@ -198,6 +201,7 @@ local JOINTS_INFO = {
             minAngle= -0.1,
             maxAngle= math.pi,
             maxMotorTorque= 50,
+            frictionCoefficient= 1,
         },
     },
     RightElbow= {
@@ -213,6 +217,7 @@ local JOINTS_INFO = {
             minAngle= -0.1,
             maxAngle= math.pi,
             maxMotorTorque= 50,
+            frictionCoefficient= 1,
         },
     },
     Wrist= {
@@ -231,7 +236,8 @@ local JOINTS_INFO = {
             radius= WRIST_BALL_RADIUS,
             startRotation= {0,0,0,1},
             limits= {math.pi/4, 0, math.pi/2},
-            maxMotorTorque= {2, 0, 8},
+            maxMotorTorque= {1, 0, 4},
+            frictionCoefficients= {0.05, 0, 0.2},
         },
     },
     LeftHip= {
@@ -251,6 +257,7 @@ local JOINTS_INFO = {
             startRotation= {0,0,0,1},
             limits= {math.pi/6, math.pi/2, math.pi/4},
             maxMotorTorque= {5, 60, 10},
+            frictionCoefficients= {0.25, 1, 0.5},
         },
     },
     RightHip= {
@@ -270,6 +277,7 @@ local JOINTS_INFO = {
             startRotation= {0,0,0,1},
             limits= {math.pi/6, math.pi/2, math.pi/4},
             maxMotorTorque= {5, 60, 10},
+            frictionCoefficients= {0.25, 1, 0.5},
         },
     },
     Knee= {
@@ -285,6 +293,7 @@ local JOINTS_INFO = {
             minAngle= -math.pi,
             maxAngle= 0.1,
             maxMotorTorque= 80,
+            frictionCoefficient= 1,
         },
     },
     Ankle= {
@@ -304,6 +313,7 @@ local JOINTS_INFO = {
             startRotation= {0,0,0,1},
             limits={math.pi/6, math.pi/3, math.pi/4},
             maxMotorTorque= {10, 100, 10},
+            frictionCoefficients= {0.5, 1, 0.5},
         },
     },
     Toes= {
@@ -319,6 +329,7 @@ local JOINTS_INFO = {
             minAngle= -math.pi/2,
             maxAngle=  math.pi/2,
             maxMotorTorque= 3,
+            frictionCoefficient= 0.15,
         },
     },
 }
