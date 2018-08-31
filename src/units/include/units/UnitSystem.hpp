@@ -57,6 +57,8 @@ namespace Units {
         using Density = decltype(Mass() / Length()[n3]);
         /** Force unit. */
         using Force = decltype(Mass() * Length() / Time()[n2]);
+        /** Inverse(angular mass) unit. */
+        using InvAngularMass = decltype(Mass()[-n1] * Length()[-n2]);
         /** Linear speed unit. */
         using Speed = decltype(Length() / Time());
         /** Torque unit. */

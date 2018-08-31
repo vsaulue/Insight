@@ -85,6 +85,23 @@ public:
     void setLinearVelocity(const Vector3<SI::Speed>& velocity);
 
     /**
+     * Gets the angular velocity of this object in the absolute frame.
+     * @return The angular velocity of this object in the absolute frame.
+     */
+    Vector3<SI::AngularVelocity> getAngularVelocity() const;
+
+    /**
+     * Adds the given vector to the angular velocity of this body.
+     * @param delta The vector to add to the angular velocity of this body (absolute frame).
+     */
+    void applyAngularImpulse(const Vector3<SI::AngularVelocity>& delta);
+
+    /** Get the inverse of the angular mass values around each principal axis.
+     * @return The inverse of the angular mass values in the inertial frame.
+     */
+    Vector3<SI::InvAngularMass> getInvInertiaDiagLocal() const;
+
+    /**
      * Gets a reference to the Bullet representation of this Body.
      *
      * @return A reference to the internal Bullet Body.

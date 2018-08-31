@@ -71,6 +71,15 @@ namespace Units {
         Scalar<Unit> z() const {
             return Scalar<Unit>(this->value.z());
         }
+
+        /**
+         * Computes the scalar product of this vector with the parameter.
+         * @param otherVector The other vector.
+         * @return The dot product of this vector with the parameter.
+         */
+        Scalar<Unit> dot(const btVector3& otherVector) {
+            return Scalar<Unit>(this->value.dot(otherVector));
+        }
     };
 }
 

@@ -103,6 +103,19 @@ Vector3<SI::Speed> Body::getLinearVelocity() const {
     return fromBulletValue<SI::Speed>(body.getLinearVelocity());
 }
 
+Vector3<SI::AngularVelocity> Body::getAngularVelocity() const {
+    return fromBulletValue<SI::AngularVelocity>(body.getAngularVelocity());
+}
+
+void Body::applyAngularImpulse(const Vector3<SI::AngularVelocity>& delta) {
+    btVector3 bulletDelta = toBulletUnits(delta);
+    body.setAngularVelocity(bulletDelta + body.getAngularVelocity());
+}
+
+Vector3<SI::InvAngularMass> Body::getInvInertiaDiagLocal() const {
+    return fromBulletValue<SI::InvAngularMass>(body.getInvInertiaDiagLocal());
+}
+
 void Body::setLinearVelocity(const Vector3<SI::Speed>& velocity) {
     btVector3 engineVelocity = toBulletUnits(velocity);
     body.setLinearVelocity(engineVelocity);
