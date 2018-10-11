@@ -174,8 +174,9 @@ int RobotBody::luaIndex(const std::string& memberName, LuaStateView& state) {
     } else if (memberName=="setRotation") {
         state.push<Method>([](RobotBody& object, LuaStateView& state) -> int {
             Body& base = *object.baseBody;
-            const btQuaternion curRotation = base.getEngineTransform().getRotation();
-            btTransform relTransform(state.get<btQuaternion>(2)*curRotation.inverse());
+            const auto& curTransform = base.getEngineTransform();
+            const btTransform relRotation(state.get<btQuaternion>(2) * curTransform.getRotation().inverse());
+            btTransform relTransform(curTransform * relRotation * curTransform.inverse());
             for (auto& part : object.parts) {
                 part.second->setEngineTransform(relTransform*part.second->getEngineTransform());
             }
