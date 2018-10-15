@@ -54,5 +54,19 @@ void SphericalJointFeedbackLoop::stepSimulation() {
 }
 
 int SphericalJointFeedbackLoop::luaIndex(const std::string& memberName, LuaStateView& state) {
-    return 0;
+    using Method = LuaMethod<SphericalJointFeedbackLoop>;
+    int result = 1;
+    if (memberName == "target") {
+        state.push<btQuaternion>(targetRotation);
+    } else if (memberName == "setTarget") {
+        state.push<Method>([](SphericalJointFeedbackLoop& object, LuaStateView& state) -> int {
+            btQuaternion newTarget = state.get<btQuaternion>(2);
+            newTarget.normalize();
+            object.targetRotation = newTarget;
+            return 0;
+        });
+    } else {
+        result = 0;
+    }
+    return result;
 }
