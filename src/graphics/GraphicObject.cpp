@@ -16,33 +16,13 @@
  * along with Insight.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "btConversions.hpp"
 #include "GraphicObject.hpp"
 #include "irrlicht_ptr.hpp"
 #include "ShapeDrawer.hpp"
 #include "units/IrrUnits.hpp"
 #include "units/Scalar.hpp"
 #include "units/SI.hpp"
-
-/**
- * Converts a Bullet vector into an Irrlicht vector.
- * @param[in] vector Buller vector.
- * @return Irrlicht vector.
- */
-static irr::core::vector3df btToIrrVector(const btVector3& vector) {
-    return irr::core::vector3df(vector.x(), vector.y(), vector.z());
-}
-
-/**
- * Converts a Bullet quaternion to a vector of Euler angles (Irrlicht format).
- * @param[in] btQuat Bullet quaternion.
- * @return Vector of Irrlicht Euler angles.
- */
-static irr::core::vector3df btQuaternionToEulerAngles(const btQuaternion& btQuat) {
-    irr::core::quaternion irrQuat(btQuat.x(), btQuat.y(), btQuat.z(), btQuat.w());
-    irr::core::vector3df result;
-    irrQuat.toEuler(result);
-    return irr::core::RADTODEG*result;
-}
 
 /**
  * Class converting the collision shape of a body into a 3d scene node.

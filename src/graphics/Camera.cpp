@@ -20,13 +20,16 @@
 #include <cmath>
 
 #include "Action.hpp"
+#include "btConversions.hpp"
 #include "Camera.hpp"
 #include "InputSettings.hpp"
 #include "irrlicht_ptr.hpp"
+#include "lua/bindings/bullet.hpp"
 #include "lua/bindings/FundamentalTypes.hpp"
 #include "lua/bindings/luaVirtualClass/pointers.hpp"
 #include "lua/types/LuaMethod.hpp"
 #include "units/IrrUnits.hpp"
+#include "units/Vector3.hpp"
 
 class CameraAnimator : public irr::scene::ISceneNodeAnimator {
 public:
@@ -160,47 +163,27 @@ void Camera::setPosition(const irr::core::vector3df& pos) {
     camera->setTarget(target.getAbsolutePosition());
 }
 
-
-/**
- * Reads a vector3df from Lua stack.
- *
- * @param state State containing the stack.
- * @param firstIndex Stack index of the first coordinate of the vector.
- *
- * @return The vector read from the Lua stack.
- */
-static irr::core::vector3df readVector3df(LuaStateView& state, int firstIndex) {
-    float x = state.get<float>(firstIndex);
-    float y = state.get<float>(firstIndex+1);
-    float z = state.get<float>(firstIndex+2);
-    return irr::core::vector3df(x,y,z);
-}
-
 int Camera::luaIndex(const std::string& memberName, LuaStateView& state) {
     using Method = LuaMethod<Camera>;
+    int result = 1;
     if (memberName == "setPosition") {
         state.push<Method>([](Camera& object, LuaStateView& state) -> int {
-            irr::core::vector3df pos = readVector3df(state, 2);
-            object.setPosition(pos);
+            auto pos = state.get<Vector3<SI::Length>>(2);
+            object.setPosition(btToIrrVector(toIrrUnits(pos)));
             return 0;
         });
-        return 1;
     } else if (memberName == "position") {
-        state.push<Method>([](Camera& object, LuaStateView& state) -> int {
-            const irr::core::vector3df& pos = object.camera->getPosition();
-            state.push<float>(pos.X);
-            state.push<float>(pos.Y);
-            state.push<float>(pos.Z);
-            return 3;
-        });
-        return 1;
+        const irr::core::vector3df& rawPos = camera->getPosition();
+        auto pos = fromIrrValue<SI::Length>(irrToBtVector(rawPos));
+        state.push<Vector3<SI::Length>>(pos);
     } else if (memberName == "lookAt") {
         state.push<Method>([](Camera& object, LuaStateView& state) -> int {
-            irr::core::vector3df pos = readVector3df(state, 2);
-            object.camera->setTarget(pos);
+            auto pos = state.get<Vector3<SI::Length>>(2);
+            object.camera->setTarget(btToIrrVector(toIrrUnits(pos)));
             return 0;
         });
-        return 1;
+    } else {
+        result = 0;
     }
-    return 0;
+    return result;
 }
