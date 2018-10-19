@@ -30,9 +30,20 @@ void GraphicEngine::addBody(const Body& body) {
     mapping[&body] = std::move(ptr);
 }
 
+/**
+ * Creates the parameter for irr::createDeviceEx.
+ * @return The construction info for the Irrlicht context.
+ */
+static SIrrlichtCreationParameters getIrrlichtCreationParameters() {
+    SIrrlichtCreationParameters result;
+    result.DriverType = video::EDT_OPENGL;
+    result.WindowSize = core::dimension2d<u32>(1024, 768);
+    result.LoggingLevel = ELL_WARNING;
+    return result;
+}
 
 GraphicEngine::GraphicEngine(const World& world) :
-    device(createDevice(video::EDT_OPENGL, core::dimension2d<u32>(1024, 768), 16, false, false, true, nullptr)),
+    device(createDeviceEx(getIrrlichtCreationParameters())),
     sceneManager(*device->getSceneManager()),
     guienv(*device->getGUIEnvironment()),
     driver(*device->getVideoDriver()),
