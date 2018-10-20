@@ -27,6 +27,16 @@ ShellInterpreter::ShellInterpreter(ShellInterpreterConfig& config) : config(conf
     running = false;
 }
 
+/**
+ * Reads a line from std::cin.
+ * @param line Output value.
+ * @return Same as std::getline.
+ */
+static auto& readLine(std::string& line) {
+    std::cout << "> " << std::flush;
+    return std::getline(std::cin, line);
+}
+
 void ShellInterpreter::run() {
     LuaState luaState;
     running = true;
@@ -34,7 +44,7 @@ void ShellInterpreter::run() {
     config.init(luaState);
 
     std::string line;
-    while (running && std::getline(std::cin, line)) {
+    while (running && readLine(line)) {
         config.beforeCommand(luaState);
         try {
             luaState.doString(line);
