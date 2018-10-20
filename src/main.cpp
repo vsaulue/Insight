@@ -515,6 +515,8 @@ public:
     struct Switch  {
         /** Prints help message. */
         static constexpr char help[] = "help";
+        /** Prints version. */
+        static constexpr char version[] = "version";
         /** Execute Lua initialisation script(s). */
         static constexpr char luaInit[] = "luaInit";
     };
@@ -536,11 +538,14 @@ public:
     InsightOptions(int argc, char** argv) {
         variable_map variables = parse(argc, argv);
         help = (variables.count(Switch::help) > 0);
+        version = (variables.count(Switch::version) > 0);
         luaInit = variables[Switch::luaInit].as<std::vector<std::string>>();
     }
 
     /** Help message requested. */
     bool help;
+    /** Version requested. */
+    bool version;
     /** List of scripts to execute when starting the program. */
     std::vector<std::string> luaInit;
 private:
@@ -554,6 +559,7 @@ private:
         result.add_options()
             (Switch::help, "prints this help message, and exits.")
             (Switch::luaInit, po::value<std::vector<std::string>>()->default_value(std::vector<std::string>(),""), "executes a Lua script when starting the program.")
+            (Switch::version, "prints version & license info and exits.")
         ;
         return result;
     }
@@ -603,6 +609,8 @@ int main(int argc, char** argv) {
         const InsightOptions options(argc, argv);
         if (options.help) {
             printHelp();
+        } else if (options.version) {
+            printHeader();
         } else {
             printHeader();
             Insight insight(options.luaInit);
