@@ -23,12 +23,20 @@ add_subdirectory(robotics)
 add_subdirectory(shell)
 add_subdirectory(units)
 
+configure_file(
+    "version.hpp.in"
+    "include/version.hpp"
+)
+
 add_executable(Insight
     insight.cpp
     main.cpp
 )
 
-target_include_directories(Insight PRIVATE include)
+target_include_directories(Insight PRIVATE
+    "include"
+    "${CMAKE_CURRENT_BINARY_DIR}/include"
+)
 target_link_libraries(Insight PRIVATE
     AIs
     Boost::program_options

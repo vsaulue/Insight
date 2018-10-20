@@ -40,6 +40,7 @@
 #include "RobotBody.hpp"
 #include "ShellInterpreter.hpp"
 #include "ShellInterpreterConfig.hpp"
+#include "version.hpp"
 #include "World.hpp"
 
 /**
@@ -574,6 +575,25 @@ private:
 
 const boost::program_options::options_description InsightOptions::description(InsightOptions::initDescription());
 
+/**
+ * Prints informations about version, license & copyright at program startup.
+ */
+static void printHeader() {
+    std::cout << "Insight version " << INSIGHT_VERSION << "\n";
+    std::cout << "Copyright (C) 2017-2018 Vincent Saulue-Laborde\n";
+    std::cout << "This is free software; see the source for copying conditions. ";
+    std::cout << "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n";
+    std::cout << std::endl;
+}
+
+/**
+ * Prints a help message.
+ */
+static void printHelp() {
+    printHeader();
+    InsightOptions::printHelp(std::cout);
+}
+
 /*
  *
  */
@@ -582,8 +602,9 @@ int main(int argc, char** argv) {
     try {
         const InsightOptions options(argc, argv);
         if (options.help) {
-            InsightOptions::printHelp(std::cout);
+            printHelp();
         } else {
+            printHeader();
             Insight insight(options.luaInit);
             insight.run();
         }

@@ -1,5 +1,5 @@
 # This file is part of Insight.
-# Copyright (C) 2017 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+# Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
 #
 # Insight is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@ set(Insight_VERSION_EXTRA -dev)
 
 set(Insight_VERSION ${Insight_VERSION_MAJOR}.${Insight_VERSION_MINOR})
 
-if(NOT ("${Insight_VERSION_PATCH_LEVEL}" MATCHES " *"))
+if(NOT ("${Insight_VERSION_PATCH_LEVEL}" MATCHES "^ *$"))
     set(Insight_VERSION ${Insight_VERSION}.${Insight_VERSION_PATCH_LEVEL})
 endif()
 
-if(NOT ("${Insight_VERSION_EXTRA}" MATCHES " *"))
-    set(Insight_VERSION ${Insight_VERSION}.${Insight_VERSION_EXTRA})
+if(NOT ("${Insight_VERSION_EXTRA}" MATCHES "^ *$"))
+    set(Insight_VERSION ${Insight_VERSION}${Insight_VERSION_EXTRA})
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
