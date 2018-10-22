@@ -56,7 +56,13 @@ Vector3<SI::Acceleration> World::getGravity() const {
 }
 
 void World::setGravity(const Vector3<SI::Acceleration>& value) {
-    world->setGravity(toBulletUnits(value));
+    btVector3 rawValue = toBulletUnits(value);
+    world->setGravity(rawValue);
+    for (auto& object : objects) {
+        auto& btBody = object->getBulletBody();
+        btBody.setGravity(rawValue);
+        btBody.activate();
+    }
 }
 
 void World::addObject(std::shared_ptr<Body> object) {
