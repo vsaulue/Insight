@@ -39,6 +39,7 @@ target_include_directories(Insight PRIVATE
 )
 target_link_libraries(Insight PRIVATE
     AIs
+    Boost::filesystem
     Boost::program_options
     GraphicEngine
     LuaWrapper

@@ -23,6 +23,7 @@
 #include <thread>
 #include <unordered_set>
 
+#include <boost/dll.hpp>
 #include <boost/program_options.hpp>
 
 #include "AI.hpp"
@@ -348,6 +349,8 @@ private:
     InsightState insightState;
     /** Holds the state of the simulation, and handles worker thread control (can skip simulation and run the GUI only). */
     SimulationState simulationState;
+    /** Directory containing the framework. */
+    std::string frameworkDir;
 
     /**
      * Worker thread main loop : computes the simulation.
@@ -385,12 +388,14 @@ public:
      * The run() method must be called to launch the different components (simulation, Lua shell).
      *
      * @param[in] luaInitScripts List of Lua scripts to execute when starting the shell.
+     * @param[in] frameworkDir Path to the framework.
      */
-    Insight(const std::vector<std::string>& luaInitScripts) :
+    Insight(const std::vector<std::string>& luaInitScripts, const std::string& frameworkDir) :
         graphicEngine(world),
         shellConfig(*this, luaInitScripts),
         interpreter(shellConfig),
-        renderPeriod(std::chrono::nanoseconds(1000000000/60))
+        renderPeriod(std::chrono::nanoseconds(1000000000/60)),
+        frameworkDir(frameworkDir)
     {
 
     }
@@ -497,6 +502,8 @@ public:
                 object.resume();
                 return 0;
             });
+        } else if (memberName == "dir") {
+            state.push<LuaNativeString>(frameworkDir.c_str());
         } else {
             result = 0;
         }
@@ -519,6 +526,8 @@ public:
         static constexpr char version[] = "version";
         /** Execute Lua initialisation script(s). */
         static constexpr char luaInit[] = "luaInit";
+        /** Sets the framework base directory. */
+        static constexpr char insightDir[] = "insightDir";
     };
 
     /**
@@ -539,6 +548,7 @@ public:
         variable_map variables = parse(argc, argv);
         help = (variables.count(Switch::help) > 0);
         version = (variables.count(Switch::version) > 0);
+        insightDir = variables[Switch::insightDir].as<std::string>();
         luaInit = variables[Switch::luaInit].as<std::vector<std::string>>();
     }
 
@@ -548,9 +558,22 @@ public:
     bool version;
     /** List of scripts to execute when starting the program. */
     std::vector<std::string> luaInit;
+    /** Framework base directory. */
+    std::string insightDir;
 private:
     /** Object holding the options descriptions. */
     static const options_description description;
+
+    /**
+     * Gets the full path of the folder containing this executable.
+     *
+     * This does NOT return the current working directory.
+     *
+     * @return The full path to the executable.
+     */
+    static std::string getBinaryDir() {
+        return boost::dll::program_location().parent_path().generic_string();
+    }
 
     /** Initializer of InsightOptions::description. */
     static options_description initDescription() {
@@ -558,6 +581,7 @@ private:
         options_description result("Command line arguments");
         result.add_options()
             (Switch::help, "prints this help message, and exits.")
+            (Switch::insightDir, po::value<std::string>()->default_value(getBinaryDir(),"executable location"), "sets the framework base directory.")
             (Switch::luaInit, po::value<std::vector<std::string>>()->default_value(std::vector<std::string>(),""), "executes a Lua script when starting the program.")
             (Switch::version, "prints version & license info and exits.")
         ;
@@ -613,7 +637,7 @@ int main(int argc, char** argv) {
             printHeader();
         } else {
             printHeader();
-            Insight insight(options.luaInit);
+            Insight insight(options.luaInit, options.insightDir);
             insight.run();
         }
     } catch (const std::exception& e) {
