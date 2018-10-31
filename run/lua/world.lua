@@ -7,16 +7,21 @@
 -- List of object added into the world by this script.
 objects= {}
 
+-- Place the camera above the scene.
+local camera = insight.graphicEngine.camera
+local cameraPos = camera.position
+camera:setPosition({cameraPos.x, cameraPos.y+2, cameraPos.z})
+
 local world = insight.world
 
 -- Currently 4 different basic shapes can be inserted via Lua.
--- 1) StaticPlane shape (cannot move)
+-- 1) StaticPlane shape (cannot move), used for the ground.
 objects.terrain = world:newBody({
     shape= {
         type= "StaticPlane",
         params= {
             normal= {0,1,0}, -- normal vector of the plane.
-            offset= -2       -- the point origin+offset*normal is in the plane (here {0,-2,0})
+            offset= 0       -- the point origin+offset*normal is in the plane (here {0,0,0})
         },
     },
 })
@@ -46,7 +51,7 @@ objects.cylinder = world:newBody({
         },
     },
 })
-objects.cylinder:setPosition({-1, 0, 2})
+objects.cylinder:setPosition({-1, 1, 2})
 
 -- 4) Cuboid shape
 objects.cuboid = world:newBody({
@@ -81,4 +86,4 @@ objects.table = world:newBody({
         },
     },
 })
-objects.table:setPosition({2,-0.90,5})
+objects.table:setPosition({2, 1.10, 5})
