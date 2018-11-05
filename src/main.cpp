@@ -307,6 +307,11 @@ private:
             state.openLib(Lib::math);
             state.openLib(Lib::table);
 
+            state.openLib(Lib::package);
+            std::string cmd = "package.path = package.path .. ';";
+            cmd+= insight.frameworkDir + "/lua/?.lua'";
+            state.doString(cmd);
+
             state.push<Insight*>(&insight);
             state.setGlobal("insight");
             for (const auto& script : initScripts) {
