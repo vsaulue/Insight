@@ -1,4 +1,6 @@
--- Example of script defining construction info for an android (IN PROGRESS).
+-- Example of script defining construction info for an android.
+
+local newHead= require("robots/parts/newHead")
 
 -- Density of the body parts (kg/m^3).
 local SHAPE_DENSITY = 1500
@@ -43,80 +45,10 @@ local ANKLE_BALL_RADIUS = 0.05
 -- Wrist joint ball radius (m).
 local WRIST_BALL_RADIUS = 0.03
 
-local BULLET_MARGIN = insight.world.defaultMargin.value
-
 local newShape = insight.world.newShape
 
--- Generates a half sphere (cut on the XZ plane, Y+ part kept).
-local function halfSphere(radius)
-    local vertices = {{0,radius,0}}
-    local loop = {}
-    for i=0,15 do
-        local angle = i/8 * math.pi
-        table.insert(loop, {math.cos(angle), math.sin(angle)})
-    end
-    for j=0,3 do
-        local angle = j/8 * math.pi
-        local loopRadius = radius*math.cos(angle)
-        local y = radius*math.sin(angle)
-        for i,point in ipairs(loop) do
-            table.insert(vertices, {loopRadius*point[1], y, loopRadius*point[2]})
-        end
-    end
-    return vertices
-end
-
--- Generates the "neck" part of the head (concave part of the joint).
-local function neckSocketParts(parts, headRadius, neckRadius, neckLength)
-    local partWidth = 0.1*headRadius
-    local halfExtents = {
-        partWidth/2,
-        0.5*(neckLength + neckRadius*(1-math.sqrt(1-math.pow((headRadius-partWidth/2)/neckRadius,2))) - MARGIN - BULLET_MARGIN),
-        0.5*(headRadius+BULLET_MARGIN)*math.sqrt(2*(1-math.cos(math.pi/8))),
-    }
-    shape=newShape({type="Cuboid", params={density= SHAPE_DENSITY, halfExtents= halfExtents}})
-    for i=0,15 do
-        local angle= (2*i+1)/16*math.pi
-        local radius= headRadius*math.sqrt((math.cos(math.pi/8)+1)/2)-halfExtents[1]+BULLET_MARGIN
-        table.insert(parts, {
-            transform= {
-                rotation= {axis= {0,1,0}, angle= angle},
-                position= {radius*math.cos(angle), -3/8*headRadius-halfExtents[2], -radius*math.sin(angle)}
-            },
-            shape= shape,
-        })
-    end
-end
-
--- Generates the shape of the head.
-function head_shape()
-    local shapes = {}
-    table.insert(shapes,{
-        transform= {rotation= {0,0,0,1}, position= {0, -3/8*HEAD_RADIUS, 0}},
-        shape= {
-            type= "ConvexHull",
-            params= {
-                mass= math.pow(HEAD_RADIUS, 3) *2/3*math.pi * SHAPE_DENSITY,
-                vertices= halfSphere(HEAD_RADIUS),
-            }
-        }
-    })
-    table.insert(shapes,{
-        transform= {rotation= {axis={1,0,0}, angle= math.pi/2}, position= {0, 0, HEAD_RADIUS/2+0.01}},
-        shape= {
-            type= "Cylinder",
-            params= {
-                density= SHAPE_DENSITY,
-                halfExtents= {0.025, HEAD_RADIUS/2, 0.025},
-            }
-        }
-    })
-    neckSocketParts(shapes, HEAD_RADIUS, NECK_BALL_RADIUS, NECK_LENGTH)
-    return newShape({type="Compound", params= {children= shapes}})
-end
-
 local SHAPES= {
-    Head= newShape(head_shape()),
+    Head= newHead(HEAD_RADIUS, NECK_BALL_RADIUS, NECK_LENGTH-MARGIN, SHAPE_DENSITY),
     Torso= newShape{type= "Cylinder", params= {density= SHAPE_DENSITY, halfExtents= TORSO_HALF_EXTENTS}},
     Arm= newShape{type= "Cylinder", params= {density= SHAPE_DENSITY, halfExtents= ARM_HALF_EXTENTS}},
     Forearm= newShape{type= "Cylinder", params= {density= SHAPE_DENSITY, halfExtents= FOREARM_HALF_EXTENTS}},
@@ -334,7 +266,7 @@ local JOINTS_INFO = {
     },
 }
 
-androidInfo= insight.newRobotInfo{
+local androidInfo= insight.newRobotInfo{
     -- list of body parts (physic engine shapes), indexed by their names.
     parts= {
         Torso= SHAPES.Torso,
@@ -375,3 +307,5 @@ androidInfo= insight.newRobotInfo{
         RightToes= {info= JOINTS_INFO.Toes, convexPart= "RightFoot", concavePart= "RightToes"},
     },
 }
+
+return androidInfo
