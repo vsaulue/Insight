@@ -1,6 +1,6 @@
 /*
  * This file is part of Insight.
- * Copyright (C) 2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2018-2019 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ EventReport MouseMoveEvent::eventReport(const Keyboard& keyboard, const Mouse& m
     irr::core::position2d<irr::s32> delta = mouse.getMove();
     EventReport result = {false, 0.0f};
     if (!(mouseLockedOnly && !mouse.isMouseLocked())) {
-        float intensity;
+        float intensity = 0;
         switch(direction) {
         case MouseDirection::Left:
             intensity = -delta.X;
