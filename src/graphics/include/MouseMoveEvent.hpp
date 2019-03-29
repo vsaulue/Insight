@@ -1,6 +1,6 @@
 /*
  * This file is part of Insight.
- * Copyright (C) 2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2018-2019 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,7 +73,7 @@ public:
 private:
     /** Direction of the mouse that should trigger this event. */
     MouseDirection direction;
-    /** Event can be triggered only if the mouse is locked in the middle of the screeen. */
+    /** Event can be triggered only if the mouse is locked in the middle of the screen. */
     bool mouseLockedOnly;
 };
 
