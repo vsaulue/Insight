@@ -1,5 +1,5 @@
 /* This file is part of Insight.
- * Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2017-2019 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -615,7 +615,7 @@ const boost::program_options::options_description InsightOptions::description(In
  */
 static void printHeader() {
     std::cout << "Insight version " << INSIGHT_VERSION << "\n";
-    std::cout << "Copyright (C) 2017-2018 Vincent Saulue-Laborde\n";
+    std::cout << "Copyright (C) 2017-2019 Vincent Saulue-Laborde\n";
     std::cout << "This is free software; see the source for copying conditions. ";
     std::cout << "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n";
     std::cout << std::endl;
