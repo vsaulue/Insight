@@ -533,6 +533,8 @@ public:
         static constexpr char luaInit[] = "luaInit";
         /** Sets the framework base directory. */
         static constexpr char insightDir[] = "insightDir";
+        /** Disable automatic execution of init.lua in insightDir. */
+        static constexpr char noDefaultInit[] = "noDefaultInit";
     };
 
     /**
@@ -555,6 +557,13 @@ public:
         version = (variables.count(Switch::version) > 0);
         insightDir = variables[Switch::insightDir].as<std::string>();
         luaInit = variables[Switch::luaInit].as<std::vector<std::string>>();
+        bool noDefaultInit = (variables.count(Switch::noDefaultInit) > 0);
+        if (!noDefaultInit) {
+            boost::filesystem::path initFile(insightDir + "/init.lua");
+            if (boost::filesystem::exists(initFile)) {
+                luaInit.push_back(initFile.generic_string());
+            }
+        }
     }
 
     /** Help message requested. */
@@ -588,6 +597,7 @@ private:
             (Switch::help, "prints this help message, and exits.")
             (Switch::insightDir, po::value<std::string>()->default_value(getBinaryDir(),"executable location"), "sets the framework base directory.")
             (Switch::luaInit, po::value<std::vector<std::string>>()->default_value(std::vector<std::string>(),""), "executes a Lua script when starting the program.")
+            (Switch::noDefaultInit, "disables automatic execution of init.lua in the framework directory.")
             (Switch::version, "prints version & license info and exits.")
         ;
         return result;
