@@ -1,5 +1,5 @@
 # This file is part of Insight.
-# Copyright (C) 2017-2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+# Copyright (C) 2017-2019 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
 #
 # Insight is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@ project(Insight)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 set(Insight_VERSION_MAJOR 0)
-set(Insight_VERSION_MINOR 0)
+set(Insight_VERSION_MINOR 1)
 set(Insight_VERSION_PATCH_LEVEL )
-set(Insight_VERSION_EXTRA -dev)
+set(Insight_VERSION_EXTRA -rc)
 
 set(Insight_VERSION ${Insight_VERSION_MAJOR}.${Insight_VERSION_MINOR})
 
