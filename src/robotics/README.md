@@ -33,8 +33,8 @@ This class wraps a [Constraint](../physics/include/Constraint.hpp) in order to i
 
 - limits (ex: only half a turn of amplitude)
 - an internal friction
-- a motor (torque generator), controlled by an [ActionSignal](../AI-Interface/ActionSignal.hpp)
-- a [SenseSignal](..//AI-Interface/SenseSignal.hpp), returning the position of the joint
+- a motor (torque generator), controlled by an [ActionSignal](../AI-Interface/include/ActionSignal.hpp)
+- a [SenseSignal](../AI-Interface/include/SenseSignal.hpp), returning the position of the joint
 
 ## JointInfo class (& derived)
 
