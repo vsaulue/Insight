@@ -98,8 +98,8 @@ int main(void) {
     state.openLib(LuaStateView::Lib::base);
 
     float incVal = 42;
-	state.push<LuaFunction>([&incVal](LuaStateView& state) -> int {
-    	float arg = state.get<float>(1);
+    state.push<LuaFunction>([&incVal](LuaStateView& state) -> int {
+        float arg = state.get<float>(1);
         state.push<float>(arg + incVal);
         return 1;
     ];
@@ -113,11 +113,11 @@ int main(void) {
 }
 ```
 
-A similar templated class is provided to implement Lua methods in C++: [LuaMethod](include/lua/types/LuaMthod.hpp).
+A similar templated class is provided to implement Lua methods in C++: [LuaMethod](include/lua/types/LuaMethod.hpp).
 
 ## Lua table wrapper
 
-The [LuaTable](lua/types/LuaTable.hpp) is provided in order to read/modify a Lua table.
+The [LuaTable](include/lua/types/LuaTable.hpp) is provided in order to read/modify a Lua table.
 
 ## Custom class bindings
 
@@ -164,7 +164,7 @@ class LuaBinding<Counter> : public LuaDefaultBinding<Counter> {
 }
 ```
 
-This is enough to push/get objects of type `Counter` on/from the Lua stack. By including the headers [lua/bindings/pointers.hpp](include/lua/bindings/pointers) or [lua/bindings/std:shared_ptr.hpp](include/lua/bindings/std/shared_ptr.hpp), it will also be possible to push/get `SomeType*`, `SomeType***` or `std::shared_ptr<SomeType>` objects.
+This is enough to push/get objects of type `Counter` on/from the Lua stack. By including the headers [lua/bindings/pointers.hpp](include/lua/bindings/pointers.hpp) or [lua/bindings/std:shared_ptr.hpp](include/lua/bindings/std/shared_ptr.hpp), it will also be possible to push/get `SomeType*`, `SomeType***` or `std::shared_ptr<SomeType>` objects.
 
 However this object will just be a black box from the Lua perspective: no members, no nice string representation, no table constructor... Let's define a binding with all of these, by adding a few public static functions to `LuaBinding<Counter>`:
 - `static Counter getFromTable(LuaTable&)` enables objects of type `Counter` to be constructed from a Lua table. `LuaStateView::get<Counter>(...)` will do it if the item of the stack is a Lua table.

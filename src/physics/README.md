@@ -2,7 +2,7 @@
 
 This engine is a wrapper of [Bullet physics](https://github.com/bulletphysics/bullet3), adding:
 
-- RAII via smart pointers
+- RAII using smart pointers
 - Lua bindings
 - Event driven programming (for new entities, entities updates)
 - Utilities to display the shapes of objects in a 3d graphics engine
@@ -39,7 +39,7 @@ Lua API (for the abstract base class: derived classes might implement more):
 - read-only properties:
   - mass: mass of this shape
   - inertia: inertia moments about the principal inertia axes
-- table constructor: see the [world.lua](../../run/lua/world.lua) sample script for valid input tables
+- table constructor: see the [demoShapes.lua](../../run/lua/demos/demoShapes.lua) sample script for valid input tables
 
 ## Body class
 

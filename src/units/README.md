@@ -45,7 +45,7 @@ Float<SI::Length> distance = rad_per_second / seconds; // Error: invalid assigme
 
 ### Fundamental dimensions
 
-The library currently uses 4 fundamental dimensions: angle, length, mass, time. They are defined in [units/Dimensions.hpp](units/Dimensions.hpp). From a C++ perspective, they are empty types used as tags. Declaring new dimensions can be done in two lines:
+The library currently uses 4 fundamental dimensions: angle, length, mass, time. They are defined in [Dimensions.hpp](include/units/Dimensions.hpp). From a C++ perspective, they are empty types used as tags. Declaring new dimensions can be done in two lines:
 
 ```
 // Defining "electric current" dimension (common unit: ampere).
@@ -64,7 +64,7 @@ struct UnitSystemMapper<System,D::ElectricCurrent> {
 
 ### Units
 
-The library defines some common units in [units/Units.hpp](units/Units.hpp). Other units can anywhere in the project. A new unit can be defined like this:
+The library defines some common units in [Units.hpp](include/units/Units.hpp). Other units can anywhere in the project. A new unit can be defined like this:
 
 ```
 /** Identifier of hour unit (time). */
@@ -95,7 +95,7 @@ Float<SomeVelocityUnit> value(12345); // SomeVelocityUnit dimension : Length / T
 auto meter_per_second = systemConvert<SI>(value); // converted value Float<SI::Speed>.
 ```
 
-To declare new compound units in all unit system, simply add an typedef in UnitSystem template class in [units/UnitSystem.hpp](units/UnitSystem.hpp). Here is how acceleration unit is defined for example:
+To declare new compound units in all unit system, simply add an typedef in UnitSystem template class in [UnitSystem.hpp](include/units/UnitSystem.hpp). Here is how acceleration unit is defined for example:
 
 ```
 using Acceleration = decltype(Length() / Time()[n2]);
@@ -143,4 +143,4 @@ auto out1 = uMat * uIn;
 UnitWrapper<btVector3,SI::Length> out2 = uMat * uIn;
 ```
 
-The main project uses this feature to wrap existing data structure from the Bulle physics engine. Have a look into the physics library for more examples.
+The main project uses this feature to wrap existing data structure from the Bullet physics engine. Have a look into the physics library for more examples.

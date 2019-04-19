@@ -10,7 +10,7 @@ This library provides utilities to easily constructs robots that can be interfac
 
 - a set of body parts ([Body](../physics/include/Body.hpp) instances)
 - a set of joints, linking body parts together
-- an [AIInterface](../AI-interface/AIInterface.hpp) publishing the senses (joint angles) and action signals (joint torques) of this body
+- an [AIInterface](../AI-interface/include/AIInterface.hpp) publishing the senses (joint angles) and action signals (joint torques) of this body
 
 This class enables to insert and move the body parts and constraints into a [World](../physics/include/World.hpp), in a coherent position in relation to each other.
 
@@ -25,7 +25,7 @@ Lua API:
   - listParts: list all the body part names of this robot
   - setPosition: sets the position of the reference part, and moves all other parts accordingly
   - setRotation: sets the orientation of the reference part, and turns all other parts accordingly
-- table constructor: see [android.lua](../../run/lua/robots/android.lua) for examples
+- table constructor: see [androidInfo.lua](../../run/lua/robots/androidInfo.lua) for examples
 
 ## Joint class (& derived)
 
@@ -42,4 +42,4 @@ This class holds the constructor data for a joint type (ex: a knee). This enable
 
 Lua API:
 
-- table constructor: see [android.lua](../../run/lua/robots/android.lua) for examples
+- table constructor: see [androidInfo.lua](../../run/lua/robots/androidInfo.lua) for examples
