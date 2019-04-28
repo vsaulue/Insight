@@ -25,7 +25,7 @@ This control program is an implementation of a simplistic control law:
 - each joint has an adjustable target angle/orientation
 - simulation step: each joint applies independently a 2nd order linear feedback law: `torque = -A * velocity -B * (target - position)`
 
-This control program is more to be seen as a "Hello world" example. It is too currently simplistic for many practical purposes.
+This control program is more to be seen as a "Hello world" example. It is currently too simplistic for many practical purposes.
 
 Lua API:
 

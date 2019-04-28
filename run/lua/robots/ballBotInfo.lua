@@ -10,7 +10,7 @@ local NECK_LENGTH = 0.05
 local MARGIN = 0.01
 
 local ballBotInfo= insight.newRobotInfo{
-    -- list of body parts (physic engine shapes), indexed by their names.
+    -- list of body parts (physics engine shapes), indexed by their names.
     parts= {
         Torso= {
             type= "Sphere",
