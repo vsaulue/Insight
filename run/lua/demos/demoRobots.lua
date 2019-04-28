@@ -12,12 +12,13 @@ end
 
 function demoRobots.exec()
     Demo.newTerrain()
-    Demo.placeCamera({0,1,5},{0,0,0})
+    Demo.placeCamera({0,1,8},{0,0,0})
 
     local RobotsData= {
-        ballBot= newRobotData("ballBotInfo", {-2,0.4,0}),
-        stableBallBot = newRobotData("stableBallBotInfo", {0,0.4,0}),
-        android = newRobotData("androidInfo", {2,1.25,0}),
+        ballBot= newRobotData("ballBotInfo", {-3,0.4,0}),
+        stableBallBot = newRobotData("stableBallBotInfo", {-1,0.4,0}),
+        android = newRobotData("androidInfo", {1,1.25,0}),
+        pendulum = newRobotData("pendulumInfo", {4,3,0}),
     }
 
     robots = {}
