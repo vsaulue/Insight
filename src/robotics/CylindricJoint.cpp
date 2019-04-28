@@ -1,6 +1,6 @@
 /*
  * This file is part of Insight.
- * Copyright (C) 2018 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
+ * Copyright (C) 2018-2019 Vincent Saulue-Laborde <vincent_saulue@hotmail.fr>
  *
  * Insight is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,9 +36,7 @@ static const btVector3 HINGE_AXIS(1,0,0);
 static void initPosition(const Body& fixedBody, const Transform<SI::Length>& fixedJoint, Body& movingBody,
                          const Transform<SI::Length>& movingJoint, Scalar<SI::Angle> initialAngle)
 {
-    btTransform joint;
-    joint.setIdentity();
-    joint.getBasis().setEulerZYX(0, 0, initialAngle.value);
+    btTransform joint(btQuaternion(HINGE_AXIS, toBulletUnits(initialAngle)));
     btTransform newTransform = fixedBody.getEngineTransform() * toBulletUnits(fixedJoint) * joint * toBulletUnits(movingJoint).inverse();
     movingBody.setEngineTransform(newTransform);
 }
