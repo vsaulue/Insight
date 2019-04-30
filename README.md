@@ -61,7 +61,7 @@ Settings like mouse sensitivity or camera speed can be modified the same way: se
 
 The main instance of the [World](src/physics/README.md#World-class) class can be found at `insight.world` in Lua scripts.
 
-New bodies can be created using the `insight.world:newBody()` method. It takes a [Shape](src/physics/README.md#Shape-class-(&-derived)) object as argument. See [demoShapes.lua](run/lua/demos/demoShapes.lua) for a list of all shapes.
+New bodies can be created using the `insight.world:newBody()` method. It takes a [Shape](https://github.com/vsaulue/Insight/blob/readme/src/physics/README.md#shape-class--derived) object as argument. See [demoShapes.lua](run/lua/demos/demoShapes.lua) for a list of all shapes.
 
 ```
 sphere = insight.world:newBody({
@@ -99,9 +99,9 @@ Where:
 
 The `constructionInfo` part can be constructed from a Lua table with the following fields:
 
-* parts: a table of [shapes](src/physics/README.md##Shape-class-(&-derived)) indexed by names.
+* parts: a table of [shapes](src/physics/README.md#shape-class--derived) indexed by names.
 * basePart: name of the "reference" part (used for easier manipulation).
-* joints: a table of [JointInfos](src/robotics/README.md##JointInfo-class-(&-derived)) indexed by names. Currently, 1 or 3 degree of freedom (dof) joints are supported. They can optionally include friction/damping, and motors.
+* joints: a table of [JointInfos](src/robotics/README.md#jointinfo-class--derived) indexed by names. Currently, 1 or 3 degree of freedom (dof) joints are supported. They can optionally include friction/damping, and motors.
 
 Examples of `constructionInfo` tables are provided in the following scripts:
 
@@ -123,7 +123,7 @@ newAndroid:setPosition({0,0,5})
 ## AIs
 
 Currently, AIs (or control laws) can't be implemented from Lua. An extremely basic control
-law is provided as a placeholder, named [feedback](src/AIs/README.md##FeedbackAI). It can be instanciated like this:
+law is provided as a placeholder, named [feedback](src/AIs/README.md#feedbackai). It can be instanciated like this:
 
 ```
 newAndroid = insight:newRobot(androidInfo, {type="feedback"})
