@@ -137,7 +137,7 @@ Platform: Windows 64 bits
 Compiler: g++ 7.3.0, posix threads, seh exceptions (from MinGW-W64-builds-4.3.4).
 CMake: v3.9 or higher
 
-3-rd party libraries (thanks to all the contributors of these project):
+3-rd party libraries (thanks to all the contributors of these projects):
 
 * [Bullet physics 3](https://github.com/bulletphysics/bullet3) v2.88
 * [Boost](https://www.boost.org/) v1.61
