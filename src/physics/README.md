@@ -43,7 +43,7 @@ Lua API (for the abstract base class: derived classes might implement more):
 
 ## Body class
 
-This class implement an real object in the physics engine: something having a shape, a mass, a position...
+This class implement a real object in the physics engine: something having a shape, a mass, a position...
 
 Lua API:
 
