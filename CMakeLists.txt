@@ -22,7 +22,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 set(Insight_VERSION_MAJOR 0)
 set(Insight_VERSION_MINOR 1)
 set(Insight_VERSION_PATCH_LEVEL )
-set(Insight_VERSION_EXTRA -rc)
+set(Insight_VERSION_EXTRA )
 
 set(Insight_VERSION ${Insight_VERSION_MAJOR}.${Insight_VERSION_MINOR})
 
