@@ -6,7 +6,8 @@ This project aims at providing tools to test 3d robot control programs. These pr
 - License: GPLv3
 - Languages: C++17 (engine, control programs), Lua
 
-@TODO: video/gif demo
+*Demo: simple stability test*
+![Simple stability test](https://user-images.githubusercontent.com/34475300/57394438-d6ef1700-71c5-11e9-9e5d-d898d8acb67a.gif)
 
 # Install
 
