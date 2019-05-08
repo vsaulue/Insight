@@ -9,6 +9,21 @@ This project aims at providing tools to test 3d robot control programs. These pr
 *Demo: simple stability test*
 ![Simple stability test](https://user-images.githubusercontent.com/34475300/57394438-d6ef1700-71c5-11e9-9e5d-d898d8acb67a.gif)
 
+# Table of contents
+
+- [Insight - AI experiment platform](#insight---ai-experiment-platform)
+- [Table of contents](#table-of-contents)
+- [Install](#install)
+- [Usage](#usage)
+  * [Demo scripts](#demo-scripts)
+  * [Executing other scripts](#executing-other-scripts)
+  * [3d window usage](#3d-window-usage)
+- [First Lua scripts](#first-lua-scripts)
+  * [Physics](#physics)
+  * [Robotics](#robotics)
+  * [AIs](#ais)
+- [Compiling](#compiling)
+
 # Install
 
 * Download precompiled binaries from the [release page](https://github.com/vsaulue/Insight/releases)
@@ -96,7 +111,7 @@ newRobot = insight:newRobot(constructionInfo,aiInfo)
 Where:
 
 * `constructionInfo` is an object describing the body of the robot.
-* `aiInfo` is an object describing the control programs.
+* `aiInfo` is an object describing the control program.
 
 The `constructionInfo` part can be constructed from a Lua table with the following fields:
 
@@ -134,9 +149,9 @@ Future versions will include ways to program AIs/control loops at runtime.
 
 # Compiling
 
-Platform: Windows 64 bits
-Compiler: g++ 7.3.0, posix threads, seh exceptions (from MinGW-W64-builds-4.3.4).
-CMake: v3.9 or higher
+- Platform: Windows 64 bits
+- Compiler: g++ 7.3.0, posix threads, seh exceptions (from MinGW-W64-builds-4.3.4).
+- CMake: v3.9 or higher
 
 3-rd party libraries (thanks to all the contributors of these projects):
 
